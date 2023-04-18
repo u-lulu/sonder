@@ -1,0 +1,63 @@
+[
+	{
+		"Title":"LOCATION OF HIGH COMMAND",
+		"Roll":"2D6",
+		"Values":
+			{
+				"2": "Marianas Trench",
+				"3": "North Pole",
+				"4": "Asia",
+				"5": "Africa",
+				"6": "South America",
+				"7": "Antarctica",
+				"8": "North America",
+				"9": "Europe",
+				"10": "Australia",
+				"11": "Mount Everest",
+				"12": "Dark side of the Moon"
+			}
+	},
+	{
+		"Title":"POSSIBLE ORIGINS",
+		"Roll":"D66",
+		"Values":
+			{
+				"11": "A strong stochastic force with no true leader",
+				"12": "Actually the topmost global corporate entity",
+				"13": "Began as a society of assassins who started WWI",
+				"14": "Born when a dangerous FIST agent turned heel",
+				"15": "Built from nothing but the Director\u2019s force of will",
+				"16": "Chartered by Victorian venture capitalists",
+				"21": "Contract agreement between the CIA and KGB",
+				"22": "Created in secret by a powerful necromancer",
+				"23": "Deployed by totalitarian future Earth government",
+				"24": "East-West black project to quash the rise of ESP",
+				"25": "Eastern Bloc policing apparatus gone rogue",
+				"26": "Established by God to keep things under control",
+				"31": "Evolved from an ancient Greek mystery cult",
+				"32": "First assembled by Emperors Nero and Caligula",
+				"33": "Founded by Nazi fugitives in Argentina",
+				"34": "Gathered from all nations by an eldritch god",
+				"35": "Granted US funding as part of the Red Scare",
+				"36": "INTERPOL spinoff that got out of control",
+				"41": "Inherited name from a mundane spy satellite net",
+				"42": "Installed by aliens to guide human history",
+				"43": "Introduced by slavers to counter safehouses",
+				"44": "Joint Axis-Allies social control program",
+				"45": "League of Nations revenant organization",
+				"46": "Managed by an AI with big plans for humanity",
+				"51": "Medieval splinter of the Catholic Church",
+				"52": "Once did what FIST does, then lost its way",
+				"53": "Present since life began thanks to time travel",
+				"54": "Reactionary ruling class response to mass media",
+				"55": "Restructured remains of the East India Company",
+				"56": "Science think tank mutated by power and greed",
+				"61": "Secretly joint-developed by all major corporations",
+				"62": "Society of vampires that ousted the vampires",
+				"63": "Spontaneously began existing via mass belief",
+				"64": "Started as a band of sellswords from Uruk",
+				"65": "Supervillain henchman army that lost its leader",
+				"66": "Was once a PMC with lofty aspirations"
+			}
+	}
+]

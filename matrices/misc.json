@@ -1,0 +1,333 @@
+[
+	{
+		"Title":"MAGICAL SYLLABLES",
+		"Roll":"D66",
+		"Values":
+			{
+				"11": "AGON",
+				"12": "AKU",
+				"13": "BASU",
+				"14": "CTH",
+				"15": "EL",
+				"16": "EOR",
+				"21": "FEL",
+				"22": "IRU",
+				"23": "JIN",
+				"24": "KHET",
+				"25": "KHON",
+				"26": "KWE",
+				"31": "KZIN",
+				"32": "LETH",
+				"33": "LO",
+				"34": "MEG",
+				"35": "MOR",
+				"36": "NAK",
+				"41": "NAZ",
+				"42": "OCH",
+				"43": "OTH",
+				"44": "PTEK",
+				"45": "QOS",
+				"46": "RIN",
+				"51": "SHU",
+				"52": "THATH",
+				"53": "THUN",
+				"54": "TZET",
+				"55": "UR",
+				"56": "URAAN",
+				"61": "UUM",
+				"62": "VEC",
+				"63": "VRAM",
+				"64": "WYRN",
+				"65": "WODO",
+				"66": "ORU"
+			}
+	},
+	{
+		"Title":"OPERATION CODENAMES",
+		"Roll":"D66",
+		"Values":
+			{
+				"11": "Altered State",
+				"12": "Attachment Theory",
+				"13": "Autumn Equinox",
+				"14": "Beat Sheet",
+				"15": "Cold Fusion",
+				"16": "Cry Havoc",
+				"21": "Current Mirror",
+				"22": "Dark Matter",
+				"23": "Deadweight Loss",
+				"24": "Double Blind",
+				"25": "Ego Death",
+				"26": "Extinction Event",
+				"31": "False Self",
+				"32": "Fifth Element",
+				"33": "Free Association",
+				"34": "Future Shock",
+				"35": "Genetic Drift",
+				"36": "Human Error",
+				"41": "Jungian Shadow",
+				"42": "Liquid Asset",
+				"43": "Long Exposure",
+				"44": "Object Permanence",
+				"45": "Observer Effect",
+				"46": "Opposing Force",
+				"51": "Platonic Ideal",
+				"52": "Punnett Square",
+				"53": "Quo Vadis",
+				"54": "Random Access",
+				"55": "Repressed Memory",
+				"56": "Savior Complex",
+				"61": "Self Destruct",
+				"62": "Soft Power",
+				"63": "Vacuous Truth",
+				"64": "Vanishing Point",
+				"65": "Winter Solstice",
+				"66": "You're OK"
+			}
+	},
+	{
+		"Title":"COMBAT BEHAVIORS",
+		"Roll":"2D6",
+		"Values":
+			{
+				"2": "Big push forward",
+				"3": "Call reinforcements",
+				"4": "Thrown weapon",
+				"5": "Find new position",
+				"6": "Wide attack",
+				"7": "Use cover",
+				"8": "Focus attack",
+				"9": "Fortify position",
+				"10": "Move to flank",
+				"11": "Area attack",
+				"12": "Use special ability, or fall back if none"
+			}
+	},
+	{
+		"Title":"HIT LOCATIONS",
+		"Roll":"2D6",
+		"Values":
+			{
+				"2": "Head/weak spot",
+				"3": "Left leg/foot",
+				"4": "Left hand",
+				"5": "Left arm",
+				"6": "Shoulder(s)",
+				"7": "Chest",
+				"8": "Gut",
+				"9": "Right arm",
+				"10": "Right hand",
+				"11": "Right leg/foot",
+				"12": "Compound injury (roll two hit locations)"
+			}
+	},
+	{
+		"Title":"FACTION ACTIONS",
+		"Roll":"2D6",
+		"Values":
+			{
+				"2": "Internal schism",
+				"3": "Hire mercenaries",
+				"4": "Ally with faction",
+				"5": "Acquire resource",
+				"6": "Pursue primary goal",
+				"7": "Fortify/observe",
+				"8": "Pursue side goal",
+				"9": "Distribute resource",
+				"10": "Antagonize faction",
+				"11": "Hire civilians",
+				"12": "Fake-out zig-zag (roll two actions)"
+			}
+	},
+	{
+		"Title":"FACTION MISSIONS",
+		"Roll":"2D6",
+		"Values":
+			{
+				"2": "Join client faction",
+				"3": "Infiltrate faction",
+				"4": "Find information",
+				"5": "Defend location",
+				"6": "Fetch item",
+				"7": "Kill target",
+				"8": "Place item",
+				"9": "Attack location",
+				"10": "Destroy information",
+				"11": "Dissolve faction",
+				"12": "Double mission (roll two objectives)"
+			}
+	},
+	{
+		"Title":"STARTING YEAR",
+		"Roll":"1D6",
+		"Values":
+			{
+				"1": "1960",
+				"2": "1965",
+				"3": "1970",
+				"4": "1975",
+				"5": "1980",
+				"6": "1985"
+			}
+	},
+	{
+		"Title":"+YEAR",
+		"Roll":"1D6",
+		"Values":
+			{
+				"1": "1",
+				"2": "2",
+				"3": "3",
+				"4": "4",
+				"5": "5",
+				"6": "0"
+			}
+	},
+	{
+		"Title":"TEMPERATURE",
+		"Roll":"1D6",
+		"Values":
+			{
+				"1": "Sharp decrease",
+				"2": "Mild decrease",
+				"3": "Fluctuates",
+				"4": "No change",
+				"5": "Mild increase",
+				"6": "Sharp increase"
+			}
+	},
+	{
+		"Title":"PRECIPITATION",
+		"Roll":"1D6",
+		"Values":
+			{
+				"1": "Sharp decrease",
+				"2": "Mild decrease",
+				"3": "Fluctuates",
+				"4": "No change",
+				"5": "Mild increase",
+				"6": "Sharp increase"
+			}
+	},
+	{
+		"Title":"CHOKE SCORES",
+		"Roll":"D66",
+		"Values":
+			{
+				"11": "CHOKE 1: Battle fugue state",
+				"12": "CHOKE 1: Bribe anyone in charge",
+				"13": "CHOKE 1: Cry profusely",
+				"14": "CHOKE 1: Enter fetal position",
+				"15": "CHOKE 1: Pass out cold",
+				"16": "CHOKE 1: Start running, don't stop",
+				"21": "CHOKE 2: Become light-headed",
+				"22": "CHOKE 2: Cower in cover",
+				"23": "CHOKE 2: Death march",
+				"24": "CHOKE 2: Find an exit",
+				"25": "CHOKE 2: Fling weapon",
+				"26": "CHOKE 2: Hide any injuries",
+				"31": "CHOKE 3: Blissful denial",
+				"32": "CHOKE 3: Freeze up",
+				"33": "CHOKE 3: Go feral",
+				"34": "CHOKE 3: Hands-up surrender",
+				"35": "CHOKE 3: Interfere with a player",
+				"36": "CHOKE 3: Suddenly masochist",
+				"41": "CHOKE 4: Behave sadistically",
+				"42": "CHOKE 4: Break weapon showing off",
+				"43": "CHOKE 4: Demand immediate help",
+				"44": "CHOKE 4: Get hopelessly lost",
+				"45": "CHOKE 4: Laugh hysterically",
+				"46": "CHOKE 4: Plead for mercy",
+				"51": "CHOKE 5: Break into song",
+				"52": "CHOKE 5: Give up entirely",
+				"53": "CHOKE 5: Shoot self in foot",
+				"54": "CHOKE 5: Stockholm syndrome",
+				"55": "CHOKE 5: Tear off shirt and howl",
+				"56": "CHOKE 5: Trip on shoelaces",
+				"61": "CHOKE 6: Cardiac arrest",
+				"62": "CHOKE 6: Major dislocation",
+				"63": "CHOKE 6: Self-sacrifice attack",
+				"64": "CHOKE 6: Start hurling accusations",
+				"65": "CHOKE 6: Turn on FIST",
+				"66": "CHOKE 6: Ultrahuman abilities activate"
+			}
+	},
+	{
+		"Title":"PARTIAL SUCCESSES / YES, BUT...",
+		"Roll":"D66",
+		"Values":
+			{
+				"11": "COMBAT The enemy doubles down",
+				"12": "COMBAT The enemy flanks you",
+				"13": "COMBAT You deal half DAMAGE",
+				"14": "COMBAT You hurt a teammate too",
+				"15": "COMBAT You trade DAMAGE",
+				"16": "COMBAT Your weapon stops working",
+				"21": "GENERAL You can't move right now",
+				"22": "GENERAL You cannot finish it alone",
+				"23": "GENERAL You deplete a resource",
+				"24": "GENERAL You ignore something else",
+				"25": "GENERAL You need more time",
+				"26": "GENERAL You'll need to rest a moment",
+				"31": "MENTAL Approximate calculations only",
+				"32": "MENTAL More research is required",
+				"33": "MENTAL Some information is lost",
+				"34": "MENTAL You can't remember exactly",
+				"35": "MENTAL You don't know why you're right",
+				"36": "MENTAL You failed to account for...",
+				"41": "MOVEMENT You drop an important item",
+				"42": "MOVEMENT You go partially off-course",
+				"43": "MOVEMENT You hurt yourself a little",
+				"44": "MOVEMENT You must take a longer route",
+				"45": "MOVEMENT You're now in harm's way",
+				"46": "MOVEMENT You're stopped halfway",
+				"51": "SOCIAL Disarm yourself immediately",
+				"52": "SOCIAL That won't work again",
+				"53": "SOCIAL You must prove yourself",
+				"54": "SOCIAL You must provide compensation",
+				"55": "SOCIAL You need to make a hard sell",
+				"56": "SOCIAL You'll be watched constantly",
+				"61": "WEIRD A trait behaves erratically",
+				"62": "WEIRD Turn on your teammates",
+				"63": "WEIRD You begin losing your grip",
+				"64": "WEIRD You get a bad nosebleed",
+				"65": "WEIRD You slowly develop a new trait",
+				"66": "WEIRD You're struck by lighting"
+			}
+	},
+	{
+		"Title":"RANDOM ENCOUNTERS",
+		"Roll":"2D6",
+		"Values":
+			{
+				"2": "Single/group of 1D6 aliens",
+				"3": "Single/group of 1D6 monsters/experiments",
+				"4": "Faction representative",
+				"5": "Single/group of animals",
+				"6": "A random NPC",
+				"7": "1D6 soldiers and/or a squad",
+				"8": "1D6 random NPCs",
+				"9": "New location becomes available",
+				"10": "Weather change",
+				"11": "Single/group of 1D6 robots"
+			}
+	},
+	{
+		"Title":"RANDOM DOWNTIME EVENTS",
+		"Roll":"2D6",
+		"Values":
+			{
+				"2": "Massive CYCLOPS raid, all missions put on stanby",
+				"3": "A world-ending threat needs immediate attention",
+				"4": "FIST's location is discoverd by 1D6 CROs",
+				"5": "A thief steals something important from FIST",
+				"6": "An NPC appears to offer a mission",
+				"7": "A faction takes action and/or offers a mission",
+				"8": "An enemy appears and plans to attack FIST",
+				"9": "Someone drops off a valuable item for free",
+				"10": "1D6 missions are offered, all in the immediate area",
+				"11": "An NPC appears to join FIST as an ally",
+				"12": "CYCLOPS top secret base coordinates revealed"
+			}
+	}
+]

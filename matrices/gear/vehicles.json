@@ -1,0 +1,63 @@
+[
+	{
+		"Title":"VEHICLES",
+		"Roll":"D66",
+		"Values":
+			{
+				"11": "Bike - 3 HP, 0 ARMOR",
+				"12": "Hang glider - 3 HP, 0 ARMOR",
+				"13": "Jet ski - 3 HP, 1 ARMOR",
+				"14": "ATV/snowmobile - 3 HP, 2 ARMOR",
+				"15": "Small boat (eg fishing, patrol) - 6 HP, 1 ARMOR",
+				"16": "Motorcycle - 6 HP, 1 ARMOR",
+				"21": "Dirtbike - 6 HP, 2 ARMOR",
+				"22": "Sandrail - 8 HP, 0 ARMOR",
+				"23": "Civilian car - 8 HP, 1 ARMOR",
+				"24": "Civilian truck/technical - 8 HP, 2 ARMOR",
+				"25": "Armored car - 8 HP, 3 ARMOR",
+				"26": "Race car (eg sports, stock) - 10 HP, 0 ARMOR",
+				"31": "Civilian plane - 10 HP, 0 ARMOR",
+				"32": "Civilian van - 10 HP, 1 ARMOR",
+				"33": "Covered truck - 10 HP, 2 ARMOR",
+				"34": "Amphibious vehicle - 10 HP, 2 ARMOR",
+				"35": "Light util vehicle (eg Jeep, UAZ) - 12 HP, 1 ARMOR",
+				"36": "Civilian carrier (eg semi, bus) - 12 HP, 1 ARMOR",
+				"41": "Gun truck - 12 HP, 3 ARMOR",
+				"42": "Fighter aircraft - 12 HP, 1 ARMOR",
+				"43": "Helicopter - 16 HP, 1 ARMOR",
+				"44": "Work vehicle (eg tractor, crane) - 16 HP, 2 ARMOR",
+				"45": "Large boat (eg barge, yacht) - 16 HP, 2 ARMOR",
+				"46": "Self-propelled artillery - 16 HP, 3 ARMOR",
+				"51": "Heavy aircraft - 18 HP, 2 ARMOR",
+				"52": "Mech frame - 18 HP, 2 ARMOR",
+				"53": "Starfighter - 18 HP, 2 ARMOR",
+				"54": "Submarine - 18 HP, 3 ARMOR",
+				"55": "Aircraft carrier - 18 HP, 3 ARMOR",
+				"56": "Airship (balloon, zeppelin, etc) - 20 HP, 0 ARMOR",
+				"61": "Commercial jet - 20 HP, 2 ARMOR",
+				"62": "Tank - 20 HP, 4 ARMOR",
+				"63": "Battleship - 30 HP, 3 ARMOR",
+				"64": "Nuclear icebreaker - 30 HP, 4 ARMOR",
+				"65": "Spaceship - 40 HP, 3 ARMOR",
+				"66": "Battle mech - 40 HP, 4 ARMOR"
+			}
+	},
+	{
+		"Title":"VEHICLE WEAPONS",
+		"Roll":"2D6",
+		"Values":
+			{
+				"2": "Auto-targeting prototype cannon - 2D6 DAMAGE",
+				"3": "Side hazards (eg spikes, laser jets) - 3 DAMAGE",
+				"4": "Homing missiles - 1D6+2 DAMAGE, 1D6 missiles",
+				"5": "Mounted gun - 1D6+1 DAMAGE",
+				"6": "Gunner seats - 0 DAMAGE, 1D6 seats",
+				"7": "Front-mounted ram - 1D6 DAMAGE",
+				"8": "Mounted heavy weapon - 1D6+2 DAMAGE",
+				"9": "Integrated weapons - 1D6 DAMAGE, 1D6 weapons",
+				"10": "Mounted grenade launcher - 1D6 DAMAGE ",
+				"11": "Mine dropper 2D6 DAMAGE, 1D6 mines",
+				"12": "Chemical weapon system - 2D6 DAMAGE to area"
+			}
+	}
+]

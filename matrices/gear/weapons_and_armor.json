@@ -1,0 +1,437 @@
+[
+	{
+		"Title":"ARMOR",
+		"Roll":"2D6",
+		"Values":
+			{
+				"2": "Combat shield (0 ARMOR, accessory)",
+				"3": "Riot shield (1 ARMOR, equip as weapon)",
+				"4": "Heavy riot shield (2 ARMOR, equip as weapon)",
+				"5": "Helmet (1 ARMOR, accessory)",
+				"6": "Civilian clothing (0 ARMOR)",
+				"7": "Standard fatigues (0 ARMOR)",
+				"8": "Tactical clothing (1 ARMOR)",
+				"9": "Bulletproof vest (1 ARMOR)",
+				"10": "Exoskeleton frame (1 ARMOR)",
+				"11": "Ceramic plate (2 ARMOR)",
+				"12": "Power armor (2 ARMOR)"
+			}
+	},
+	{
+		"Title":"WEAPONS",
+		"Roll":"D66",
+		"Values":
+			{
+				"11": "Small blunt (baton, cane, etc) - 3 DAMAGE",
+				"12": "Large blunt (bat, crowbar, etc) - 1D6 DAMAGE",
+				"13": "Small blade (pocketknife, hatchet, etc) - 3 DAMAGE",
+				"14": "Large blade (combat knife, axe, etc) - 1D6 DAMAGE",
+				"15": "Light hand (wraps, thick gloves, etc) - 3 DAMAGE",
+				"16": "Heavy hand (knuckle dusters, etc) - 1D6 DAMAGE",
+				"21": "Small ranged (slingshot, BB gun, etc) - 3 DAMAGE",
+				"22": "Whip - 1D6 DAMAGE",
+				"23": "Bow - 1D6 DAMAGE",
+				"24": "Pistol - 1D6 DAMAGE",
+				"25": "Machine pistol - 1D6 DAMAGE",
+				"26": "Submachine gun - 1D6 DAMAGE",
+				"31": "Carbine - 1D6 DAMAGE",
+				"32": "Hand cannon - 1D6+1 DAMAGE",
+				"33": "Bolt-action rifle - 1D6+1 DAMAGE",
+				"34": "Semi-automatic rifle - 1D6+1 DAMAGE",
+				"35": "Assault rifle - 1D6+1 DAMAGE",
+				"36": "Break-action shotgun - 1D6+1 DAMAGE",
+				"41": "Pump-action shotgun - 1D6+1 DAMAGE",
+				"42": "Light machine gun - 1D6+1 DAMAGE",
+				"43": "Sword - 1D6+1 DAMAGE",
+				"44": "Spear - 1D6+1 DAMAGE",
+				"45": "Large axe - 1D6+1 DAMAGE",
+				"46": "Large hammer - 1D6+1 DAMAGE",
+				"51": "Sniper rifle - 1D6+2 DAMAGE",
+				"52": "Rocket launcher - 1D6+2 DAMAGE",
+				"53": "Heavy machine gun - 1D6+2 DAMAGE",
+				"54": "Heavy misc (eg railgun, laser) - 1D6+2 DAMAGE",
+				"55": "Energy blade (eg beam, magic) - 1D6+2 DAMAGE",
+				"56": "Concussion grenade - 1D6 DAMAGE",
+				"61": "Frag grenade - 1D6+1 DAMAGE",
+				"62": "Small bomb (eg landmine, pipe) - 1D6+2 DAMAGE",
+				"63": "Large bomb (eg C4 setup) - 2D6 DAMAGE",
+				"64": "Anomalous weapon - 2D6 DAMAGE",
+				"65": "Ultra-shotgun - 2D6 DAMAGE",
+				"66": "FUBAR blaster 3D6 DAMAGE"
+			}
+	},
+	{
+		"Title":"WEAPON TAGS",
+		"Roll":"D66",
+		"Values":
+			{
+				"11": {
+					"Name":"ACCURATE",
+					"Effect":"Scoped, sighted, or well-balanced; this weapon grants one automatic success when attacking per mission."
+				},
+				"12": {
+					"Name":"ANTI-MATERIEL",
+					"Effect":"Deals double DAMAGE to vehicles and structures; cumbersome to carry around."
+				},
+				"13": {
+					"Name":"ALT-FIRE",
+					"Effect":"This weapon has a secondary component or form which also deals damage, (e.g. bayonet, launcher attachment, sword that becomes a whip)."
+				},
+				"14": {
+					"Name":"ARMOR-PIERCING",
+					"Effect":"Attacks with this weapon ignore ARMOR bonuses granted by physical means."
+				},
+				"15": {
+					"Name":"BANE",
+					"Effect":"Forged from (or fires) a magically useful material of your choice (silver, salt, etc.) Deals double DAMAGE to those affected."
+				},
+				"16": {
+					"Name":"COLLAPSIBLE",
+					"Effect":"Easily concealed, no matter the size; will never be detected during pat-downs."
+				},
+				"21": {
+					"Name":"CURSED",
+					"Effect":"Requires powerful magic to remove once equipped. The wielder may permanently spend 1D6 MAX HP to guarantee a successful attack."
+				},
+				"22": {
+					"Name":"CUSTOMIZED",
+					"Effect":"Deals an additional 1 DAMAGE and has a weapon skin; coveted by enemies."
+				},
+				"23": {
+					"Name":"DUMMY",
+					"Effect":"Appears to be a weapon, but is actually another mundane item of your choice (e.g. gun lighter, fake sword with a hidden compartment)."
+				},
+				"24": {
+					"Name":"ELECTRIFIED",
+					"Effect":"Deals double DAMAGE to robots and other complex machines. Shorts out running electronics and briefly electrifies bodies of water."
+				},
+				"25": {
+					"Name":"EXPERIMENTAL",
+					"Effect":"When each mission begins, roll D66 on this table for the weapon's effect (if you get EXPERIMENTAL, create a new one with the ref)."
+				},
+				"26": {
+					"Name":"FLASHY",
+					"Effect":"If you describe a unique and bombastic attack with this weapon, you can roll +CREATIVE to hit."
+				},
+				"31": {
+					"Name":"GRIP",
+					"Effect":"Custom materials and ergonomic design; the referee can never state that you drop this weapon."
+				},
+				"32": {
+					"Name":"HEAVY",
+					"Effect":"This thing is too big to be called a weapon. Once per mission, take +3 on a FORCEFUL roll that involves this weapon."
+				},
+				"33": {
+					"Name":"HUD",
+					"Effect":"Scans hostiles. When you kill something new, the referee will tell you a useful fact about it."
+				},
+				"34": {
+					"Name":"ICE",
+					"Effect":"Deals double DAMAGE to anything which needs warmth to function."
+				},
+				"35": {
+					"Name":"INCENDIARY",
+					"Effect":"When damage is dealt, this weapon also deals 2 DAMAGE to anything within fire-spreading range. Deals double DAMAGE to plants."
+				},
+				"36": {
+					"Name":"INDESTRUCTIBLE",
+					"Effect":"Impervious to everything; can withstand any amount of pressure or corrosion."
+				},
+				"41": {
+					"Name":"LIGHT",
+					"Effect":"Weighs almost nothing. Grants +1 on REFLEXIVE rolls that involve this weapon."
+				},
+				"42": {
+					"Name":"LOUD",
+					"Effect":"Attacks with this weapon draw the undivided attention of enemies within earshot (and instantly reveal your position)."
+				},
+				"43": {
+					"Name":"LUCKY",
+					"Effect":"Rolling an ultra success while attacking with this weapon grants the user one WAR DIE."
+				},
+				"44": {
+					"Name":"MEDICAL",
+					"Effect":"Once per mission, you may use this weapon to deal negative DAMAGE, healing the target."
+				},
+				"45": {
+					"Name":"MESSY",
+					"Effect":"Enemies explode into gore/goo/scrap etc. on ultra successes (in addition to the usual bonus). No identifiers will remain—not even teeth."
+				},
+				"46": {
+					"Name":"MENACING",
+					"Effect":"Enemies who see a comrade slain by this weapon have a 1-in-1D6 chance to flee."
+				},
+				"51": {
+					"Name":"NON-LETHAL",
+					"Effect":"Does not deal DAMAGE; has a 3-in-1D6 chance to knock unconscious on a success."
+				},
+				"52": {
+					"Name":"POISONED",
+					"Effect":"When you would roll for damage for this weapon, wait and mark your target as poisoned instead. Next time they're hurt, roll your DAMAGE and add it to the total amount they take."
+				},
+				"53": {
+					"Name":"PROTOTYPE",
+					"Effect":"Wielding this next-generation weapon grants +1 TACTICAL; roll +TAC to attack with it."
+				},
+				"54": {
+					"Name":"QUICK-DRAW",
+					"Effect":"Attacks that target enemies drawing their weapons will always succeed."
+				},
+				"55": {
+					"Name":"REMOTE",
+					"Effect":"Projectiles (or the weapon itself) can be remotely steered through chutes and around walls."
+				},
+				"56": {
+					"Name":"RITUAL",
+					"Effect":"Shatters to protect you from death once, negating lethal damage. Disintegrates afterward."
+				},
+				"61": {
+					"Name":"SAPIENT",
+					"Effect":"Communicates with its wielder by thought; roll 1D6 for disposition: bloodthirsty, caring, craven, excitable, morose, stoic."
+				},
+				"62": {
+					"Name":"SHREDDER",
+					"Effect":"Deals double DAMAGE to exposed flesh. On critical hits, decreases the target's ARMOR by 1."
+				},
+				"63": {
+					"Name":"STUN",
+					"Effect":"Those damaged by this weapon cannot move or act until their current HP changes."
+				},
+				"64": {
+					"Name":"TRANQUILIZER",
+					"Effect":"As NON-LETHAL, but chance is increased to 5-in-1D6 if a vulnerable area is specifically targeted (e.g. head, neck, exposed membrane, etc.)"
+				},
+				"65": {
+					"Name":"UNSTABLE",
+					"Effect":"Can be set to overload to deal triple DAMAGE once; explodes for 3D6 damage to everyone nearby seconds later."
+				},
+				"66": {
+					"Name":"VALUABLE",
+					"Effect":"Utterly unique in history or make. Can be used as a bargaining chip in almost any situation."
+				}
+			}
+	},
+	{
+		"Title":"WEAPON SKINS",
+		"Roll":"D666",
+		"Values":
+			{
+				"1": "1D6 gem sockets",
+				"2": "2D6 inset gems",
+				"3": "3D6 previous owners' names",
+				"4": "4D6 bullet-deflection marks",
+				"5": "5D6 collected dog tags ",
+				"6": "6D6 kill notches",
+				"7": "Affixed talisman",
+				"8": "Airbrush stenciling",
+				"9": "Alchemical symbols",
+				"10": "Alligator skin accents",
+				"11": "Animal head ornament",
+				"12": "Appealing asymmetry",
+				"13": "Arctic white",
+				"14": "Atomic purple",
+				"15": "Bandage wrapping",
+				"16": "Barbed wire",
+				"17": "Belches smoke",
+				"18": "Bite marks",
+				"19": "Black and gold",
+				"20": "Blanketed in sequins ",
+				"21": "Blinking eyes",
+				"22": "Blood red",
+				"23": "Bold corporate logo",
+				"24": "Bone and muscle",
+				"25": "Boxy components",
+				"26": "Bulbous and swollen",
+				"27": "Burn marks",
+				"28": "Burning sigils",
+				"29": "Caked with mud",
+				"30": "Candy striped",
+				"31": "Cardboard casing",
+				"32": "Cartoon shading",
+				"33": "Cartoon stickers",
+				"34": "Carved teeth and vertebrae",
+				"35": "Casts no shadow",
+				"36": "Caution orange",
+				"37": "Cheap PVC",
+				"38": "Checkerboard",
+				"39": "Cherry blossoms",
+				"40": "Cherry sunburst",
+				"41": "Chitinous material",
+				"42": "Chlorophyll stains",
+				"43": "Claw scratches",
+				"44": "Clunky buttons",
+				"45": "Colorful feathers",
+				"46": "Cool looking internal orb",
+				"47": "Country flag paint job",
+				"48": "Crackles with static",
+				"49": "Crystal-clear",
+				"50": "CV dazzle",
+				"51": "Cybernetic veins",
+				"52": "CYCLOPS emblem",
+				"53": "Damascus steel",
+				"54": "Dangling scraps",
+				"55": "Decorated with jewelry",
+				"56": "Demonic extrusions",
+				"57": "Desert camo",
+				"58": "Diamond studded",
+				"59": "Digital camo",
+				"60": "Diverse fabrics",
+				"61": "Dragon decals",
+				"62": "Draped in pearls",
+				"63": "Dried gore stains",
+				"64": "Ectoplasmic",
+				"65": "Electric yellow",
+				"66": "Embroidered",
+				"67": "Engraved roses",
+				"68": "Engraved word",
+				"69": "Etched equations",
+				"70": "Exposed electronics",
+				"71": "Faintly hums",
+				"72": "Faux fur accents",
+				"73": "FIST emblem",
+				"74": "Floral print",
+				"75": "Forest camo",
+				"76": "Four-leaf clover decal",
+				"77": "Frost crystals",
+				"78": "Fuligin",
+				"79": "Fungal growths",
+				"80": "Galaxy print",
+				"81": "Gang paint job",
+				"82": "Gently whispers",
+				"83": "Ghostly silhouette",
+				"84": "Glitch effects",
+				"85": "Glow in the dark",
+				"86": "Glowing radioactive",
+				"87": "Glut of attachments",
+				"88": "Gradient paint job",
+				"89": "Grey plastic",
+				"90": "Grotesquely segmented",
+				"91": "Growing hair",
+				"92": "Gutted for lighter weight ",
+				"93": "Half-melted",
+				"94": "Harvest gold",
+				"95": "Has a face",
+				"96": "Hastily scratched runes",
+				"97": "Healthy moss covering ",
+				"98": "High-pitched whine",
+				"99": "Hologram projection",
+				"100": "Holographic casing",
+				"101": "Hot rod flames",
+				"102": "Ideological symbols",
+				"103": "Illuminated with mythic art",
+				"104": "Impossible serial number",
+				"105": "Incense smell",
+				"106": "Incessant jittery",
+				"107": "Insect cloud",
+				"108": "Iridescent finish",
+				"109": "Ivy leaf decal",
+				"110": "Jazz design",
+				"111": "Jungle camo",
+				"112": "Jury-rigged thingamajig",
+				"113": "Keychains",
+				"114": "LCD screen",
+				"115": "Leopard print",
+				"116": "Light-up piping",
+				"117": "Liquid compartment",
+				"118": "Lisa Frank stickers",
+				"119": "Looks like a toy",
+				"120": "Low-poly",
+				"121": "Luxurious tassels",
+				"122": "Made of nanomachines",
+				"123": "Made of reclaimed garbage",
+				"124": "Made of water",
+				"125": "Magical fire",
+				"126": "Mahogany finish",
+				"127": "Marble swirl",
+				"128": "Matte black",
+				"129": "Menacing spikes",
+				"130": "Metallic origami",
+				"131": "Milky blue",
+				"132": "Mirror-sheen polish",
+				"133": "Monochromatic",
+				"134": "Monogrammed",
+				"135": "Motor oil",
+				"136": "Music notation",
+				"137": "Never gets dirty",
+				"138": "Ocean camo",
+				"139": "Octarine",
+				"140": "Olive drab",
+				"141": "Optic camouflage",
+				"142": "Organic scarring",
+				"143": "Over-mechanized",
+				"144": "Oxidized copper",
+				"145": "Painful to look at",
+				"146": "Paint splatters",
+				"147": "Paisley print",
+				"148": "Palm tree print",
+				"149": "Partially petrified",
+				"150": "Pinned playing card",
+				"151": "Plywood components",
+				"152": "Polished chrome",
+				"153": "Polka-dotted",
+				"154": "Pride flag paint job",
+				"155": "Psychedelic imagery",
+				"156": "Pure hard light",
+				"157": "Rainbow spray paint",
+				"158": "Red-hot metal ",
+				"159": "Reflective tape",
+				"160": "Releases confetti",
+				"161": "Religious iconography",
+				"162": "Rich leather accents",
+				"163": "Roman numerals",
+				"164": "Rose gold",
+				"165": "Rosewood grip",
+				"166": "Rust-bitten",
+				"167": "Sacred geometry",
+				"168": "Scrawled phone number",
+				"169": "Seems to breathe",
+				"170": "Seeping slime ",
+				"171": "Shattered mirror plating",
+				"172": "Sheds petals",
+				"173": "Skull and crossbones",
+				"174": "Slag metal",
+				"175": "Sloppily modified",
+				"176": "Smoky swirl finish",
+				"177": "Snakeskin accents ",
+				"178": "Snow camo",
+				"179": "Sparkle trail",
+				"180": "Speaker grill2",
+				"181": "Spiderwebs",
+				"182": "Splitter camo",
+				"183": "Straps and zippers",
+				"184": "Striped hazard tape",
+				"185": "Stuffed with herbs",
+				"186": "Summons autumn leaves",
+				"187": "Tactical engravings",
+				"188": "Tactical pouches",
+				"189": "Tarnished silver",
+				"190": "Tartan print ",
+				"191": "Techno-greebled",
+				"192": "Textures missing",
+				"193": "Tie-dye",
+				"194": "Tied rabbit's foot",
+				"195": "Tiger stripe",
+				"196": "Tobacco sunburst",
+				"197": "Topographic texture",
+				"198": "Trickles blood",
+				"199": "TV static cutout",
+				"200": "Twenty-four carat gold plating",
+				"201": "Two-dimensional",
+				"202": "Unfinished gunmetal",
+				"203": "Uniformly ribbed",
+				"204": "Urban camo",
+				"205": "Velvet accents",
+				"206": "Verdant green",
+				"207": "Visual ghosting",
+				"208": "Wards and charms",
+				"209": "Warped checkerboard",
+				"210": "Web of stitches",
+				"211": "White and silver",
+				"212": "Wireframe model",
+				"213": "Woodburned pattern",
+				"214": "Written all over",
+				"215": "Zebra stripe",
+				"216": "Zip ties"
+			}
+	}
+]
