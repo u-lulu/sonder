@@ -288,21 +288,35 @@ async def roll(ctx, modifier: discord.Option(discord.SlashCommandOptionType.inte
 @player_group.command(description="Rolls any amount of six-sided dice")
 async def d6(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of dice to roll", required=False, default=1)):
 	print(f"/player d6 {count}")
+	max = 40
 	if count < 1:
 		await ctx.respond("Invalid parameters. You must provide a positive whole number of dice to roll.", ephemeral=True)
-	elif count > 50:
-		await ctx.respond("Invalid parameters. You may roll a maximum of 50 dice at a time.", ephemeral=True)
+	elif count > max:
+		await ctx.respond(f"Invalid parameters. You may roll a maximum of {max} dice at a time.", ephemeral=True)
 	else:
 		results = ""
+		individual = {
+			1: 0,
+			2: 0,
+			3: 0,
+			4: 0,
+			5: 0,
+			6: 0
+		}
 		sum = 0
 		for i in range(count):
 			x = rnd.randint(1,6)
+			individual[x] = individual[x] + 1
 			sum += x
 			results += num_to_die[x] + " "
 		if count > 1:
-			results += f"\n**Total: {sum}**\nAverage: {sum/count}"
+			results += f"\n> **Total: {sum}**\n> Average: {sum/count}"
+			for i in range(1,7):
+				if individual[i] > 0:
+					results += f"\n> - {num_to_die[i]}: {individual[i]}"
 		else:
 			results += f"({sum})"
+		print(len(results))
 		await ctx.respond(results)
 
 bot.add_application_command(player_group)
