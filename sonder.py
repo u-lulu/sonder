@@ -324,7 +324,6 @@ async def d6(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, 
 					results += f"\n> - {num_to_die[i]}: {individual[i]}"
 		else:
 			results += f"({sum})"
-		print(len(results))
 		await ctx.respond(results)
 
 bot.add_application_command(player_group)
