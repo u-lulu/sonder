@@ -325,7 +325,7 @@ matrix_group = discord.SlashCommandGroup("matrix", "Intelligence Matrix Rollers"
 
 intelligence = {}
 
-file = open('matrices\mission_generator.json')
+file = open('matrices/mission_generator.json')
 intelligence["mission"] = json.load(file)
 file.close()
 
@@ -341,7 +341,7 @@ async def mission(ctx):
 	message = f"The dossier says that **{instigator}** is trying to **{activity}**, which will **{effect}**. However, **{twist}**.\n- Reward: **{reward}**"
 	await ctx.respond(message)
 
-file = open('matrices\mission_prompts.json')
+file = open('matrices/mission_prompts.json')
 intelligence["prompt"] = json.load(file)
 file.close()
 
