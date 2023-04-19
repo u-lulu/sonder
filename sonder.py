@@ -315,7 +315,7 @@ async def d6(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, 
 		sum = 0
 		for i in range(count):
 			x = rnd.randint(1,6)
-			numerical_results.append(x)
+			numerical_results.append(str(x))
 			individual[x] = individual[x] + 1
 			sum += x
 			results += num_to_die[x] + " "
