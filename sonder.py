@@ -351,7 +351,7 @@ async def prompt(ctx):
 	result = roll_intelligence_matrix(intelligence["prompt"][0])
 	await ctx.respond(result)
 
-file = open('matrices\misc.json')
+file = open('matrices/misc.json')
 intelligence["misc"] = json.load(file)
 file.close()
 
