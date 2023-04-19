@@ -325,7 +325,7 @@ async def d6(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, 
 			results += f"\n> **Total: {sum}**\n> Average: {sum/count}\n > Counts:"
 			for i in range(1,7):
 				if individual[i] > 0:
-					results += f"\n> - **{i} - ** {individual[i]}"
+					results += f"\n> - **{i}:** {individual[i]}"
 		else:
 			results += f"({sum})"
 		await ctx.respond(results)
