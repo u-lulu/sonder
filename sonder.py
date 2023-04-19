@@ -730,6 +730,18 @@ async def experiment(ctx):
 	desc = result[1]
 	feature = result[2]
 	mistake = result[3]
+	if creation == "Uncontrolled\u2014Roll 1D6 extra features.":
+		feature = [feature]
+		more = rnd.randint(1,6)
+		for i in range(more):
+			feature.append(roll_intelligence_matrix(intelligence["chars_experiments"][2]))
+		feature = ", ".join(feature)
+	elif creation == "Accidental\u2014Roll 1D6 extra mistakes":
+		mistake = [mistake]
+		more = rnd.randint(1,6)
+		for i in range(more):
+			mistake.append(roll_intelligence_matrix(intelligence["chars_experiments"][3]))
+		mistake = ", ".join(mistake)
 	message = f"Description: {desc}\nCreation: {creation}\nFeature: {feature}\nMistake: {mistake}"
 	await ctx.respond(message)
 
