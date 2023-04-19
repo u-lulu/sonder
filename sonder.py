@@ -319,7 +319,8 @@ async def d6(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, 
 			individual[x] = individual[x] + 1
 			sum += x
 			results += num_to_die[x] + " "
-			results += ", ".join(numerical_results)
+			
+		results += ", ".join(numerical_results)
 		if count > 1:
 			results += f"\n> **Total: {sum}**\n> Average: {sum/count}\n > Counts:"
 			for i in range(1,7):
