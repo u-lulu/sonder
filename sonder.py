@@ -138,7 +138,7 @@ async def shutdown(ctx):
 		await ctx.respond(f"Restarting.")
 		await bot.close()
 	else:
-		await ctx.respond(f"You do not have permission to use this command.",ephemeral=True)
+		await ctx.respond(f"Only <@{ownerid}> may use this command.",ephemeral=True)
 
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
