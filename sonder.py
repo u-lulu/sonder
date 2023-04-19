@@ -140,7 +140,7 @@ async def shutdown(ctx):
 	else:
 		await ctx.respond(f"Only <@{ownerid}> may use this command.",ephemeral=True)
 
-@bot.command(description="Links to the Help document for this bot.")
+@bot.command(description="Links to the Help document for this bot")
 async def help(ctx):
 	await ctx.respond("https://docs.google.com/document/d/15pm5o5cJuQF_J3l-NMpziPEuxDkcWJVE3TNT7_IerbQ/edit?usp=sharing",ephemeral=True)
 
