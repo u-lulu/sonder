@@ -757,6 +757,8 @@ async def monster(ctx):
 	desc = result[1]
 	feature = result[2]
 	horror = result[3]
+	if amount == "Dire (3-6 ARMOR, 6D6-10D6 HP, roll another horror)":
+		horror += " __*and*__ " + roll_intelligence_matrix(intelligence["chars_monsters"][3])
 	message = f"Description: {desc}\nAmount: {amount}\nFeature: {feature}\nHorror: {horror}"
 	await ctx.respond(message)
 
