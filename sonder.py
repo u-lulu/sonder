@@ -591,16 +591,12 @@ async def year(ctx):
 	modifier = int(roll_intelligence_matrix(intelligence["misc"][7]))
 	await ctx.respond(str(start + modifier))
 
-@world_group.command(description="Randomly modifies the Temperature")
-async def temperature(ctx):
-	print("/matrix world temperature")
-	result = roll_intelligence_matrix(intelligence["misc"][8])
-	await ctx.respond(result)
-
-@world_group.command(description="Randomly modifies Precipitation")
-async def precipitation(ctx):
-	print("/matrix world precipitation")
-	result = roll_intelligence_matrix(intelligence["misc"][9])
+@world_group.command(description="Randomly modifies the local Temperature and Precipitation")
+async def weather(ctx):
+	print("/matrix world weather")
+	temp = roll_intelligence_matrix(intelligence["misc"][8])
+	precip = roll_intelligence_matrix(intelligence["misc"][9])
+	result = f"**Temperature:** {temp}\n**Precipitation:** {precip}"
 	await ctx.respond(result)
 
 chars_group = matrix_group.create_subgroup("character", "Character Intelligence Matrices")
