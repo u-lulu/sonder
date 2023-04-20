@@ -157,12 +157,12 @@ async def shutdown(ctx):
 
 @bot.command(description="Links to the Help document for this bot")
 async def help(ctx):
-    print("/help")
+	print("/help")
 	await ctx.respond("https://docs.google.com/document/d/15pm5o5cJuQF_J3l-NMpziPEuxDkcWJVE3TNT7_IerbQ/edit?usp=sharing",ephemeral=True)
 
 @bot.command(description="Links to the invite page for this bot")
 async def invite(ctx):
-    print("/invite")
+	print("/invite")
 	await ctx.respond("https://discord.com/api/oauth2/authorize?client_id=1096635021395251352&permissions=274877908992&scope=bot%20applications.commands",ephemeral=True)
 
 @bot.command(description="spin")
