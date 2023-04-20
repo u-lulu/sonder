@@ -349,18 +349,14 @@ async def d6(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, 
 			results += num_to_die[x] + " "
 			
 		if count > 1:
-			try:
-				results += "\n[" + ", ".join(numerical_results) + "]"
-				sum_to_print = str(sum)
-				if modifier != 0:
-					sum_to_print = f"{sum} + {modifier} = {sum+modifier}"
-				results += f"\n> **Total: {sum_to_print}**\n> Average: {sum/count}\n > Counts:"
-				for i in range(1,7):
-					if individual[i] > 0:
-						results += f"\n> - **{i}:** {individual[i]}"
-			except Exception as e:
-				await ctx.respond(e)
-				return
+			results += "\n[" + ", ".join(numerical_results) + "]"
+			sum_to_print = str(sum)
+			if modifier != 0:
+				sum_to_print = f"{sum} + {modifier} = {sum+modifier}"
+			results += f"\n> **Total: {sum_to_print}**\n> Average: {sum/count}\n > Counts:"
+			for i in range(1,7):
+				if individual[i] > 0:
+					results += f"\n> - **{i}:** {individual[i]}"
 		else:
 			if modifier != 0:
 				results += f"({sum} + {modifier} = {sum+modifier})"
