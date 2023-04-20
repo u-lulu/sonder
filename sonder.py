@@ -165,7 +165,8 @@ async def invite(ctx):
 
 @bot.command(description="spin")
 async def spin(ctx):
-	await ctx.respond(file=discord.File('spin_lq.mp4'))
+	print("/spin")
+	await ctx.respond("https://cdn.discordapp.com/attachments/1098474379383423018/1098474445892485190/spin_hq.mp4",ephemeral=True)
 
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
