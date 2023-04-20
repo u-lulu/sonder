@@ -322,7 +322,7 @@ async def roll(ctx, modifier: discord.Option(discord.SlashCommandOptionType.inte
 	await ctx.respond(message)
 
 @player_group.command(description="Rolls any amount of six-sided dice")
-async def d6(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of dice to roll", required=False, default=1)):
+async def d6(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of dice to roll", required=False, default=1), modifier: discord.Option(discord.SlashCommandOptionType.integer, "A modifier to the final sum of the dice roll.", required=False, default=0)):
 	print(f"/player d6 {count}")
 	max = 30
 	if count < 1:
@@ -350,6 +350,8 @@ async def d6(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, 
 			
 		results += "\n[" + ", ".join(numerical_results) + "]"
 		if count > 1:
+            if modifier != 0:
+                sum = f"{sum} + {mod} = {sum+mod}"
 			results += f"\n> **Total: {sum}**\n> Average: {sum/count}\n > Counts:"
 			for i in range(1,7):
 				if individual[i] > 0:
