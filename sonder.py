@@ -441,11 +441,29 @@ async def choke(ctx):
 	result = roll_intelligence_matrix(intelligence["misc"][10])
 	await ctx.respond(result)
 
+async def part_success_autocomplete(ctx: discord.AutocompleteContext):
+	return ["COMBAT","GENERAL","MENTAL","MOVEMENT","SOCIAL","WEIRD"]
+
 @matrix_group.command(description="Causes random consequences for a Partial Success")
-async def partial(ctx):
-	print("/matrix partial")
-	result = roll_intelligence_matrix(intelligence["misc"][11])
-	await ctx.respond(result)
+async def partial(ctx, type: discord.Option(str,"The type of consequence that should be inflicted",autocomplete=discord.utils.basic_autocomplete(part_success_autocomplete),required=False,default="")):
+	print(f"/matrix partial {type}")
+	hidden = False
+	type = type.upper()
+	message = ""
+	if type == "":
+		message = roll_intelligence_matrix(intelligence["misc"][11])
+	elif type in ["COMBAT","GENERAL","MENTAL","MOVEMENT","SOCIAL","WEIRD"]:
+		all = intelligence["misc"][11]["Values"].values()
+		outcomes = []
+		for item in all:
+			if item.startswith(type):
+				split_point = len(type) + 1
+				outcomes.append(item[split_point:])
+		message = rnd.choose(outcomes)
+	else:
+		hidden = True
+		message = "Valid partial success types are COMBAT, GENERAL, MOVEMENT, SOCIAL, and WEIRD."
+	await ctx.respond(message,ephemeral=hidden)
 
 @matrix_group.command(description="Spawns a Random Encounter")
 async def encounter(ctx):
