@@ -105,41 +105,41 @@ def roll_all_matrices(table_list):
 	return out
 	
 def decap_first(string):
-    if len(string) > 1:
-        if string[1].islower() or not string[1].isalpha():
-            return string[0].lower() + string[1:]
-    return string
+	if len(string) > 1:
+		if string[1].islower() or not string[1].isalpha():
+			return string[0].lower() + string[1:]
+	return string
 
 def remove_duplicates(lst):
-    unique_lst = []
+	unique_lst = []
 
-    # Iterate through the elements in the original list
-    for elem in lst:
-        # If the element is not already in the unique list, add it
-        if elem not in unique_lst:
-            unique_lst.append(elem)
+	# Iterate through the elements in the original list
+	for elem in lst:
+		# If the element is not already in the unique list, add it
+		if elem not in unique_lst:
+			unique_lst.append(elem)
 
-    # Return the resulting list
-    return unique_lst
+	# Return the resulting list
+	return unique_lst
 
 def roll_extra_possibility(input_string):
-    regex_pattern = r"(.+)\s\((\d+)-in-1D6:\s(.+)\)"
-    match = re.match(regex_pattern, input_string)
-    if match:
-        standard = match.group(1)
-        num = int(match.group(2))
-        alt = match.group(3)
-        roll_result = rnd.randint(1, 6)
-        if roll_result <= num:
-            return f"{standard} *({alt})*"
-        else:
-            return standard
-    else:
-        return input_string
+	regex_pattern = r"(.+)\s\((\d+)-in-1D6:\s(.+)\)"
+	match = re.match(regex_pattern, input_string)
+	if match:
+		standard = match.group(1)
+		num = int(match.group(2))
+		alt = match.group(3)
+		roll_result = rnd.randint(1, 6)
+		if roll_result <= num:
+			return f"{standard} *({alt})*"
+		else:
+			return standard
+	else:
+		return input_string
 
 @bot.event
 async def on_ready():
-    print(f"{bot.user} is ready and online!")
+	print(f"{bot.user} is ready and online!")
 
 @bot.command(description="Measure's this bot's latency")
 async def ping(ctx):
@@ -829,11 +829,11 @@ async def robot(ctx):
 	
 	if budget == "Federal\u2014roll again for conflicting programming":
 		prog_conflict = roll_intelligence_matrix(intelligence["chars_robots"][3])
-        while prog_conflict == prog:
-            prog_conflict = roll_intelligence_matrix(intelligence["chars_robots"][3])
+		while prog_conflict == prog:
+			prog_conflict = roll_intelligence_matrix(intelligence["chars_robots"][3])
 		prog = f"{prog} (conflicts with {prog_conflict})"
 	elif budget == "CYCLOPS\u2014add 1D6 additional features":
-        possible_features = intelligence["chars_robots"][2]["Values"].values()
+		possible_features = intelligence["chars_robots"][2]["Values"].values()
 		feature = rnd.sample(possible_features,rnd.randint(2,7))
 		feature = ", ".join(feature)
 	elif budget == "Corporate\u2014mash together 1D6 descriptions":
