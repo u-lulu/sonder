@@ -39,10 +39,10 @@ num_to_die = {
 }
 
 def trait_message_format(trait):
-	return f"{trait['Number']}. **{trait['Name']}**\n{trait['Effect']}\n- {trait['Item']}, {trait['Stat']}"
+	return f"# **{trait['Name']}** ({trait['Number']})\n{trait['Effect']}\n- {trait['Item']}, {trait['Stat']}"
 
 def role_message_format(role):
-	return f"{role['Number']}. **{role['Name']}**\n{role['Text']}"
+	return f"# **{role['Name']}** ({role['Number']})\n{role['Text']}"
 
 def search_for_trait(trait):
 	message = ""
@@ -158,17 +158,17 @@ async def shutdown(ctx):
 @bot.command(description="Links to the Help document for this bot")
 async def help(ctx):
 	print("/help")
-	await ctx.respond("https://docs.google.com/document/d/15pm5o5cJuQF_J3l-NMpziPEuxDkcWJVE3TNT7_IerbQ/edit?usp=sharing",ephemeral=True)
+	await ctx.respond("[Full command documentation](https://docs.google.com/document/d/15pm5o5cJuQF_J3l-NMpziPEuxDkcWJVE3TNT7_IerbQ/edit?usp=sharing)",ephemeral=True)
 
 @bot.command(description="Links to the invite page for this bot")
 async def invite(ctx):
 	print("/invite")
-	await ctx.respond("https://discord.com/api/oauth2/authorize?client_id=1096635021395251352&permissions=274877908992&scope=bot%20applications.commands",ephemeral=True)
+	await ctx.respond("[Invite page](https://discord.com/api/oauth2/authorize?client_id=1096635021395251352&permissions=274877908992&scope=bot%20applications.commands)",ephemeral=True)
 
 @bot.command(description="spin")
 async def spin(ctx):
 	print("/spin")
-	await ctx.respond("https://cdn.discordapp.com/attachments/1098474379383423018/1098475477116669952/spin_lq.mp4",ephemeral=True)
+	await ctx.respond("[very funny](https://cdn.discordapp.com/attachments/1098474379383423018/1098475477116669952/spin_lq.mp4)",ephemeral=True)
 
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
