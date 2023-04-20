@@ -225,7 +225,7 @@ async def character(ctx):
 	
 	extra_thing = rnd.randint(1,3)
 	
-	message += role_message_format(role) + "\n\n"
+	message += role_message_format(role)[2:] + "\n\n"
 	
 	stats = {
 		"MAX": 6,
