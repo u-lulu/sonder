@@ -129,7 +129,7 @@ def roll_extra_possibility(input_string):
         standard = match.group(1)
         num = int(match.group(2))
         alt = match.group(3)
-        roll_result = random.randint(1, 6)
+        roll_result = rnd.randint(1, 6)
         if roll_result <= num:
             return f"{standard} *({alt})*"
         else:
