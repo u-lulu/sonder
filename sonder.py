@@ -122,6 +122,21 @@ def remove_duplicates(lst):
     # Return the resulting list
     return unique_lst
 
+def roll_extra_possibility(string):
+    regex_pattern = r"(.+)\s\((\d+)-in-1D6:\s(.+)\)"
+    match = re.match(regex_pattern, input_string)
+    if match:
+        standard = match.group(1)
+        num = int(match.group(2))
+        alt = match.group(3)
+        roll_result = random.randint(1, 6)
+        if roll_result <= num:
+            return f"{standard} *({alt})*"
+        else:
+            return standard
+    else:
+        return input_string
+
 @bot.event
 async def on_ready():
     print(f"{bot.user} is ready and online!")
@@ -654,7 +669,7 @@ async def scientist(ctx):
 	career = result[1]
 	name = result[2]
 	feature = result[3]
-	discovery = result[4]
+	discovery = roll_extra_possibility(result[4])
 	message = f"Name: {name}\nAllegiance: {alleg}\nCareer: {career}\nFeature: {feature}\nDiscovery: {discovery}"
 	await ctx.respond(message)
 
@@ -829,7 +844,7 @@ async def aliens(ctx):
 	mission = result[1]
 	desc = result[2]
 	feature = result[3]
-	truth = result[4]
+	truth = roll_extra_possibility(result[4])
 	message = f"Description: {desc}\nFeature: {feature}\nMission: {mission}\nOrigin: {origin}\nTruth: {truth}"
 	await ctx.respond(message)
 
@@ -927,7 +942,7 @@ async def battlefield(ctx):
 	layout = result[0]
 	desc = result[1]
 	feature = result[2]
-	grave = result[3]
+	grave = roll_extra_possibility(result[3])
 	message = f"Layout: {layout}\nDescription: {desc}\nFeature: {feature}\nGrave: {grave}"
 	await ctx.respond(message)
 
