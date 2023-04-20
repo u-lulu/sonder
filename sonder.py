@@ -163,6 +163,10 @@ async def help(ctx):
 async def invite(ctx):
 	await ctx.respond("https://discord.com/api/oauth2/authorize?client_id=1096635021395251352&permissions=274877908992&scope=bot%20applications.commands",ephemeral=True)
 
+@bot.command(description="spin")
+async def spin(ctx):
+	await ctx.respond(file='spin_lq.mp4')
+
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
 async def role_autocomp(ctx):
