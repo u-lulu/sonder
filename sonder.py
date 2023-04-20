@@ -348,8 +348,8 @@ async def d6(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, 
 			sum += x
 			results += num_to_die[x] + " "
 			
-		results += "\n[" + ", ".join(numerical_results) + "]"
 		if count > 1:
+			results += "\n[" + ", ".join(numerical_results) + "]"
 			sum_to_print = sum
 			if modifier != 0:
 				sum_to_print = f"{sum} + {mod} = {sum+mod}"
