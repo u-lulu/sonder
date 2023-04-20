@@ -820,29 +820,32 @@ file.close()
 
 @enemy_group.command(description="Spawns a random Robot")
 async def robot(ctx):
-	print("/matrix enemy robot")
-	result = roll_all_matrices(intelligence["chars_robots"])
-	budget = result[0]
-	desc = result[1]
-	feature = result[2]
-	prog = result[3]
-	
-	if budget == "Federal\u2014roll again for conflicting programming":
-		prog_conflict = roll_intelligence_matrix(intelligence["chars_robots"][3])
-		while prog_conflict == prog:
-			prog_conflict = roll_intelligence_matrix(intelligence["chars_robots"][3])
-		prog = f"{prog} (conflicts with {prog_conflict})"
-	elif budget == "CYCLOPS\u2014add 1D6 additional features":
-		possible_features = intelligence["chars_robots"][2]["Values"].values()
-		feature = rnd.sample(possible_features,rnd.randint(2,7))
-		feature = ", ".join(feature)
-	elif budget == "Corporate\u2014mash together 1D6 descriptions":
-		possible_descs = intelligence["chars_robots"][1]["Values"].values()
-		desc = rnd.sample(possible_descs,rnd.randint(1,6))
-		desc = ", ".join(desc)
-	
-	message = f"Description: {desc}\nBudget: {budget}\nFeature: {feature}\nProgramming: {prog}"
-	await ctx.respond(message)
+    try:
+        print("/matrix enemy robot")
+        result = roll_all_matrices(intelligence["chars_robots"])
+        budget = result[0]
+        desc = result[1]
+        feature = result[2]
+        prog = result[3]
+        
+        if budget == "Federal\u2014roll again for conflicting programming":
+            prog_conflict = roll_intelligence_matrix(intelligence["chars_robots"][3])
+            while prog_conflict == prog:
+                prog_conflict = roll_intelligence_matrix(intelligence["chars_robots"][3])
+            prog = f"{prog} (conflicts with {prog_conflict})"
+        elif budget == "CYCLOPS\u2014add 1D6 additional features":
+            possible_features = intelligence["chars_robots"][2]["Values"].values()
+            feature = rnd.sample(possible_features,rnd.randint(2,7))
+            feature = ", ".join(feature)
+        elif budget == "Corporate\u2014mash together 1D6 descriptions":
+            possible_descs = intelligence["chars_robots"][1]["Values"].values()
+            desc = rnd.sample(possible_descs,rnd.randint(1,6))
+            desc = ", ".join(desc)
+        
+        message = f"Description: {desc}\nBudget: {budget}\nFeature: {feature}\nProgramming: {prog}"
+        await ctx.respond(message)
+    except Exception as e:
+        await ctx.respond(e)
 
 file = open('matrices/characters/squads.json')
 intelligence["chars_squads"] = json.load(file)
