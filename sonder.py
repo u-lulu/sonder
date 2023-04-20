@@ -268,7 +268,7 @@ async def character(ctx):
 	
 	message += "TRAITS:\n"
 	for trait in traits:
-		message += f"{trait['Number']}. **{trait['Name']}**\n{trait['Effect']} ({trait['Stat']})\n"
+		message += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
 	
 	message += "\nITEMS:"
 	for trait in traits:
