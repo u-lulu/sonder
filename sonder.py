@@ -523,7 +523,7 @@ async def skin(ctx):
 	result = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
 	await ctx.respond(result)
 
-@gear_group.command(description="Generates a unique Weapon")
+@gear_group.command(description="Generates a fully unique Weapon")
 async def weaponsmith(ctx):
 	print("/matrix gear weaponsmith")
 	model = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][1])
@@ -531,6 +531,15 @@ async def weaponsmith(ctx):
 	tag = f"**{tag['Name']}**: {tag['Effect']}"
 	skin = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
 	message = f"{model} (adorned with {skin})\n- {tag}"
+	await ctx.respond(message)
+
+@gear_group.command(description="Generates a fully unique Vehicle")
+async def hangar(ctx):
+	print("/matrix gear weaponsmith")
+	model = roll_intelligence_matrix(intelligence["gear_vehicles"][0])
+	weapon = roll_intelligence_matrix(intelligence["gear_vehicles"][1])
+	skin = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
+	message = f"{model}\n- Equipped with {weapon}\n- Adorned with {skin}"
 	await ctx.respond(message)
 
 cyclops_group = matrix_group.create_subgroup("cyclops", "CYCLOPS Intelligence Matrices")
