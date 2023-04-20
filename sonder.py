@@ -459,7 +459,7 @@ async def partial(ctx, type: discord.Option(str,"The type of consequence that sh
 			if item.startswith(type):
 				split_point = len(type) + 1
 				outcomes.append(item[split_point:])
-		message = rnd.choose(outcomes)
+		message = rnd.choice(outcomes)
 	else:
 		hidden = True
 		message = "Valid partial success types are COMBAT, GENERAL, MOVEMENT, SOCIAL, and WEIRD."
