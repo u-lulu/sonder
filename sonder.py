@@ -829,18 +829,16 @@ async def robot(ctx):
 	
 	if budget == "Federal\u2014roll again for conflicting programming":
 		prog_conflict = roll_intelligence_matrix(intelligence["chars_robots"][3])
+        while prog_conflict == prog:
+            prog_conflict = roll_intelligence_matrix(intelligence["chars_robots"][3])
 		prog = f"{prog} (conflicts with {prog_conflict})"
 	elif budget == "CYCLOPS\u2014add 1D6 additional features":
-		feature = [feature]
-		more = rnd.randint(1,6)
-		for i in range(more):
-			feature.append(roll_intelligence_matrix(intelligence["chars_robots"][2]))
+        possible_features = intelligence["chars_robots"][2]["Values"].values()
+		feature = rnd.sample(possible_features,rnd.randint(2,7))
 		feature = ", ".join(feature)
 	elif budget == "Corporate\u2014mash together 1D6 descriptions":
-		desc = []
-		more = rnd.randint(1,6)
-		for i in range(more):
-			desc.append(roll_intelligence_matrix(intelligence["chars_robots"][1]))
+		possible_descs = intelligence["chars_robots"][1]["Values"].values()
+		desc = rnd.sample(possible_features,rnd.randint(1,6))
 		desc = ", ".join(desc)
 	
 	message = f"Description: {desc}\nBudget: {budget}\nFeature: {feature}\nProgramming: {prog}"
@@ -858,8 +856,8 @@ async def squad(ctx):
 	command = result[1]
 	name = result[2]
 	feature = result[3]
-	if rnd.randint(1,2) == 2:
-		feature = f"{feature}, with {roll_intelligence_matrix(intelligence['chars_squads'][3])}"
+	if rnd.randint(1,6) <= 3:
+		feature = f"{feature} __*and*__ {roll_intelligence_matrix(intelligence['chars_squads'][3])}"
 	theme = result[4]
 	message = f"Name: {name}\nReputation: {rep}\nFeature: {feature}\nTheme: {theme}"
 	await ctx.respond(message)
