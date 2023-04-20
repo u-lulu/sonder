@@ -834,11 +834,11 @@ async def robot(ctx):
                 prog_conflict = roll_intelligence_matrix(intelligence["chars_robots"][3])
             prog = f"{prog} (conflicts with {prog_conflict})"
         elif budget == "CYCLOPS\u2014add 1D6 additional features":
-            possible_features = intelligence["chars_robots"][2]["Values"].values()
+            possible_features = list(intelligence["chars_robots"][2]["Values"].values())
             feature = rnd.sample(possible_features,rnd.randint(2,7))
             feature = ", ".join(feature)
         elif budget == "Corporate\u2014mash together 1D6 descriptions":
-            possible_descs = intelligence["chars_robots"][1]["Values"].values()
+            possible_descs = list(intelligence["chars_robots"][1]["Values"].values())
             desc = rnd.sample(possible_descs,rnd.randint(1,6))
             desc = ", ".join(desc)
         
