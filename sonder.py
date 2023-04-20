@@ -350,8 +350,8 @@ async def d6(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, 
 			
 		results += "\n[" + ", ".join(numerical_results) + "]"
 		if count > 1:
-            if modifier != 0:
-                sum = f"{sum} + {mod} = {sum+mod}"
+		  if modifier != 0:
+				sum = f"{sum} + {mod} = {sum+mod}"
 			results += f"\n> **Total: {sum}**\n> Average: {sum/count}\n > Counts:"
 			for i in range(1,7):
 				if individual[i] > 0:
