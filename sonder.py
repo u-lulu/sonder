@@ -165,8 +165,11 @@ async def invite(ctx):
 
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
+async def role_autocomp(ctx):
+	return trait_names
+
 @trait_group.command(description="Looks up a trait by name or d666 number")
-async def lookup(ctx, trait: discord.Option(str)):
+async def lookup(ctx, trait: discord.Option(str,"The trait to search for",autocomplete=discord.utils.basic_autocomplete(role_autocomp))):
 	print(f"/trait lookup {trait}")
 	message = search_for_trait(trait)
 	hidden = message in ["No trait exists with the given number. Trait numbers must be possible d666 roll outputs.","Could not find a trait with an approximately similar name."]
@@ -184,8 +187,11 @@ bot.add_application_command(trait_group)
 
 role_group = discord.SlashCommandGroup("role", "Role Commands")
 
+async def role_autocomp(ctx):
+	return role_names
+
 @role_group.command(description="Looks up a role by name or d66 number")
-async def lookup(ctx, role: discord.Option(str)):
+async def lookup(ctx, role: discord.Option(str,"The role to search for",autocomplete=discord.utils.basic_autocomplete(role_autocomp))):
 	print(f"/role lookup {role}")
 	message = search_for_role(role)
 	hidden = message in ["No role exists with the given number. Role numbers must be possible d66 roll outputs.","Could not find a role with an approximately similar name."]
