@@ -122,7 +122,7 @@ def remove_duplicates(lst):
     # Return the resulting list
     return unique_lst
 
-def roll_extra_possibility(string):
+def roll_extra_possibility(input_string):
     regex_pattern = r"(.+)\s\((\d+)-in-1D6:\s(.+)\)"
     match = re.match(regex_pattern, input_string)
     if match:
