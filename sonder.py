@@ -838,7 +838,7 @@ async def robot(ctx):
 		feature = ", ".join(feature)
 	elif budget == "Corporate\u2014mash together 1D6 descriptions":
 		possible_descs = intelligence["chars_robots"][1]["Values"].values()
-		desc = rnd.sample(possible_features,rnd.randint(1,6))
+		desc = rnd.sample(possible_descs,rnd.randint(1,6))
 		desc = ", ".join(desc)
 	
 	message = f"Description: {desc}\nBudget: {budget}\nFeature: {feature}\nProgramming: {prog}"
