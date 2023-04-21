@@ -95,7 +95,7 @@
 				},
 				"22": {
 					"Name":"CUSTOMIZED",
-					"Effect":"Deals an additional 1 DAMAGE and has a weapon skin; coveted by enemies."
+					"Effect":"Deals an additional 1 DAMAGE and has a weapon skin (`/matrix gear skin`); coveted by enemies."
 				},
 				"23": {
 					"Name":"DUMMY",

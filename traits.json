@@ -135,7 +135,7 @@
   {
     "Number": 142,
     "Name": "BREAKDOWN",
-    "Effect": "Your mind is paranormally sensitive to the cacophony of the outside world (or perhaps is a cacophonous world in and of itself). When you take this trait, randomly roll a CHOKE score for your character (D66, p. xx)\u2014and roll against it when appropriate, as the ref would with an NPC. If you CHOKE, you must either drop everything you're doing to perform the listed action, or immediately create a psionic shockwave from your skull, ten feet in diameter with the concussive force of a frag grenade. This shockwave deals 1D6+2 DAMAGE to everyone caught inside (including yourself).",
+    "Effect": "Your mind is paranormally sensitive to the cacophony of the outside world (or perhaps is a cacophonous world in and of itself). When you take this trait, randomly roll a CHOKE score for your character (`/matrix choke`)\u2014and roll against it when appropriate, as the ref would with an NPC. If you CHOKE, you must either drop everything you're doing to perform the listed action, or immediately create a psionic shockwave from your skull, ten feet in diameter with the concussive force of a frag grenade. This shockwave deals 1D6+2 DAMAGE to everyone caught inside (including yourself).",
     "Item": "Needle gun (1D6+1 DAMAGE)",
     "Stat": "-1 TACTICAL"
   },
@@ -157,7 +157,7 @@
     "Number": 145,
     "Name": "BUM",
     "Effect": "Years of homelessness have been harsh on your bones, but you are skilled in the art of survival sans income and shelter. You may roll the dice +CREATIVE to panhandle in the presence of enemies\u2014on a success, at least one enemy will give you something they have, free of charge. Those who ignore poor and homeless people will never notice you, even if you\u2019re hiding in plain sight.",
-    "Item": "Shabby coat (new Item (p. xx) in pocket each mission)",
+    "Item": "Shabby coat (new Item (`/matrix gear item`) in pocket each mission)",
     "Stat": "-1 FORCEFUL"
   },
   {
@@ -233,7 +233,7 @@
   {
     "Number": 164,
     "Name": "CONCEAL",
-    "Effect": "You can always take weapons and contraband through pat-downs, checkpoints, and metal detectors without rolling the dice. Once per mission, if you have no weapon equipped and no weapons in your inventory, you may reveal a random weapon (roll D66 on the weapons table, p. xx) and say that you had it hidden away the whole time.",
+    "Effect": "You can always take weapons and contraband through pat-downs, checkpoints, and metal detectors without rolling the dice. Once per mission, if you have no weapon equipped and no weapons in your inventory, you may reveal a random weapon (roll on the weapons table, `/matrix gear weapon`) and say that you had it hidden away the whole time.",
     "Item": "Leather trenchcoat (1 ARMOR)",
     "Stat": "-1 REFLEXIVE"
   },
