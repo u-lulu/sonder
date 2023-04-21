@@ -545,12 +545,42 @@ async def weapon(ctx):
 	result = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][1])
 	await ctx.respond(result)
 
+wep_tag_names = []
+for tag in intelligence["gear_weapons_and_armor"][2]:
+	wep_tag_names.append(tag['Name'])
+
+async def tag_lookup_autocomp(ctx):
+	return wep_tag_names
+
 @gear_group.command(description="Applies a random Weapon Tag")
-async def tag(ctx):
+async def tag(ctx, lookup: discord.Option(str,"Including this argument searches for a specific tag instead",autocomplete=discord.utils.basic_autocomplete(tag_lookup_autocomp),required=False,default="")):
 	log("/matrix gear tag")
-	result = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][2])
-	message = f"**{result['Name']}**: {result['Effect']}"
-	await ctx.respond(message)
+	tags = intelligence["gear_weapons_and_armor"][2]
+	message = ""
+	hidden = False
+	if lookup == "":
+		result = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][2])
+		message = f"**{result['Name']}**: {result['Effect']}"
+	else:
+		if re.match("^\d+$", lookup):
+			if lookup in tags:
+				result = tags[lookup]
+				message = f"**{result['Name']}**: {result['Effect']}"
+			else:
+				message = "No role exists with the given number. Role numbers must be possible d66 roll outputs."
+				hidden = True
+		else:
+			best_match = difflib.get_close_matches(lookup.upper(), wep_tag_names, n=1, cutoff=0.0)
+			
+			if len(best_match) > 0:
+				for tag in tags:
+					if tag["Name"] == best_match[0]:
+						result = tag
+						message = f"**{result['Name']}**: {result['Effect']}"
+						break
+			else:
+				message = "Could not find a role with an approximately similar name."
+	await ctx.respond(message,ephemeral=hidden)
 
 @gear_group.command(description="Grants a random Vehicle")
 async def vehicle(ctx):
