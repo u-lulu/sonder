@@ -567,7 +567,7 @@ async def tag(ctx, lookup: discord.Option(str,"Including this argument searches 
 				result = tags[lookup]
 				message = f"**{result['Name']}**: {result['Effect']}"
 			else:
-				message = "No role exists with the given number. Role numbers must be possible d66 roll outputs."
+				message = "No tag exists with the given number. Tag numbers must be possible d66 roll outputs."
 				hidden = True
 		else:
 			best_match = difflib.get_close_matches(lookup.upper(), wep_tag_names, n=1, cutoff=0.0)
@@ -579,7 +579,7 @@ async def tag(ctx, lookup: discord.Option(str,"Including this argument searches 
 						message = f"**{result['Name']}**: {result['Effect']}"
 						break
 			else:
-				message = "Could not find a role with an approximately similar name."
+				message = "Could not find a tag with an approximately similar name."
 				hidden = True
 	await ctx.respond(message,ephemeral=hidden)
 
