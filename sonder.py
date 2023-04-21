@@ -573,7 +573,7 @@ async def tag(ctx, lookup: discord.Option(str,"Including this argument searches 
 			best_match = difflib.get_close_matches(lookup.upper(), wep_tag_names, n=1, cutoff=0.0)
 			
 			if len(best_match) > 0:
-				for tag in tags:
+				for tag in tags.values():
 					if tag["Name"] == best_match[0]:
 						result = tag
 						message = f"**{result['Name']}**: {result['Effect']}"
