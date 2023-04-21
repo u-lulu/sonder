@@ -1,4 +1,4 @@
-# sonder
+# Sonder
 A Discord bot that provides data from the tabletop game FIST: Ultra Edition.
 
 Full command documentation:
