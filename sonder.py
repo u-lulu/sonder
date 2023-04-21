@@ -546,7 +546,7 @@ async def weapon(ctx):
 	await ctx.respond(result)
 
 wep_tag_names = []
-for tag in intelligence["gear_weapons_and_armor"][2]:
+for tag in intelligence["gear_weapons_and_armor"][2]["Values"]:
 	wep_tag_names.append(tag['Name'])
 
 async def tag_lookup_autocomp(ctx):
@@ -555,7 +555,7 @@ async def tag_lookup_autocomp(ctx):
 @gear_group.command(description="Applies a random Weapon Tag")
 async def tag(ctx, lookup: discord.Option(str,"Including this argument searches for a specific tag instead",autocomplete=discord.utils.basic_autocomplete(tag_lookup_autocomp),required=False,default="")):
 	log("/matrix gear tag")
-	tags = intelligence["gear_weapons_and_armor"][2]
+	tags = intelligence["gear_weapons_and_armor"][2]["Values"]
 	message = ""
 	hidden = False
 	if lookup == "":
@@ -580,6 +580,7 @@ async def tag(ctx, lookup: discord.Option(str,"Including this argument searches 
 						break
 			else:
 				message = "Could not find a role with an approximately similar name."
+				hidden = True
 	await ctx.respond(message,ephemeral=hidden)
 
 @gear_group.command(description="Grants a random Vehicle")
