@@ -62,7 +62,7 @@
 			{
 				"11": "Air raids",
 				"12": "Ammo shack",
-				"13": "Armor lockers",
+				"13": "Armor lockers (`/matrix gear armor`)",
 				"14": "Barbed wire",
 				"15": "Bear traps",
 				"16": "Bombed out",
@@ -86,7 +86,7 @@
 				"46": "Radio towers",
 				"51": "Reality fractures",
 				"52": "Sack of money",
-				"53": "Scared animals",
+				"53": "Scared animals (`/matrix enemy animal`)",
 				"54": "Several bunkers",
 				"55": "Snipers posted",
 				"56": "Strewn bones",
@@ -94,7 +94,7 @@
 				"62": "Tripwires",
 				"63": "Two flags",
 				"64": "Unused tanks",
-				"65": "Weapon racks",
+				"65": "Weapon racks (`/matrix gear weapon`)",
 				"66": "Weird noises"
 			}
 	},

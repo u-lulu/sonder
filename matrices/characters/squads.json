@@ -17,10 +17,10 @@
 		"Roll":"1D6",
 		"Values":
 			{
-				"1": "Agency",
-				"2": "Corporation",
-				"3": "Criminals",
-				"4": "Insurgents",
+				"1": "Agency (`/matrix faction agency`)",
+				"2": "Corporation (`/matrix faction corporation`)",
+				"3": "Criminals (`/matrix faction criminals`)",
+				"4": "Insurgents (`/matrix faction insurgents`)",
 				"5": "CYCLOPS",
 				"6": "Mercenaries"
 			}

@@ -4,12 +4,12 @@
 		"Roll":"1D6",
 		"Values":
 			{
-				"1": "Soldier",
-				"2": "Scientist",
-				"3": "Celebrity",
-				"4": "Politican",
-				"5": "Civilian",
-				"6": "Spy"
+				"1": "Soldier (`/matrix character soldier`)",
+				"2": "Scientist (`/matrix character scientist`)",
+				"3": "Celebrity (`/matrix character celebrity`)",
+				"4": "Politican (`/matrix character politician`)",
+				"5": "Civilian (`/matrix character civilian`)",
+				"6": "Spy (`/matrix character spy`)"
 			}
 	},
 	{
@@ -116,18 +116,18 @@
 		"Roll":"D66",
 		"Values":
 			{
-				"11": "Absorbed into corporate holdings",
+				"11": "Absorbed into corporate holdings (`/matrix faction corporation`)",
 				"12": "Built with a hidden weakness",
-				"13": "Championed by a politician",
+				"13": "Championed by a politician (`/matrix character politician`)",
 				"14": "Constructed through community effort",
 				"15": "Damaged from a past gunfight",
 				"16": "Designed by a bad architect",
 				"21": "Ebb and flow of insect infestation",
 				"22": "Erected to evade taxes",
 				"23": "Ex-tourist attraction",
-				"24": "Founded by a retired soldier",
-				"25": "Frequented by a celebrity",
-				"26": "Funded by an intelligence agency",
+				"24": "Founded by a retired soldier (`/matrix character soldier`)",
+				"25": "Frequented by a celebrity (`/matrix character celebrity`)",
+				"26": "Funded by an intelligence agency (`/matrix faction agency`)",
 				"31": "Handed down for generations",
 				"32": "Has always been avoided at night",
 				"33": "Hiding place for a body",
@@ -145,7 +145,7 @@
 				"53": "Secret nuclear disposal site",
 				"54": "Shuffled between management firms",
 				"55": "Site of a well-known murder",
-				"56": "Someone added several new rooms",
+				"56": "Someone added several new rooms (`/matrix location room`)",
 				"61": "Twice cordoned off as a biohazard",
 				"62": "Used to have an expansion",
 				"63": "Used to supply illegal substances",

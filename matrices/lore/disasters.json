@@ -116,21 +116,21 @@
 		"Roll":"D66",
 		"Values":
 			{
-				"11": "A corporation attempts to buy the area",
-				"12": "A cult claims to have prophesied it exactly",
-				"13": "Aliens offer superior disaster control",
-				"14": "An anomalous artifact unearths itself",
-				"15": "An experiment escapes into the area",
+				"11": "A corporation attempts to buy the area (`/matrix faction corporation`)",
+				"12": "A cult claims to have prophesied it exactly (`/matrix faction cult`)",
+				"13": "Aliens offer superior disaster control (`/matrix faction aliens`)",
+				"14": "An anomalous artifact unearths itself (`/matrix lore artifact`)",
+				"15": "An experiment escapes into the area (`/matrix enemy experiment`)",
 				"16": "Area becomes closed to the public",
 				"21": "Area becomes flooded by ghosts of victims",
 				"22": "Area has to be bombed by the government",
 				"23": "CYCLOPS reverse engineers the disaster",
 				"24": "CYCLOPS seizes the recon opportunity",
 				"25": "Catalytic event for the summoning of a demon",
-				"26": "Celebrity writes an iconic protest song",
-				"31": "City wracked with widespread paranoia",
-				"32": "Covert monster community outed",
-				"33": "Criminal organization takes over relief effort",
+				"26": "Celebrity writes an iconic protest song (`/matrix character celebrity`)",
+				"31": "City wracked with widespread paranoia (`/matrix location city`)",
+				"32": "Covert monster community outed (`/matrix enemy monster`)",
+				"33": "Criminal organization takes over relief effort (`/matrix faction criminals`)",
 				"34": "Disaster presented as a divine punishment",
 				"35": "END IS NIGH sign-wearers have a great day",
 				"36": "Eugenicist ideas become popular",
@@ -138,8 +138,8 @@
 				"42": "Every man for himself mindset takes hold",
 				"43": "Final straw to start a brewing war",
 				"44": "Hollywood immediately begins a film adaptation",
-				"45": "Important politician goes missing",
-				"46": "Local reality spirals and becomes a zone",
+				"45": "Important politician goes missing (`/matrix character politician`)",
+				"46": "Local reality spirals and becomes a zone (`/matrix location zone`)",
 				"51": "Mandatory curfew imposed",
 				"52": "Mass panic causes a fatal crowd crush",
 				"53": "Mutual aid hub established",
@@ -150,8 +150,8 @@
 				"62": "Ruthless martial law imposed",
 				"63": "Strict security protocol adopted",
 				"64": "The event attracts disaster tourism",
-				"65": "Triggers a second, worse disaster (reroll Disasters)",
-				"66": "Used as mission cover by a spy"
+				"65": "Triggers a second, worse disaster (`/matrix lore disaster` again)",
+				"66": "Used as mission cover by a spy (`/matrix character spy`)"
 			}
 	}
 ]

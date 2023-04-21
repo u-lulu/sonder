@@ -73,16 +73,16 @@
 		"Roll":"D66",
 		"Values":
 			{
-				"11": "Alien eggs",
-				"12": "Animal bones",
+				"11": "Alien eggs (`/matrix faction aliens`)",
+				"12": "Animal bones (`/matrix enemy animal`)",
 				"13": "Atonal chanting",
 				"14": "Blood goblets",
-				"15": "Bound monster",
+				"15": "Bound monster (`/matrix enemy monster`)",
 				"16": "Candle circles",
 				"21": "Cleansing smoke",
 				"22": "Computer program",
 				"23": "Corpse juice",
-				"24": "Cursed cassette",
+				"24": "Cursed cassette (`/matrix cassette`)",
 				"25": "Dark mulled wine",
 				"26": "Divination tool",
 				"31": "Drains caster",
@@ -97,7 +97,7 @@
 				"44": "Human sacrifice",
 				"45": "Kills the user",
 				"46": "Living sigils",
-				"51": "Magical syllables",
+				"51": "Magical syllables (`/matrix syllables`)",
 				"52": "Many charms",
 				"53": "Microtonal music",
 				"54": "Powerful gem",
@@ -106,7 +106,7 @@
 				"61": "Spell jars",
 				"62": "Standing stones",
 				"63": "Stars must align",
-				"64": "Summon anomaly",
+				"64": "Summon anomaly (`/matrix enemy anomaly`)",
 				"65": "Tattooing ritual",
 				"66": "Tea ceremony"
 			}
@@ -116,8 +116,8 @@
 		"Roll":"D66",
 		"Values":
 			{
-				"11": "Activates a buried magitech robot",
-				"12": "An elder god is awoken to end the world",
+				"11": "Activates a buried magitech robot (`/matrix enemy robot`)",
+				"12": "An elder god is awoken to end the world (`/matrix syllables`)",
 				"13": "Attracts followers to your cause",
 				"14": "Births a new being without a soul",
 				"15": "Catalyst for developing telekinesis",
@@ -151,7 +151,7 @@
 				"63": "Turns those who cross a boundary into stone",
 				"64": "Useful resources spill bountifully from thin air",
 				"65": "Wealth and power inexplicably flow your way",
-				"66": "Wizard aliens take it as a combat challenge"
+				"66": "Wizard aliens take it as a combat challenge (`/matrix faction aliens`)"
 			}
 	}
 ]

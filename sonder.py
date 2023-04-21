@@ -1061,7 +1061,7 @@ async def structure(ctx):
 	desc = result[2]
 	feature = result[3]
 	history = result[4]
-	message = f"Description: {desc}\nFeature: {feature}\nOwner: {owner} (`/matrix character {owner.lower()}`)\nSecurity: {security}\nHistory: {history}"
+	message = f"Description: {desc}\nFeature: {feature}\nOwner: {owner}\nSecurity: {security}\nHistory: {history}"
 	await ctx.respond(message)
 
 
@@ -1087,6 +1087,13 @@ file = open('matrices/lore/artifacts.json')
 intelligence["lore_artifacts"] = json.load(file)
 file.close()
 
+def starts_with_vowel(word):
+    vowels = ['a', 'e', 'i', 'o', 'u']
+    if word[0].lower() in vowels:
+        return "an"
+    else:
+        return "a"
+
 @lore_group.command(description="Forges a random Artifact")
 async def artifact(ctx):
 	log("/matrix lore artifact")
@@ -1095,6 +1102,22 @@ async def artifact(ctx):
 	desc = result[1]
 	feature = result[2]
 	rumor = result[3]
+	if rumor == "Conflicting archaeological accounts, reroll feature":
+		second_feature = feature
+		while feature == second_feature:
+			second_feature = roll_intelligence_matrix(intelligence["lore_artifacts"][2])
+		feature = f"{feature} *(but some say... {second_feature})*"
+	elif rumor == "Hearsay has warped its image, reroll description":
+		second_desc = desc
+		while desc == second_desc:
+			second_desc = roll_intelligence_matrix(intelligence["lore_artifacts"][1])
+		a = starts_with_vowel(second_desc)
+		desc = f"{desc} *(but lately, people believe it's {a} {second_desc})*"
+	elif rumor == "Secret race to claim it, reroll interest":
+		second_interest = interest
+		while interest == second_interest:
+			second_interest = roll_intelligence_matrix(intelligence["lore_artifacts"][0])
+		interest = f"{interest} *(but more recently, it's {second_interest})*"
 	message = f"Description: {desc}\nFeature: {feature}\nRumor: {rumor}\nInterest: {interest}"
 	await ctx.respond(message)
 
