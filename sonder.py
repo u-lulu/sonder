@@ -3,7 +3,9 @@ import json
 import difflib
 import re
 import random as rnd
-import os # default module
+from datetime import datetime
+from datetime import date
+import os
 
 bot = discord.Bot(activity=discord.Game(name='FIST: Ultra Edition'))
 
@@ -110,6 +112,9 @@ def decap_first(string):
 			return string[0].lower() + string[1:]
 	return string
 
+def log(msg):
+	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
+
 def remove_duplicates(lst):
 	unique_lst = []
 
@@ -139,16 +144,16 @@ def roll_extra_possibility(input_string):
 
 @bot.event
 async def on_ready():
-	print(f"{bot.user} is ready and online!")
+	log(f"{bot.user} is ready and online!")
 
 @bot.command(description="Measure's this bot's latency")
 async def ping(ctx):
-	print("/ping")
+	log("/ping")
 	await ctx.respond(f"Pong! Latency is {bot.latency}")
 
 @bot.command(description="Shuts down the bot. Will not work unless you own the bot.")
 async def shutdown(ctx):
-	print(f"/shutdown ({ctx.author.id})")
+	log(f"/shutdown ({ctx.author.id})")
 	if ctx.author.id == ownerid:
 		await ctx.respond(f"Restarting.")
 		await bot.close()
@@ -157,17 +162,17 @@ async def shutdown(ctx):
 
 @bot.command(description="Links to the Help document for this bot")
 async def help(ctx):
-	print("/help")
+	log("/help")
 	await ctx.respond("[Full command documentation](https://docs.google.com/document/d/15pm5o5cJuQF_J3l-NMpziPEuxDkcWJVE3TNT7_IerbQ/edit?usp=sharing)",ephemeral=True)
 
 @bot.command(description="Links to the invite page for this bot")
 async def invite(ctx):
-	print("/invite")
+	log("/invite")
 	await ctx.respond("[Invite page](https://discord.com/api/oauth2/authorize?client_id=1096635021395251352&permissions=274877908992&scope=bot%20applications.commands)",ephemeral=True)
 
 @bot.command(description="spin")
 async def spin(ctx):
-	print("/spin")
+	log("/spin")
 	await ctx.respond("[very funny](https://cdn.discordapp.com/attachments/1098474379383423018/1098475477116669952/spin_lq.mp4)",ephemeral=True)
 
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
@@ -177,7 +182,7 @@ async def role_autocomp(ctx):
 
 @trait_group.command(description="Looks up a trait by name or d666 number")
 async def lookup(ctx, trait: discord.Option(str,"The trait to search for",autocomplete=discord.utils.basic_autocomplete(role_autocomp))):
-	print(f"/trait lookup {trait}")
+	log(f"/trait lookup {trait}")
 	message = search_for_trait(trait)
 	hidden = message in ["No trait exists with the given number. Trait numbers must be possible d666 roll outputs.","Could not find a trait with an approximately similar name."]
 	
@@ -185,7 +190,7 @@ async def lookup(ctx, trait: discord.Option(str,"The trait to search for",autoco
 
 @trait_group.command(description="Produces a random trait")
 async def random(ctx):
-	print("/trait random")
+	log("/trait random")
 	result = rnd.choice(trait_data)
 	message = trait_message_format(result)
 	await ctx.respond(message)
@@ -199,14 +204,14 @@ async def role_autocomp(ctx):
 
 @role_group.command(description="Looks up a role by name or d66 number")
 async def lookup(ctx, role: discord.Option(str,"The role to search for",autocomplete=discord.utils.basic_autocomplete(role_autocomp))):
-	print(f"/role lookup {role}")
+	log(f"/role lookup {role}")
 	message = search_for_role(role)
 	hidden = message in ["No role exists with the given number. Role numbers must be possible d66 roll outputs.","Could not find a role with an approximately similar name."]
 	await ctx.respond(message,ephemeral=hidden)
 
 @role_group.command(description="Produces a random role")
 async def random(ctx):
-	print("/role random")
+	log("/role random")
 	result = rnd.choice(role_data)
 	message = role_message_format(result)
 	await ctx.respond(message)
@@ -217,7 +222,7 @@ player_group = discord.SlashCommandGroup("player", "Player Commands")
 
 @player_group.command(description="Produces a random character sheet")
 async def character(ctx):
-	print("/player character")
+	log("/player character")
 	message = "ROLE: "
 	
 	traits = rnd.sample(trait_data, 2)
@@ -280,7 +285,7 @@ async def character(ctx):
 
 @player_group.command(description="Rolls against the Emergency Insertion table")
 async def emergencyinsertion(ctx):
-	print("/player emergencyinsertion")
+	log("/player emergencyinsertion")
 	results = [rnd.randint(1,6), rnd.randint(1,6)]
 	sum = results[0] + results[1]
 	
@@ -300,7 +305,7 @@ async def emergencyinsertion(ctx):
 
 @player_group.command(description="Rolls a skill check")
 async def roll(ctx, modifier: discord.Option(discord.SlashCommandOptionType.integer, "The skill modifier for the roll", required=False, default=0)):
-	print(f"/player roll {modifier}")
+	log(f"/player roll {modifier}")
 	results = [rnd.randint(1,6), rnd.randint(1,6)]
 	sum = results[0] + results[1] + modifier
 	
@@ -323,7 +328,7 @@ async def roll(ctx, modifier: discord.Option(discord.SlashCommandOptionType.inte
 
 @player_group.command(description="Rolls any amount of six-sided dice")
 async def d6(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of dice to roll", required=False, default=1), modifier: discord.Option(discord.SlashCommandOptionType.integer, "A modifier to the final sum of the dice roll.", required=False, default=0)):
-	print(f"/player d6 {count}")
+	log(f"/player d6 {count}")
 	max = 30
 	if count < 1:
 		await ctx.respond("Invalid parameters. You must provide a positive whole number of dice to roll.", ephemeral=True)
@@ -376,7 +381,7 @@ file.close()
 
 @matrix_group.command(description="Provides a random Mission Dossier")
 async def mission(ctx):
-	print("/matrix mission")
+	log("/matrix mission")
 	results = roll_all_matrices(intelligence["mission"])
 	instigator = decap_first(results[0])
 	activity = decap_first(results[1])
@@ -392,7 +397,7 @@ file.close()
 
 @matrix_group.command(description="Provides a random Mission Prompt")
 async def prompt(ctx):
-	print("/matrix prompt")
+	log("/matrix prompt")
 	result = roll_intelligence_matrix(intelligence["prompt"][0])
 	await ctx.respond(result)
 
@@ -402,7 +407,7 @@ file.close()
 
 @matrix_group.command(description="Incants a Magical Word")
 async def syllables(ctx):
-	print("/matrix syllables")
+	log("/matrix syllables")
 	result = ""
 	count = rnd.randint(1,6)
 	for i in range(count):
@@ -411,19 +416,19 @@ async def syllables(ctx):
 
 @matrix_group.command(description="Gives a random Operation Codename")
 async def codename(ctx):
-	print("/matrix codename")
+	log("/matrix codename")
 	result = roll_intelligence_matrix(intelligence["misc"][1])
 	await ctx.respond(result)
 
 @matrix_group.command(description="Provokes a random Combat Behavior")
 async def tactics(ctx):
-	print("/matrix tactics")
+	log("/matrix tactics")
 	result = roll_intelligence_matrix(intelligence["misc"][2])
 	await ctx.respond(result)
 
 @matrix_group.command(description="Strikes a random Hit Location")
 async def hit(ctx):
-	print("/matrix hit")
+	log("/matrix hit")
 	result = [roll_intelligence_matrix(intelligence["misc"][3])]
 	while "Compound injury (roll two hit locations)" in result:
 		result.append(roll_intelligence_matrix(intelligence["misc"][3]))
@@ -434,7 +439,7 @@ async def hit(ctx):
 
 @matrix_group.command(description="Provokes a random Faction Action")
 async def factionaction(ctx):
-	print("/matrix factionaction")
+	log("/matrix factionaction")
 	result = [roll_intelligence_matrix(intelligence["misc"][4])]
 	while "Fake-out zig-zag (roll two actions)" in result:
 		result.append(roll_intelligence_matrix(intelligence["misc"][4]))
@@ -445,7 +450,7 @@ async def factionaction(ctx):
 
 @matrix_group.command(description="Discloses a random Faction Mission")
 async def factionmission(ctx):
-	print("/matrix factionmission")
+	log("/matrix factionmission")
 	result = [roll_intelligence_matrix(intelligence["misc"][5])]
 	while "Double mission (roll two objectives)" in result:
 		result.append(roll_intelligence_matrix(intelligence["misc"][5]))
@@ -456,7 +461,7 @@ async def factionmission(ctx):
 
 @matrix_group.command(description="Assigns a random CHOKE Score")
 async def choke(ctx):
-	print("/matrix choke")
+	log("/matrix choke")
 	result = roll_intelligence_matrix(intelligence["misc"][10])
 	await ctx.respond(result)
 
@@ -465,7 +470,7 @@ async def part_success_autocomplete(ctx: discord.AutocompleteContext):
 
 @matrix_group.command(description="Causes random consequences for a Partial Success")
 async def partial(ctx, type: discord.Option(str,"The type of consequence that should be inflicted",autocomplete=discord.utils.basic_autocomplete(part_success_autocomplete),required=False,default="")):
-	print(f"/matrix partial {type}")
+	log(f"/matrix partial {type}")
 	hidden = False
 	type = type.upper()
 	message = ""
@@ -486,13 +491,13 @@ async def partial(ctx, type: discord.Option(str,"The type of consequence that sh
 
 @matrix_group.command(description="Spawns a Random Encounter")
 async def encounter(ctx):
-	print("/matrix encounter")
+	log("/matrix encounter")
 	result = roll_intelligence_matrix(intelligence["misc"][12])
 	await ctx.respond(result)
 
 @matrix_group.command(description="Provokes a random Downtime Event")
 async def downtime(ctx):
-	print("/matrix downtime")
+	log("/matrix downtime")
 	result = roll_intelligence_matrix(intelligence["misc"][13])
 	await ctx.respond(result)
 
@@ -512,57 +517,57 @@ file.close()
 
 @gear_group.command(description="Divulges the contents of a random Crate")
 async def crate(ctx):
-	print("/matrix gear crate")
+	log("/matrix gear crate")
 	result = roll_intelligence_matrix(intelligence["gear_items"][1])
 	message = f"You crack open a crate, revealing **{result}** inside."
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random Common Item")
 async def item(ctx):
-	print("/matrix gear item")
+	log("/matrix gear item")
 	result = roll_intelligence_matrix(intelligence["gear_items"][0])
 	await ctx.respond(result)
 
 @gear_group.command(description="Grants a random piece of Armor")
 async def armor(ctx):
-	print("/matrix gear armor")
+	log("/matrix gear armor")
 	result = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][0])
 	await ctx.respond(result)
 
 @gear_group.command(description="Grants a random Weapon")
 async def weapon(ctx):
-	print("/matrix gear weapon")
+	log("/matrix gear weapon")
 	result = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][1])
 	await ctx.respond(result)
 
 @gear_group.command(description="Applies a random Weapon Tag")
 async def tag(ctx):
-	print("/matrix gear tag")
+	log("/matrix gear tag")
 	result = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][2])
 	message = f"**{result['Name']}**: {result['Effect']}"
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random Vehicle")
 async def vehicle(ctx):
-	print("/matrix gear vehicle")
+	log("/matrix gear vehicle")
 	result = roll_intelligence_matrix(intelligence["gear_vehicles"][0])
 	await ctx.respond(result)
 
 @gear_group.command(description="Grants a random Vehicle Weapon")
 async def vehicleweapon(ctx):
-	print("/matrix gear vehicleweapon")
+	log("/matrix gear vehicleweapon")
 	result = roll_intelligence_matrix(intelligence["gear_vehicles"][1])
 	await ctx.respond(result)
 
 @gear_group.command(description="Applies a random Weapon Skin")
 async def skin(ctx):
-	print("/matrix gear skin")
+	log("/matrix gear skin")
 	result = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
 	await ctx.respond(result)
 
 @gear_group.command(description="Generates a fully unique Weapon")
 async def weaponsmith(ctx):
-	print("/matrix gear weaponsmith")
+	log("/matrix gear weaponsmith")
 	model = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][1])
 	tag = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][2])
 	tag = f"**{tag['Name']}**: {tag['Effect']}"
@@ -572,7 +577,7 @@ async def weaponsmith(ctx):
 
 @gear_group.command(description="Generates a fully unique Vehicle")
 async def hangar(ctx):
-	print("/matrix gear weaponsmith")
+	log("/matrix gear weaponsmith")
 	model = roll_intelligence_matrix(intelligence["gear_vehicles"][0])
 	weapon = roll_intelligence_matrix(intelligence["gear_vehicles"][1])
 	skin = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
@@ -591,21 +596,21 @@ file.close()
 
 @cyclops_group.command(description="Grants a random CYCLOPS Gadget")
 async def gadget(ctx):
-	print("/matrix cyclops gadget")
+	log("/matrix cyclops gadget")
 	result = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
 	message = f"**{result['Name']}**: {result['Effect']}"
 	await ctx.respond(message)
 
 @cyclops_group.command(description="Divulges where CYCLOPS High Command is (allegedly) located")
 async def location(ctx):
-	print("/matrix cyclops location")
+	log("/matrix cyclops location")
 	result = roll_intelligence_matrix(intelligence["cyclops_rumors"][0])
 	message = f"Rumored location of CYCLOPS High Command: **{result}**"
 	await ctx.respond(message)
 
 @cyclops_group.command(description="Divulges the (alleged) origin of CYCLOPS")
 async def origin(ctx):
-	print("/matrix cyclops origin")
+	log("/matrix cyclops origin")
 	result = roll_intelligence_matrix(intelligence["cyclops_rumors"][1])
 	message = f"Rumored origin of CYCLOPS: **{result}**"
 	await ctx.respond(message)
@@ -618,28 +623,28 @@ file.close()
 
 @world_group.command(description="Spawns a random Hazard")
 async def hazard(ctx):
-	print("/matrix world hazard")
+	log("/matrix world hazard")
 	result = roll_intelligence_matrix(intelligence["world_hazards"][0])
 	message = f"Tread carefully; the area ahead contains **{result.lower()}**."
 	await ctx.respond(message)
 
 @world_group.command(description="Reveals a random Trap")
 async def trap(ctx):
-	print("/matrix world trap")
+	log("/matrix world trap")
 	result = roll_intelligence_matrix(intelligence["world_hazards"][1])
 	message = f"You've sprung a trap! You suffer the effects of **{result.lower()}**."
 	await ctx.respond(message)
 
 @world_group.command(description="Starts in a random Year")
 async def year(ctx):
-	print("/matrix world year")
+	log("/matrix world year")
 	start = int(roll_intelligence_matrix(intelligence["misc"][6]))
 	modifier = int(roll_intelligence_matrix(intelligence["misc"][7]))
 	await ctx.respond(str(start + modifier))
 
 @world_group.command(description="Randomly modifies the local Temperature and Precipitation")
 async def weather(ctx):
-	print("/matrix world weather")
+	log("/matrix world weather")
 	temp = roll_intelligence_matrix(intelligence["misc"][8])
 	precip = roll_intelligence_matrix(intelligence["misc"][9])
 	result = f"**Temperature:** {temp}\n**Precipitation:** {precip}"
@@ -653,7 +658,7 @@ file.close()
 
 @chars_group.command(description="Spawns a random Celebrity")
 async def celebrity(ctx):
-	print("/matrix character celebrity")
+	log("/matrix character celebrity")
 	result = roll_all_matrices(intelligence["chars_celebs"])
 	profession = [result[0]]
 	while "Roll twice, ignoring duplicates" in profession:
@@ -674,7 +679,7 @@ file.close()
 
 @chars_group.command(description="Spawns a random Civilian")
 async def civilian(ctx):
-	print("/matrix character civilian")
+	log("/matrix character civilian")
 	result = roll_all_matrices(intelligence["chars_civvies"])
 	job = result[0]
 	name = result[1]
@@ -689,7 +694,7 @@ file.close()
 
 @chars_group.command(description="Spawns a random Politician")
 async def politician(ctx):
-	print("/matrix character politician")
+	log("/matrix character politician")
 	result = roll_all_matrices(intelligence["chars_politicians"])
 	position = result[0]
 	vice = result[1]
@@ -705,7 +710,7 @@ file.close()
 
 @chars_group.command(description="Spawns a random Scientist")
 async def scientist(ctx):
-	print("/matrix character scientist")
+	log("/matrix character scientist")
 	result = roll_all_matrices(intelligence["chars_scientists"])
 	alleg = result[0]
 	career = result[1]
@@ -721,7 +726,7 @@ file.close()
 
 @chars_group.command(description="Spawns a random Soldier")
 async def soldier(ctx):
-	print("/matrix character soldier")
+	log("/matrix character soldier")
 	result = roll_all_matrices(intelligence["chars_soldiers"])
 	rank = result[0]
 	name = result[1]
@@ -736,7 +741,7 @@ file.close()
 
 @chars_group.command(description="Spawns a random Spy")
 async def spy(ctx):
-	print("/matrix character spy")
+	log("/matrix character spy")
 	result = roll_all_matrices(intelligence["chars_spies"])
 	code = result[0]
 	clearance = result[1]
@@ -754,7 +759,7 @@ file.close()
 
 @enemy_group.command(description="Spawns a random Animal")
 async def animal(ctx):
-	print("/matrix enemy animal")
+	log("/matrix enemy animal")
 	result = roll_all_matrices(intelligence["chars_animals"])
 	amount = result[0]
 	desc = result[1]
@@ -769,7 +774,7 @@ file.close()
 
 @enemy_group.command(description="Spawns a random Anomaly")
 async def anomaly(ctx):
-	print("/matrix enemy anomaly")
+	log("/matrix enemy anomaly")
 	result = roll_all_matrices(intelligence["chars_anomalies"])
 	signature = result[0]
 	desc = result[1]
@@ -784,7 +789,7 @@ file.close()
 
 @enemy_group.command(description="Performs a random Experiment")
 async def experiment(ctx):
-	print("/matrix enemy experiment")
+	log("/matrix enemy experiment")
 	result = roll_all_matrices(intelligence["chars_experiments"])
 	creation = result[0]
 	desc = result[1]
@@ -811,7 +816,7 @@ file.close()
 
 @enemy_group.command(description="Spawns a random Monster")
 async def monster(ctx):
-	print("/matrix enemy monster")
+	log("/matrix enemy monster")
 	result = roll_all_matrices(intelligence["chars_monsters"])
 	amount = result[0]
 	desc = result[1]
@@ -828,7 +833,7 @@ file.close()
 
 @enemy_group.command(description="Spawns a random Robot")
 async def robot(ctx):
-	print("/matrix enemy robot")
+	log("/matrix enemy robot")
 	result = roll_all_matrices(intelligence["chars_robots"])
 	budget = result[0]
 	desc = result[1]
@@ -858,7 +863,7 @@ file.close()
 
 @enemy_group.command(description="Spawns a random Squad")
 async def squad(ctx):
-	print("/matrix enemy squad")
+	log("/matrix enemy squad")
 	result = roll_all_matrices(intelligence["chars_squads"])
 	rep = result[0]
 	command = result[1]
@@ -878,7 +883,7 @@ file.close()
 
 @fact_group.command(description="Establishes a random Alien faction")
 async def aliens(ctx):
-	print("/matrix faction aliens")
+	log("/matrix faction aliens")
 	result = roll_all_matrices(intelligence["facs_aliens"])
 	origin = result[0]
 	mission = result[1]
@@ -894,7 +899,7 @@ file.close()
 
 @fact_group.command(description="Establishes a random Agency")
 async def agency(ctx):
-	print("/matrix faction agency")
+	log("/matrix faction agency")
 	result = roll_all_matrices(intelligence["facs_agencies"])
 	parent = result[0]
 	name = result[1]
@@ -909,7 +914,7 @@ file.close()
 
 @fact_group.command(description="Establishes a random Corporation")
 async def corporation(ctx):
-	print("/matrix faction corporation")
+	log("/matrix faction corporation")
 	result = roll_all_matrices(intelligence["facs_corporations"])
 	sector = result[0]
 	if sector == "Megacorp (roll 1D6 sectors)":
@@ -929,7 +934,7 @@ file.close()
 
 @fact_group.command(description="Establishes a random Criminal organization")
 async def criminals(ctx):
-	print("/matrix faction criminals")
+	log("/matrix faction criminals")
 	result = roll_all_matrices(intelligence["facs_criminals"])
 	honor = result[0]
 	name = result[1]
@@ -944,7 +949,7 @@ file.close()
 
 @fact_group.command(description="Establishes a random Cult")
 async def cult(ctx):
-	print("/matrix faction cult")
+	log("/matrix faction cult")
 	result = roll_all_matrices(intelligence["facs_cults"])
 	lead = result[0]
 	size = result[1]
@@ -960,7 +965,7 @@ file.close()
 
 @fact_group.command(description="Establishes a random Insurgent group")
 async def insurgents(ctx):
-	print("/matrix faction insurgents")
+	log("/matrix faction insurgents")
 	result = roll_all_matrices(intelligence["facs_insurgents"])
 	foothold = result[0]
 	desc = result[1]
@@ -977,7 +982,7 @@ file.close()
 
 @loc_group.command(description="Locates a random Battlefield")
 async def battlefield(ctx):
-	print("/matrix location battlefield")
+	log("/matrix location battlefield")
 	result = roll_all_matrices(intelligence["locs_battlefields"])
 	layout = result[0]
 	desc = result[1]
@@ -992,7 +997,7 @@ file.close()
 
 @loc_group.command(description="Locates a random City")
 async def city(ctx):
-	print("/matrix location city")
+	log("/matrix location city")
 	result = roll_all_matrices(intelligence["locs_cities"])
 	cyclops = result[0]
 	name = result[1]
@@ -1007,7 +1012,7 @@ file.close()
 
 @loc_group.command(description="Locates a random location in Nature")
 async def nature(ctx):
-	print("/matrix location nature")
+	log("/matrix location nature")
 	result = roll_all_matrices(intelligence["locs_nature"])
 	situation = result[0]
 	desc = result[1]
@@ -1028,7 +1033,7 @@ file.close()
 
 @loc_group.command(description="Locates a random Room")
 async def room(ctx):
-	print("/matrix location room")
+	log("/matrix location room")
 	result = roll_all_matrices(intelligence["locs_rooms"])
 	exits = result[0]
 	doors = result[1]
@@ -1044,7 +1049,7 @@ file.close()
 
 @loc_group.command(description="Locates a random Structure")
 async def structure(ctx):
-	print("/matrix location structure")
+	log("/matrix location structure")
 	result = roll_all_matrices(intelligence["locs_structures"])
 	owner = result[0]
 	security = result[1]
@@ -1061,7 +1066,7 @@ file.close()
 
 @loc_group.command(description="Locates a random Zone")
 async def zone(ctx):
-	print("/matrix location zone")
+	log("/matrix location zone")
 	result = roll_all_matrices(intelligence["locs_zones"])
 	size = result[0]
 	integrity = result[1]
@@ -1079,7 +1084,7 @@ file.close()
 
 @lore_group.command(description="Forges a random Artifact")
 async def artifact(ctx):
-	print("/matrix lore artifact")
+	log("/matrix lore artifact")
 	result = roll_all_matrices(intelligence["lore_artifacts"])
 	interest = result[0]
 	desc = result[1]
@@ -1094,7 +1099,7 @@ file.close()
 
 @lore_group.command(description="Uncovers a random Coverup")
 async def coverup(ctx):
-	print("/matrix lore coverup")
+	log("/matrix lore coverup")
 	result = roll_all_matrices(intelligence["lore_coverups"])
 	suppression = result[0]
 	witness = result[1]
@@ -1112,7 +1117,7 @@ file.close()
 
 @lore_group.command(description="Establishes a random Diplomacy")
 async def diplomacy(ctx):
-	print("/matrix lore diplomacy")
+	log("/matrix lore diplomacy")
 	result = roll_all_matrices(intelligence["lore_diplomacy"])
 	coverage = result[0]
 	desc = result[1]
@@ -1127,7 +1132,7 @@ file.close()
 
 @lore_group.command(description="Causes a random Disaster")
 async def disaster(ctx):
-	print("/matrix lore disaster")
+	log("/matrix lore disaster")
 	result = roll_all_matrices(intelligence["lore_disasters"])
 	scale = result[0]
 	response = result[1]
@@ -1143,7 +1148,7 @@ file.close()
 
 @lore_group.command(description="Tells a random Legend")
 async def legend(ctx):
-	print("/matrix lore legend")
+	log("/matrix lore legend")
 	result = roll_all_matrices(intelligence["lore_legends"])
 	fate = result[0]
 	if fate == "Many threads (roll two fates)":
@@ -1166,7 +1171,7 @@ file.close()
 
 @lore_group.command(description="Casts a random Spell")
 async def spell(ctx):
-	print("/matrix lore spell")
+	log("/matrix lore spell")
 	result = roll_all_matrices(intelligence["lore_spells"])
 	level = result[0]
 	obscurity = result[1]
