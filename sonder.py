@@ -546,7 +546,7 @@ async def weapon(ctx):
 	await ctx.respond(result)
 
 wep_tag_names = []
-for tag in intelligence["gear_weapons_and_armor"][2]["Values"]:
+for tag in intelligence["gear_weapons_and_armor"][2]["Values"].values():
 	wep_tag_names.append(tag['Name'])
 
 async def tag_lookup_autocomp(ctx):
