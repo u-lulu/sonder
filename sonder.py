@@ -240,8 +240,10 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 	traits = rnd.sample(trait_data, traitcount)
 	role = rnd.choice(role_data)
 	
-	if (rnd.randint(1,10000) == 1):
-		traits[0] = secret_trait
+	for i in range(len(traits)):
+		if (rnd.randint(1,10000) == 1):
+			traits[i] = secret_trait
+			break
 	
 	extra_thing = rnd.randint(1,3)
 	
