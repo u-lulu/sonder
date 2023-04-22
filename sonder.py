@@ -291,6 +291,7 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 		message += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
 		altmessage += f"- **{trait['Name']}** ({trait['Number']}, {trait['Stat']})\n"
 	
+	altmessage += "\nITEMS:"
 	message += "\nITEMS:"
 	for trait in traits:
 		altmessage += f"\n- {trait['Item']}"
