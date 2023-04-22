@@ -229,11 +229,8 @@ player_group = discord.SlashCommandGroup("player", "Player Commands")
 @player_group.command(description="Produces a random character sheet")
 async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionType.integer, "The number of traits this character should have. Defaults to 2.", required=False, default=2)):
 	log(f"/player character {traitcount}")
-	max = 10
 	if traitcount < 1:
 		await ctx.respond("Generated characters must have at least 1 trait.",ephemeral=True)
-	elif traitcount > 10:
-		await ctx.respond(f"Cannot generate a character with more than {max} traits.",ephemeral=True)
 	message = "ROLE: "
 	
 	traits = rnd.sample(trait_data, traitcount)
@@ -302,7 +299,10 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 		message += f"\n- {rnd.choice(standard_issue_items)}"
 	if len(message) > 2000:
 		message = altmessage
-	await ctx.respond(message)
+	if len(message) > 2000:
+		await ctx.respond("The generated character does not fit in the 2,000 character limit for messages. Try lowering the amount of traits.",ephemeral=True)
+	else:
+		await ctx.respond(message)
 
 @player_group.command(description="Rolls against the Emergency Insertion table")
 async def emergencyinsertion(ctx):
