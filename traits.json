@@ -1466,8 +1466,8 @@
     "Number": 656,
     "Name": "WEIGHTLIFTER",
     "Effect": "You can always easily lift things close to your own weight. If it\u2019s something really heavy, like a huge tank or part of a crumbling building, there will be a complication from over-exertion\u2014the referee will tell you what.",
-    "Item": "Heavy riot shield (2 ARMOR",
-    "Stat": "equip as weapon) +1 FORCEFUL"
+    "Item": "Heavy riot shield (2 ARMOR, equip as weapon)",
+    "Stat": "+1 FORCEFUL"
   },
   {
     "Number": 661,
