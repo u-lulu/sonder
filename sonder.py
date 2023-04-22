@@ -298,7 +298,7 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 		message += f"\n- {trait['Item']}"
 	if extra_thing == 3:
 		standard_issue_items = ["Balaclava (hides identity)", "Flashlight (can be used as a weapon attachment)", "Knife (1D6 DAMAGE)", "MRE field rations (+1D6 HP, one use)", "Pistol (1D6 DAMAGE)", "Riot shield (1 ARMOR, equip as weapon)"]
-		altmessage += f"\n- {trait['Item']}"
+		altmessage += f"\n- {rnd.choice(standard_issue_items)}"
 		message += f"\n- {rnd.choice(standard_issue_items)}"
 	if len(message) > 2000:
 		message = altmessage
