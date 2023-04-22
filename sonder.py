@@ -231,9 +231,9 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 	log(f"/player character {traitcount}")
 	max = 10
 	if traitcount < 1:
-		await ctx.respond("Generated characters must have at least 1 trait.")
+		await ctx.respond("Generated characters must have at least 1 trait.",ephemeral=True)
 	elif traitcount > 10:
-		await ctx.respond(f"Cannot generate a character with more than {max} traits.")
+		await ctx.respond(f"Cannot generate a character with more than {max} traits.",ephemeral=True)
 	message = "ROLE: "
 	
 	traits = rnd.sample(trait_data, traitcount)
