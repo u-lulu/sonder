@@ -227,11 +227,16 @@ bot.add_application_command(role_group)
 player_group = discord.SlashCommandGroup("player", "Player Commands")
 
 @player_group.command(description="Produces a random character sheet")
-async def character(ctx):
-	log("/player character")
+async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionType.integer, "The number of traits this character should have. Defaults to 2.", required=False, default=2)):
+	log(f"/player character {traitcount}")
+	max = 10
+	if traitcount < 1:
+		await ctx.respond("Generated characters must have at least 1 trait.")
+	elif traitcount > 10:
+		await ctx.respond(f"Cannot generate a character with more than {max} traits.")
 	message = "ROLE: "
 	
-	traits = rnd.sample(trait_data, 2)
+	traits = rnd.sample(trait_data, traitcount)
 	role = rnd.choice(role_data)
 	
 	if (rnd.randint(1,10000) == 1):
@@ -281,15 +286,21 @@ async def character(ctx):
 	message += f"REFLEXIVE: {stats['REFLEXIVE']}\n\n"
 	
 	message += "TRAITS:\n"
+	altmessage = message
 	for trait in traits:
 		message += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
+		altmessage += f"- **{trait['Name']}** ({trait['Number']}, {trait['Stat']})\n"
 	
 	message += "\nITEMS:"
 	for trait in traits:
+		altmessage += f"\n- {trait['Item']}"
 		message += f"\n- {trait['Item']}"
 	if extra_thing == 3:
 		standard_issue_items = ["Balaclava (hides identity)", "Flashlight (can be used as a weapon attachment)", "Knife (1D6 DAMAGE)", "MRE field rations (+1D6 HP, one use)", "Pistol (1D6 DAMAGE)", "Riot shield (1 ARMOR, equip as weapon)"]
+		altmessage += f"\n- {trait['Item']}"
 		message += f"\n- {rnd.choice(standard_issue_items)}"
+	if len(message) > 2000:
+		message = altmessage
 	await ctx.respond(message)
 
 @player_group.command(description="Rolls against the Emergency Insertion table")
