@@ -226,7 +226,7 @@ bot.add_application_command(role_group)
 
 player_group = discord.SlashCommandGroup("player", "Player Commands")
 
-trait_sort_key = (trait)
+trait_sort_key(trait):
 	return trait["Name"]
 
 @player_group.command(description="Produces a random character sheet")
