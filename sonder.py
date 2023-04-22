@@ -226,6 +226,9 @@ bot.add_application_command(role_group)
 
 player_group = discord.SlashCommandGroup("player", "Player Commands")
 
+trait_sort_key = (trait)
+	return trait["Name"]
+
 @player_group.command(description="Produces a random character sheet")
 async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionType.integer, "The number of traits this character should have. Defaults to 2.", required=False, default=2)):
 	log(f"/player character {traitcount}")
@@ -244,6 +247,8 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 		if (rnd.randint(1,10000) == 1):
 			traits[i] = secret_trait
 			break
+	
+	traits.sort(key=trait_sort_key)
 	
 	extra_thing = rnd.randint(1,3)
 	
