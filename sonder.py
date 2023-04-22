@@ -196,7 +196,7 @@ async def lookup(ctx, trait: discord.Option(str,"The trait to search for",autoco
 async def random(ctx):
 	log("/trait random")
 	result = rnd.choice(trait_data)
-	if (rnd.randint(1,2) == 1):
+	if (rnd.randint(1,10000) == 1):
 		result = secret_trait
 	message = trait_message_format(result)
 	await ctx.respond(message)
@@ -234,7 +234,7 @@ async def character(ctx):
 	traits = rnd.sample(trait_data, 2)
 	role = rnd.choice(role_data)
 	
-	if (rnd.randint(1,2) == 1):
+	if (rnd.randint(1,10000) == 1):
 		traits[0] = secret_trait
 	
 	extra_thing = rnd.randint(1,3)
