@@ -573,7 +573,7 @@ async def armor(ctx):
 
 @gear_group.command(description="Grants a random Weapon")
 async def weapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of weapons to produce (allows duplicates)", required=False, default=1)):
-	log("/matrix gear weapon")
+	log(f"/matrix gear weapon {count}")
 	max = 30
 	if count < 1:
 		await ctx.respond("You must generate a minimum of 1 weapon.",ephemeral=True)
@@ -627,7 +627,7 @@ async def tag(ctx, lookup: discord.Option(str,"Including this argument searches 
 
 @gear_group.command(description="Grants a random Vehicle")
 async def vehicle(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of vehicles to produce (allows duplicates)", required=False, default=1)):
-	log("/matrix gear vehicle")
+	log(f"/matrix gear vehicle {count}")
 	max = 30
 	if count < 1:
 		await ctx.respond("You must generate a minimum of 1 vehicle.",ephemeral=True)
