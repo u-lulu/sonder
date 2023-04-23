@@ -579,9 +579,9 @@ async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer
 	joinlist = []
 	for key in sorted(list(results.keys())):
 		if results[key] > 1:
-			joinlist.append(key)
-		else:
 			joinlist.append(f"{key} **(x{results[key]})**")
+		else:
+			joinlist.append(key)
 	message = "\n".join(joinlist)
 	await ctx.respond(message)
 
