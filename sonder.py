@@ -309,11 +309,21 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 		altmessage += f"\n- {rnd.choice(standard_issue_items)}"
 		message += f"\n- {rnd.choice(standard_issue_items)}"
 	if len(message) > 2000:
-		message = altmessage
+		message = message.replace("FORCEFUL", "FRC")
+		message = message.replace("CREATIVE", "CRE")
+		message = message.replace("REFLEXIVE", "RFX")
+		message = message.replace("TACTICAL", "TAC")
+		if len(message) > 2000:
+			message = altmessage
 	if len(message) > 2000:
-		await ctx.respond("The generated character does not fit in the 2,000 character limit for messages. Try lowering the amount of traits.",ephemeral=True)
-	else:
-		await ctx.respond(message)
+		message = message.replace("FORCEFUL", "FRC")
+		message = message.replace("CREATIVE", "CRE")
+		message = message.replace("REFLEXIVE", "RFX")
+		message = message.replace("TACTICAL", "TAC")
+		if len(message) > 2000:
+			await ctx.respond("The generated character does not fit in the 2,000 character limit for messages. Try lowering the amount of traits.",ephemeral=True)
+			return
+	await ctx.respond(message)
 
 @player_group.command(description="Rolls against the Emergency Insertion table")
 async def emergencyinsertion(ctx):
