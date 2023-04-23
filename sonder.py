@@ -560,10 +560,20 @@ async def crate(ctx):
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random Common Item")
-async def item(ctx):
-	log("/matrix gear item")
-	result = roll_intelligence_matrix(intelligence["gear_items"][0])
-	await ctx.respond(result)
+async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of items to produce (allows duplicates)", required=False, default=1)):
+	log(f"/matrix gear item {count}")
+	max = 30
+	if count < 1:
+		await ctx.respond("You must generate a minimum of 1 item.",ephemeral=True)
+		return
+	elif count > max:
+		await ctx.respond(f"You may only generate a maximum of {max} items.",ephemeral=True)
+		return
+	results = []
+	for i in range(count):
+		results.append(roll_intelligence_matrix(intelligence["gear_items"][0]))
+	message = "\n".join(results)
+	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random piece of Armor")
 async def armor(ctx):
