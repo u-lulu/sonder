@@ -582,7 +582,7 @@ async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer
 			joinlist.append(key)
 		else:
 			joinlist.append(f"{key} **(x{results[key]})**")
-	message = "\n".join(results)
+	message = "\n".join(joinlist)
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random piece of Armor")
