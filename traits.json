@@ -108,7 +108,7 @@
     "Number": 134,
     "Name": "BERSERKER",
     "Effect": "For you, there are no tactics\u2014only the thrill of battle. If you rush into combat with no precaution or pre-planning, your first attack will deal double DAMAGE.",
-    "Item": "Minigun (1D6+2 damage)",
+    "Item": "Minigun (1D6+2 DAMAGE)",
     "Stat": "-2 TACTICAL"
   },
   {
@@ -227,7 +227,7 @@
     "Number": 163,
     "Name": "COMMANDO",
     "Effect": "You're a real life action hero. You deal +1 DAMAGE during any solo fight where you are visibly outmatched, but take a -2 DAMAGE penalty when someone is fighting alongside you.",
-    "Item": "Rocket launcher (1D6+2 damage)",
+    "Item": "Rocket launcher (1D6+2 DAMAGE)",
     "Stat": "+1 FORCEFUL"
   },
   {
@@ -332,7 +332,7 @@
     "Number": 226,
     "Name": "DUELIST",
     "Effect": "You deal +1 DAMAGE during a fair fight with a single opponent. You deal another +1 DAMAGE if you attempt to intimidate, taunt, or seduce that opponent.",
-    "Item": "Laser katana (1D6+2 damage)",
+    "Item": "Laser katana (1D6+2 DAMAGE)",
     "Stat": "+1 DAMAGE with melee weapons"
   },
   {
@@ -437,7 +437,7 @@
     "Number": 253,
     "Name": "FORAGE",
     "Effect": "When you have some prep time, you can ask the referee about the local flora and fauna. If you present a convincing reason why one of these things could work for the ailment you\u2019re trying to treat, you may heal yourself or someone else for 1D6 HP.",
-    "Item": "Machete (1D6 damage)",
+    "Item": "Machete (1D6 DAMAGE)",
     "Stat": "+1 TACTICAL"
   },
   {
@@ -521,7 +521,7 @@
     "Number": 313,
     "Name": "HAZARD",
     "Effect": "You are unusually hardy when faced with toxins and pathogens. Once per mission, you can expose yourself to a hazardous substance and suffer no ill effects. If you choose to anyway, the referee will tell you something useful about the substance\u2019s effects, nature, or origin.",
-    "Item": "Gas mask (ignore breathing-based damage)",
+    "Item": "Gas mask (ignore breathing-based DAMAGE)",
     "Stat": "+1 FORCEFUL"
   },
   {
@@ -535,7 +535,7 @@
     "Number": 315,
     "Name": "HEAVYWEIGHT",
     "Effect": "You can tear through most inanimate obstacles with ease. If it\u2019s something really tough, like solid concrete or metal, it will be more difficult and complicated\u2014the referee will explain how.",
-    "Item": "Break-action shotgun (1D6+1 damage)",
+    "Item": "Break-action shotgun (1D6+1 DAMAGE)",
     "Stat": "+1 FORCEFUL"
   },
   {
@@ -556,7 +556,7 @@
     "Number": 322,
     "Name": "HIGHLANDER",
     "Effect": "When you kill someone important, you may gain a trait, but not the associated stat bonus or item, based on any special abilities they may have. The referee decides who is important.",
-    "Item": "Ancient longsword (1D6+1 damage)",
+    "Item": "Ancient longsword (1D6+1 DAMAGE)",
     "Stat": "+1 FORCEFUL"
   },
   {
@@ -577,7 +577,7 @@
     "Number": 325,
     "Name": "HUNTER",
     "Effect": "You can track anything that leaves a trail, as though the ability were instinctual. When you find it, you can roll +TACTICAL to observe it without detection.",
-    "Item": "Compound bow (1D6 damage, silent)",
+    "Item": "Compound bow (1D6 DAMAGE, silent)",
     "Stat": "+1 TACTICAL"
   },
   {
@@ -612,7 +612,7 @@
     "Number": 334,
     "Name": "IMPROVISE",
     "Effect": "You can improvise a weapon from two or more common objects to instantly kill a single enemy once per mission. You can always create this makeshift weapon discreetly and quickly, even while restrained or otherwise incapacitated, without rolling the dice.",
-    "Item": "Slingshot (3 damage)",
+    "Item": "Slingshot (3 DAMAGE)",
     "Stat": "+1 CREATIVE"
   },
   {
@@ -633,7 +633,7 @@
     "Number": 341,
     "Name": "INTERROGATION",
     "Effect": "You can lock an unsuspecting enemy in a chokehold and ask them one question, which they will always answer truthfully before trying to escape.",
-    "Item": "Masterwork knife (1D6+1 damage)",
+    "Item": "Masterwork knife (1D6+1 DAMAGE)",
     "Stat": "+1 FORCEFUL"
   },
   {
@@ -668,7 +668,7 @@
     "Number": 346,
     "Name": "LIMBS",
     "Effect": "You have many appendages (additional arms, spider-like legs, tentacles, etc.) When you are attempting to catch something or grapple someone, roll twice and take the best result.",
-    "Item": "Many knives (1D6+1 damage)",
+    "Item": "Many knives (1D6+1 DAMAGE)",
     "Stat": "+1 REFLEXIVE"
   },
   {
@@ -696,7 +696,7 @@
     "Number": 354,
     "Name": "LOVER",
     "Effect": "If you and another player both have this trait, you can choose, together, to become lovers. If you rescued your lover from the brink of death during the mission, you gain 1 WAR DIE at the end of the mission.. There is no limit to how many lovers you can have, but if a lover of yours dies, your character can no longer gain new traits by fulfilling their ROLE.",
-    "Item": "Silver handgun (1D6 damage, double vs. undead)",
+    "Item": "Silver handgun (1D6 DAMAGE, double vs. undead)",
     "Stat": "+1 ARMOR when protecting others"
   },
   {
@@ -787,7 +787,7 @@
     "Number": 415,
     "Name": "MORBID",
     "Effect": "You have some kind of relationship with death. Describe how, and what death looks like. If you or another character dies, you can call death to your side. Death will give you some task or challenge and a time limit, then the dead character is healed by 1D6. If you don\u2019t complete the task within the time limit, death takes you both.",
-    "Item": "Gifted scythe (2D6 damage)",
+    "Item": "Gifted scythe (2D6 DAMAGE)",
     "Stat": "-2 MAX HP"
   },
   {
@@ -801,7 +801,7 @@
     "Number": 421,
     "Name": "MUTANT",
     "Effect": "You are a picture of evolution in microcosm, always changing form as your unstable genome shifts. At the beginning of each mission, roll 1D6. On a 4+, drop any one trait you already have (except MUTANT), and permanently replace it with another, recalculating your attributes.",
-    "Item": "Toxic grenade (1D6+2 damage, one use)",
+    "Item": "Toxic grenade (1D6+2 DAMAGE, one use)",
     "Stat": "-1 TACTICAL"
   },
   {
@@ -857,7 +857,7 @@
     "Number": 433,
     "Name": "PARKOUR",
     "Effect": "You can easily swing, jump, and free-run across rooftops, and rafters without rolling the dice. If it\u2019s something really precarious, like barrels floating in toxic waste or a rope bridge full of people shooting at you, you can still do it, but you\u2019ll drop one of your items in an inconvenient spot\u2014the referee decides what, and where.",
-    "Item": "Baseball bat (1D6 damage)",
+    "Item": "Baseball bat (1D6 DAMAGE)",
     "Stat": "+1 REFLEXIVE"
   },
   {
@@ -927,7 +927,7 @@
     "Number": 451,
     "Name": "PROSTHETIC",
     "Effect": "One of your limbs is replaced with any weapon you own, and you can equip another weapon to use. When you roll the maximum damage possible with an equipped weapon, you can roll damage again with your limb-weapon for an extra powerful combo attack.",
-    "Item": "Light machine gun (1D6+1 damage)",
+    "Item": "Light machine gun (1D6+1 DAMAGE)",
     "Stat": "-1 REFLEXIVE"
   },
   {
@@ -955,7 +955,7 @@
     "Number": 455,
     "Name": "PYROMANIAC",
     "Effect": "If there is something flammable nearby, you can always ignite it, but the fire will uncontrollably spread somewhere inconvenient\u2014the referee will tell you where.",
-    "Item": "Flamethrower (1D6+2 damage)",
+    "Item": "Flamethrower (1D6+2 DAMAGE)",
     "Stat": "+2 FORCEFUL"
   },
   {
@@ -983,7 +983,7 @@
     "Number": 463,
     "Name": "RAGE",
     "Effect": "Whenever you do something risky that\u2019s loud, bloody, and violent, roll 3D6 and take the best two. Any other time you do something risky, roll 3D6 and take the worst two. Enemies who you hurt have a 1 in 6 chance of immediately attempting to flee the scene.",
-    "Item": "Ultra-shotgun (2D6 damage)",
+    "Item": "Ultra-shotgun (2D6 DAMAGE)",
     "Stat": "-1 CREATIVE"
   },
   {
@@ -1011,8 +1011,8 @@
     "Number": 511,
     "Name": "RIVAL",
     "Effect": "Choose any other player to be your rival. Each time you spectacularly one-up or humiliate your rival, heal 1D6 HP. If your rival thoroughly one-ups you, you lose any WAR DICE you have. When you take this trait, you gain a new aesthetic quirk, like a streak of dyed hair, an eyepatch, or a cool scar.",
-    "Item": "Carbine (1D6 damage)",
-    "Stat": "+1 damage when showing off"
+    "Item": "Carbine (1D6 DAMAGE)",
+    "Stat": "+1 DAMAGE when showing off"
   },
   {
     "Number": 512,
@@ -1032,7 +1032,7 @@
     "Number": 514,
     "Name": "SAWBONES",
     "Effect": "You\u2019re a doctor, but you don\u2019t have a medical license. Once per mission, when a player character dies, you can roll +CREATIVE to perform surgery and resurrect them with full health. You must swap out one of their traits for a new one as part of your experimental surgery, and explain why your operation changed their trait.",
-    "Item": "Bone saw (1D6+1 damage)",
+    "Item": "Bone saw (1D6+1 DAMAGE)",
     "Stat": "-2 MAX HP"
   },
   {
@@ -1088,7 +1088,7 @@
     "Number": 526,
     "Name": "SHARPSHOOTER",
     "Effect": "If you name a specific body part, possession, or component of something you\u2019re attacking with a ranged weapon, you will always hit it, temporarily disabling that part but dealing 0 DAMAGE.",
-    "Item": "Revolver (1D6+1 damage)",
+    "Item": "Revolver (1D6+1 DAMAGE)",
     "Stat": "+1 REFLEXIVE"
   },
   {
@@ -1116,7 +1116,7 @@
     "Number": 534,
     "Name": "SKELETON",
     "Effect": "You have no flesh\u2014explain why. You have 2 ARMOR against weapons that pierce or slash, and take +1 DAMAGE from weapons that bludgeon. If you reach 0 HP but all your bones are intact, you may rise with 1 HP after someone else completely reassembles you.",
-    "Item": "Ownerless femur (1D6 damage)",
+    "Item": "Ownerless femur (1D6 DAMAGE)",
     "Stat": "-2 FORCEFUL"
   },
   {
@@ -1137,7 +1137,7 @@
     "Number": 541,
     "Name": "SLOW-MO",
     "Effect": "You may slow time to a crawl (at a 1-to-1 seconds-to-minutes ratio) at will, turning volleys of gunfire into glittering armadas of hot lead ships. Doing so costs you 1 HP for every second of time you slow. Slow-time affects your actions and physical processes but does not change the speed of your thoughts, giving you lightning-fast cognition relative to those around you. During slowed time, your REFLEXIVE score is increased by 4.",
-    "Item": "Machine pistol (1D6 damage)",
+    "Item": "Machine pistol (1D6 DAMAGE)",
     "Stat": "-2 REFLEXIVE"
   },
   {
@@ -1165,7 +1165,7 @@
     "Number": 545,
     "Name": "SNATCHER",
     "Effect": "You are an alien poorly puppeteering a technically dead human body, with a killing touch. If you do not consume one human brain without anyone finding out once per mission, you will melt into a puddle and die.",
-    "Item": "Poison fingertips (2D6 damage, don't count as equipped)",
+    "Item": "Poison fingertips (2D6 DAMAGE, don't count as equipped)",
     "Stat": "-2 CREATIVE"
   },
   {
@@ -1179,7 +1179,7 @@
     "Number": 551,
     "Name": "SNIPER",
     "Effect": "If you have prep time, the enemy is unaware of your presence, and you remain stationary, you can roll 3D6 to attack and use the best two dice. If you succeed, you deal the maximum possible DAMAGE for your weapon.",
-    "Item": "Sniper rifle (1D6+2 damage)",
+    "Item": "Sniper rifle (1D6+2 DAMAGE)",
     "Stat": "+1 DAMAGE with ranged weapons"
   },
   {
@@ -1291,7 +1291,7 @@
     "Number": 615,
     "Name": "SYNTHETIC",
     "Effect": "You are a human-like android. Your positronic brain can make thousands of calculations per second, and you never have to roll the dice for tasks like solving equations and calculating trajectories. You take 1D6 DAMAGE when your innards are exposed to water.",
-    "Item": "Infantry-scale railgun (1D6+2 damage)",
+    "Item": "Infantry-scale railgun (1D6+2 DAMAGE)",
     "Stat": "+1 TACTICAL"
   },
   {
@@ -1326,7 +1326,7 @@
     "Number": 624,
     "Name": "TELEPORT",
     "Effect": "You can teleport yourself (and any items you are wearing or holding) to a safe location within your line of sight at will. If you want to teleport under fire or to somewhere you can\u2019t see, roll +TACTICAL to avoid accidents.",
-    "Item": "Flare gun (1D6 damage)",
+    "Item": "Flare gun (1D6 DAMAGE)",
     "Stat": "+2 REFLEXIVE"
   },
   {
@@ -1431,7 +1431,7 @@
     "Number": 651,
     "Name": "VETERAN",
     "Effect": "You've seen war, plenty of it, and you know in your gut where to start looking when there's a target on your head. Whenever you enter a new area, you can ask the referee if there is a hidden danger and get an honest answer.",
-    "Item": "Assault rifle (1D6+1 damage)",
+    "Item": "Assault rifle (1D6+1 DAMAGE)",
     "Stat": "+1 ARMOR at all times"
   },
   {
