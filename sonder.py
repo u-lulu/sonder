@@ -593,7 +593,7 @@ async def weapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integ
 		return
 	results = []
 	for i in range(count):
-		results.append(intelligence["gear_weapons_and_armor"][1])
+		results.append(roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][1]))
 	message = "\n".join(results)
 	await ctx.respond(message)
 
