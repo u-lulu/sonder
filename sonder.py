@@ -595,10 +595,20 @@ async def armor(ctx, count: discord.Option(discord.SlashCommandOptionType.intege
 	elif count > max:
 		await ctx.respond(f"You may only generate a maximum of {max} armor pieces.",ephemeral=True)
 		return
-	results = []
+	results = {}
 	for i in range(count):
-		results.append(roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][0]))
-	message = "\n".join(results)
+		item = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][0])
+		if item not in results:
+			results[item] = 1
+		else:
+			results[item] = results[item] + 1
+	joinlist = []
+	for key in sorted(list(results.keys())):
+		if results[key] > 1:
+			joinlist.append(f"{key} **(x{results[key]})**")
+		else:
+			joinlist.append(key)
+	message = "\n".join(joinlist)
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random Weapon")
@@ -611,10 +621,20 @@ async def weapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integ
 	elif count > max:
 		await ctx.respond(f"You may only generate a maximum of {max} weapons.",ephemeral=True)
 		return
-	results = []
+	results = {}
 	for i in range(count):
-		results.append(roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][1]))
-	message = "\n".join(results)
+		item = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][1])
+		if item not in results:
+			results[item] = 1
+		else:
+			results[item] = results[item] + 1
+	joinlist = []
+	for key in sorted(list(results.keys())):
+		if results[key] > 1:
+			joinlist.append(f"{key} **(x{results[key]})**")
+		else:
+			joinlist.append(key)
+	message = "\n".join(joinlist)
 	await ctx.respond(message)
 
 wep_tag_names = []
@@ -665,10 +685,20 @@ async def vehicle(ctx, count: discord.Option(discord.SlashCommandOptionType.inte
 	elif count > max:
 		await ctx.respond(f"You may only generate a maximum of {max} vehicles.",ephemeral=True)
 		return
-	results = []
+	results = {}
 	for i in range(count):
-		results.append(roll_intelligence_matrix(intelligence["gear_vehicles"][0]))
-	message = "\n".join(results)
+		item = roll_intelligence_matrix(intelligence["gear_vehicles"][0])
+		if item not in results:
+			results[item] = 1
+		else:
+			results[item] = results[item] + 1
+	joinlist = []
+	for key in sorted(list(results.keys())):
+		if results[key] > 1:
+			joinlist.append(f"{key} **(x{results[key]})**")
+		else:
+			joinlist.append(key)
+	message = "\n".join(joinlist)
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random Vehicle Weapon")
@@ -681,10 +711,20 @@ async def vehicleweapon(ctx, count: discord.Option(discord.SlashCommandOptionTyp
 	elif count > max:
 		await ctx.respond(f"You may only generate a maximum of {max} vehicle weapons.",ephemeral=True)
 		return
-	results = []
+	results = {}
 	for i in range(count):
-		results.append(roll_intelligence_matrix(intelligence["gear_vehicles"][1]))
-	message = "\n".join(results)
+		item = roll_intelligence_matrix(intelligence["gear_vehicles"][1])
+		if item not in results:
+			results[item] = 1
+		else:
+			results[item] = results[item] + 1
+	joinlist = []
+	for key in sorted(list(results.keys())):
+		if results[key] > 1:
+			joinlist.append(f"{key} **(x{results[key]})**")
+		else:
+			joinlist.append(key)
+	message = "\n".join(joinlist)
 	await ctx.respond(message)
 
 @gear_group.command(description="Applies a random Weapon Skin")
@@ -697,10 +737,20 @@ async def skin(ctx, count: discord.Option(discord.SlashCommandOptionType.integer
 	elif count > max:
 		await ctx.respond(f"You may only generate a maximum of {max} weapon skins.",ephemeral=True)
 		return
-	results = []
+	results = {}
 	for i in range(count):
-		results.append(roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3]))
-	message = "\n".join(results)
+		item = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
+		if item not in results:
+			results[item] = 1
+		else:
+			results[item] = results[item] + 1
+	joinlist = []
+	for key in sorted(list(results.keys())):
+		if results[key] > 1:
+			joinlist.append(f"{key} **(x{results[key]})**")
+		else:
+			joinlist.append(key)
+	message = "\n".join(joinlist)
 	await ctx.respond(message)
 
 @gear_group.command(description="Generates a fully unique Weapon")
