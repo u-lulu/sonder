@@ -652,16 +652,36 @@ async def vehicle(ctx, count: discord.Option(discord.SlashCommandOptionType.inte
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random Vehicle Weapon")
-async def vehicleweapon(ctx):
-	log("/matrix gear vehicleweapon")
-	result = roll_intelligence_matrix(intelligence["gear_vehicles"][1])
-	await ctx.respond(result)
+async def vehicleweapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of vehicle weapons to produce (allows duplicates)", required=False, default=1)):
+	log(f"/matrix gear vehicleweapon {count}")
+	max = 30
+	if count < 1:
+		await ctx.respond("You must generate a minimum of 1 vehicle weapon.",ephemeral=True)
+		return
+	elif count > max:
+		await ctx.respond(f"You may only generate a maximum of {max} vehicle weapons.",ephemeral=True)
+		return
+	results = []
+	for i in range(count):
+		results.append(roll_intelligence_matrix(intelligence["gear_vehicles"][1]))
+	message = "\n".join(results)
+	await ctx.respond(message)
 
 @gear_group.command(description="Applies a random Weapon Skin")
-async def skin(ctx):
-	log("/matrix gear skin")
-	result = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
-	await ctx.respond(result)
+async def skin(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of weapon skins to produce (allows duplicates)", required=False, default=1)):
+	log(f"/matrix gear skin {count}")
+	max = 30
+	if count < 1:
+		await ctx.respond("You must generate a minimum of 1 weapon skin.",ephemeral=True)
+		return
+	elif count > max:
+		await ctx.respond(f"You may only generate a maximum of {max} weapon skins.",ephemeral=True)
+		return
+	results = []
+	for i in range(count):
+		results.append(roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3]))
+	message = "\n".join(results)
+	await ctx.respond(message)
 
 @gear_group.command(description="Generates a fully unique Weapon")
 async def weaponsmith(ctx):
