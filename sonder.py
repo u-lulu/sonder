@@ -576,10 +576,20 @@ async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random piece of Armor")
-async def armor(ctx):
+async def armor(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of armor pieces to produce (allows duplicates)", required=False, default=1)):
 	log("/matrix gear armor")
-	result = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][0])
-	await ctx.respond(result)
+	max = 30
+	if count < 1:
+		await ctx.respond("You must generate a minimum of 1 armor piece.",ephemeral=True)
+		return
+	elif count > max:
+		await ctx.respond(f"You may only generate a maximum of {max} armor pieces.",ephemeral=True)
+		return
+	results = []
+	for i in range(count):
+		results.append(roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][0]))
+	message = "\n".join(results)
+	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random Weapon")
 async def weapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of weapons to produce (allows duplicates)", required=False, default=1)):
