@@ -438,9 +438,10 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax; see https://pyp
 		log(f"Caught: {e}")
 		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
 		return
-	message = f"**# Total: {output[0]}**\n`{output[1]}`"
-	if len(message) > 2000:
-		message = message[:1995]+"...]`"
+	message = f"**Total: {output[0]}**\n`{output[1]}`"
+	limit = 300
+	if len(message) > limit:
+		message = message[:limit-5]+"...]`"
 	await ctx.respond(message)
 
 bot.add_application_command(player_group)
