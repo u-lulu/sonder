@@ -425,7 +425,7 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax; see https://pyp
 	output = ()
 	try:
 		output = func_timeout(2, rolldice.roll_dice, args=[syntax])
-	except (rolldice.rolldice.DiceGroupException, func_timeout.exceptions.FunctionTimedOut) as e:
+	except (rolldice.rolldice.DiceGroupException, FunctionTimedOut) as e:
 		await ctx.respond(e,ephemeral=True)
 		return
 	await ctx.respond(str(output))
