@@ -1,4 +1,4 @@
-import discord
+import discord # pip install py-cord
 import json
 import difflib
 import re
@@ -6,8 +6,8 @@ import random as rnd
 from datetime import datetime
 from datetime import date
 import os
-import rolldice
-from func_timeout import func_timeout, FunctionTimedOut
+import rolldice # pip install py-rolldice
+from func_timeout import func_timeout, FunctionTimedOut # pip install func-timeout
 
 bot = discord.Bot(activity=discord.Game(name='FIST: Ultra Edition'))
 
