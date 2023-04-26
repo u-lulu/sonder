@@ -430,7 +430,7 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax; see https://pyp
 		return
 	message = f"# {output[0]}\n```{output[1]}```"
 	if len(message) > 2000:
-		message = message[:1995]+"...]`"
+		message = message[:1993]+"...]```"
 	await ctx.respond(message)
 
 bot.add_application_command(player_group)
