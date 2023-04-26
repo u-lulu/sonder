@@ -7,6 +7,7 @@ from datetime import datetime
 from datetime import date
 import os
 import rolldice
+from func_timeout import func_timeout, FunctionTimedOut
 
 bot = discord.Bot(activity=discord.Game(name='FIST: Ultra Edition'))
 
@@ -423,8 +424,8 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax; see https://pyp
 	
 	output = ()
 	try:
-		output = rolldice.roll_dice(syntax)
-	except rolldice.rolldice.DiceGroupException as e:
+		output = func_timeout(2, rolldice.roll_dice, args=[syntax])
+	except (rolldice.rolldice.DiceGroupException, func_timeout.exceptions.FunctionTimedOut) as e:
 		await ctx.respond(e,ephemeral=True)
 		return
 	await ctx.respond(str(output))
