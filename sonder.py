@@ -418,15 +418,22 @@ async def d6(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, 
 @player_group.command(description="Rolls dice using common dice syntax; see https://pypi.org/project/py-rolldice/ for full details")
 async def dice(ctx, syntax: discord.Option(str,"The dice syntax; see https://pypi.org/project/py-rolldice/ for full details")):
 	log(f"/player dice {syntax}")
+	timeout = 2
 	if ctx.author.id != ownerid:
 		ctx.respond("This feature is currently in development. Check back later!",ephemeral=True)
 		return
 	
 	output = ()
 	try:
-		output = func_timeout(2, rolldice.roll_dice, args=[syntax])
-	except (rolldice.rolldice.DiceGroupException, FunctionTimedOut) as e:
+		output = func_timeout(timeout, rolldice.roll_dice, args=[syntax])
+	except rolldice.rolldice.DiceGroupException as e:
 		await ctx.respond(e,ephemeral=True)
+		return
+	except FunctionTimedOut as e:
+		await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
+		return
+	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
+		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
 		return
 	message = f"# {output[0]}\n```{output[1]}```"
 	if len(message) > 2000:
