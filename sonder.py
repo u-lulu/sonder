@@ -396,6 +396,8 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax; see https://git
 	if len(message) > limit:
 		message = message[:limit-5]+"...]`"
 	await ctx.respond(message)
+	if not ('d' in syntax or 'D' in syntax):
+		ctx.respond(f"It seems your input didn't actually roll any dice. Did you mean `1d{syntax}` or `{syntax}d6`?\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
 
 bot.add_application_command(player_group)
 
