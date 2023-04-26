@@ -372,8 +372,8 @@ async def roll(ctx, modifier: discord.Option(discord.SlashCommandOptionType.inte
 		message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
 	await ctx.respond(message)
 
-@player_group.command(description="Rolls dice using common dice syntax; see https://pypi.org/project/py-rolldice/ for full details")
-async def dice(ctx, syntax: discord.Option(str,"The dice syntax; see https://pypi.org/project/py-rolldice/ for full details")):
+@player_group.command(description="Rolls dice using common dice syntax; see https://github.com/mundungus443/py-rolldice#dice-syntax for full details")
+async def dice(ctx, syntax: discord.Option(str,"The dice syntax; see https://github.com/mundungus443/py-rolldice#dice-syntax for full details")):
 	log(f"/player dice {syntax}")
 	timeout = 2
 	output = ()
@@ -381,7 +381,7 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax; see https://pyp
 		output = func_timeout(timeout, rolldice.roll_dice, args=[syntax])
 	except rolldice.rolldice.DiceGroupException as e:
 		log(f"Caught: {e}")
-		await ctx.respond(e,ephemeral=True)
+		await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
 		return
 	except FunctionTimedOut as e:
 		log(f"Caught: {e}")
