@@ -427,12 +427,15 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax; see https://pyp
 	try:
 		output = func_timeout(timeout, rolldice.roll_dice, args=[syntax])
 	except rolldice.rolldice.DiceGroupException as e:
+		log(f"Caught: {e}")
 		await ctx.respond(e,ephemeral=True)
 		return
 	except FunctionTimedOut as e:
+		log(f"Caught: {e}")
 		await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
 		return
 	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
+		log(f"Caught: {e}")
 		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
 		return
 	message = f"# {output[0]}\n```{output[1]}```"
