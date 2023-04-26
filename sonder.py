@@ -6,6 +6,7 @@ import random as rnd
 from datetime import datetime
 from datetime import date
 import os
+import rolldice
 
 bot = discord.Bot(activity=discord.Game(name='FIST: Ultra Edition'))
 
@@ -412,6 +413,21 @@ async def d6(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, 
 			else:
 				results += f"({sum})"
 		await ctx.respond(results)
+
+@player_group.command(description="Rolls dice using common dice syntax; see https://pypi.org/project/py-rolldice/ for full details")
+async def dice(ctx, syntax: discord.Option(str,"The dice syntax; see https://pypi.org/project/py-rolldice/ for full details")):
+	log(f"/player dice {syntax}")
+	if ctx.author.id != ownerid:
+		ctx.respond("This feature is currently in development. Check back later!",ephemeral=True)
+		return
+	
+	output = ()
+	try:
+		output = rolldice.roll_dice(syntax)
+	except rolldice.rolldice.DiceGroupException as e:
+		await ctx.respond(e)
+		return
+	await ctx.respond(str(output))
 
 bot.add_application_command(player_group)
 
