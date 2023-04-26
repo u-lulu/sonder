@@ -376,10 +376,6 @@ async def roll(ctx, modifier: discord.Option(discord.SlashCommandOptionType.inte
 async def dice(ctx, syntax: discord.Option(str,"The dice syntax; see https://pypi.org/project/py-rolldice/ for full details")):
 	log(f"/player dice {syntax}")
 	timeout = 2
-	if ctx.author.id != ownerid:
-		ctx.respond("This feature is currently in development. Check back later!",ephemeral=True)
-		return
-	
 	output = ()
 	try:
 		output = func_timeout(timeout, rolldice.roll_dice, args=[syntax])
