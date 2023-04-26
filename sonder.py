@@ -428,7 +428,10 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax; see https://pyp
 	except (rolldice.rolldice.DiceGroupException, FunctionTimedOut) as e:
 		await ctx.respond(e,ephemeral=True)
 		return
-	await ctx.respond(f"`{syntax}`\n`{output[1]}`\n# {output[0]}")
+	message = f"# {output[0]}\n```{output[1]}```"
+	if len(message) > 2000:
+		message = message[:1995]+"...]`"
+	await ctx.respond(message)
 
 bot.add_application_command(player_group)
 
