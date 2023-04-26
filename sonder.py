@@ -372,49 +372,6 @@ async def roll(ctx, modifier: discord.Option(discord.SlashCommandOptionType.inte
 		message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
 	await ctx.respond(message)
 
-@player_group.command(description="Rolls any amount of six-sided dice")
-async def d6(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of dice to roll", required=False, default=1), modifier: discord.Option(discord.SlashCommandOptionType.integer, "A modifier to the final sum of the dice roll.", required=False, default=0)):
-	log(f"/player d6 {count}")
-	max = 30
-	if count < 1:
-		await ctx.respond("Invalid parameters. You must provide a positive whole number of dice to roll.", ephemeral=True)
-	elif count > max:
-		await ctx.respond(f"Invalid parameters. You may roll a maximum of {max} dice at a time.", ephemeral=True)
-	else:
-		results = ""
-		numerical_results = []
-		individual = {
-			1: 0,
-			2: 0,
-			3: 0,
-			4: 0,
-			5: 0,
-			6: 0
-		}
-		sum = 0
-		for i in range(count):
-			x = rnd.randint(1,6)
-			numerical_results.append(str(x))
-			individual[x] = individual[x] + 1
-			sum += x
-			results += num_to_die[x] + " "
-			
-		if count > 1:
-			results += "\n[" + ", ".join(numerical_results) + "]"
-			sum_to_print = str(sum)
-			if modifier != 0:
-				sum_to_print = f"{sum} + {modifier} = {sum+modifier}"
-			results += f"\n> **Total: {sum_to_print}**\n> Average: {sum/count}\n > Counts:"
-			for i in range(1,7):
-				if individual[i] > 0:
-					results += f"\n> - **{i}:** {individual[i]}"
-		else:
-			if modifier != 0:
-				results += f"({sum} + {modifier} = {sum+modifier})"
-			else:
-				results += f"({sum})"
-		await ctx.respond(results)
-
 @player_group.command(description="Rolls dice using common dice syntax; see https://pypi.org/project/py-rolldice/ for full details")
 async def dice(ctx, syntax: discord.Option(str,"The dice syntax; see https://pypi.org/project/py-rolldice/ for full details")):
 	log(f"/player dice {syntax}")
