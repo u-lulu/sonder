@@ -372,8 +372,8 @@ async def roll(ctx, modifier: discord.Option(discord.SlashCommandOptionType.inte
 		message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
 	await ctx.respond(message)
 
-@player_group.command(description="Rolls dice using common dice syntax; see https://github.com/mundungus443/py-rolldice#dice-syntax for full details")
-async def dice(ctx, syntax: discord.Option(str,"The dice syntax; see https://github.com/mundungus443/py-rolldice#dice-syntax for full details")):
+@player_group.command(description="Rolls dice using common dice syntax")
+async def dice(ctx, syntax: discord.Option(str,"The dice syntax")):
 	log(f"/player dice {syntax}")
 	timeout = 2
 	output = ()
