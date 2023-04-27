@@ -176,6 +176,11 @@ async def invite(ctx):
 	log("/invite")
 	await ctx.respond("[Invite page](https://discord.com/api/oauth2/authorize?client_id=1096635021395251352&permissions=274877908992&scope=bot%20applications.commands)",ephemeral=True)
 
+@bot.command(description="Links to the support server for this bot")
+async def server(ctx):
+	log("/server")
+	await ctx.respond("https://discord.gg/VeedQmQc7k",ephemeral=True)
+
 @bot.command(description="spin")
 async def spin(ctx):
 	log("/spin")
