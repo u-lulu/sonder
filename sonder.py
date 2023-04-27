@@ -47,10 +47,10 @@ num_to_die = {
 }
 
 def trait_message_format(trait):
-	return f"# **{trait['Name']}** ({trait['Number']})\n{trait['Effect']}\n- {trait['Item']}, {trait['Stat']}"
+	return f"### **{trait['Name']}** ({trait['Number']})\n{trait['Effect']}\n- {trait['Item']}, {trait['Stat']}"
 
 def role_message_format(role):
-	return f"# **{role['Name']}** ({role['Number']})\n{role['Text']}"
+	return f"### **{role['Name']}** ({role['Number']})\n{role['Text']}"
 
 def search_for_trait(trait):
 	message = ""
