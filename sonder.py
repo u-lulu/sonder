@@ -242,7 +242,7 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 	if traitcount < 1:
 		await ctx.respond("Generated characters must have at least 1 trait.",ephemeral=True)
 		return
-	if traitcount > 100:
+	if traitcount > 40:
 		await ctx.respond("Cannot generate a character with that many traits.",ephemeral=True)
 		return
 	message = "ROLE: "
