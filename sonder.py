@@ -259,7 +259,7 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 	
 	extra_thing = rnd.randint(1,3)
 	
-	message += role_message_format(role)[2:] + "\n\n"
+	message += role_message_format(role)[4:] + "\n\n"
 	
 	stats = {
 		"MAX": 6,
