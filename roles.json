@@ -62,7 +62,7 @@
   {
     "Number": 31,
     "Name": "FUGITIVE",
-    "Text": "Describe the high-caliber crime you either committed, or that you actually didn't commit (and if so, who framed you). Advance if something you did made significant progress towards clearing your name, or if you fought off the long arm of the law."
+    "Text": "Describe a high-caliber crime: one that you did commit, or one that you actually didn't commit (and if so, who framed you). Advance if something you did made significant progress towards clearing your name, or if you fought off the long arm of the law."
   },
   {
     "Number": 32,
@@ -127,7 +127,7 @@
   {
     "Number": 52,
     "Name": "REPENTANT",
-    "Text": "Describe a shameful and horrible decision from your past. Advance if something you did atoned for your sins in a meaningful way, or completely changed the context in which you view your past sins."
+    "Text": "Describe a shameful and horrible decision from your past. Advance if something you did atoned for your sins in a meaningful way, or completely changed the context in which you view your past deeds."
   },
   {
     "Number": 53,
@@ -137,7 +137,7 @@
   {
     "Number": 54,
     "Name": "RETURN",
-    "Text": "Describe the faraway place or time from which you hail, and the improbable circumstances that found you stranded here. Advance if you made progress on your quest to go home, or if you made contact with someone from the place before."
+    "Text": "Describe the faraway place or time from which you hail, and the improbable circumstances that found you stranded here. Advance if you made progress on your quest to go home, or if you made contact with someone from the place-before."
   },
   {
     "Number": 55,
