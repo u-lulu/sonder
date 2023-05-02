@@ -52,7 +52,7 @@
 				"4": "Homing missiles - 1D6+2 DAMAGE, 1D6 missiles",
 				"5": "Mounted gun - 1D6+1 DAMAGE",
 				"6": "Gunner seats - 0 DAMAGE, 1D6 seats",
-				"7": "Front-mounted ram - 1D6 DAMAGE",
+				"7": "Front-mounted ram - No crash self-damage",
 				"8": "Mounted heavy weapon - 1D6+2 DAMAGE",
 				"9": "Integrated weapons - 1D6 DAMAGE, 1D6 weapons",
 				"10": "Mounted grenade launcher - 1D6 DAMAGE ",

@@ -47,10 +47,10 @@
 				"54": "Steppe",
 				"55": "Swamp",
 				"56": "Temperate coast",
-				"61": "Tree savanna",
-				"62": "Tropical coast",
-				"63": "Tropical dry forest",
-				"64": "Tropical moist forest",
+				"61": "Tropical coast",
+				"62": "Tropical dry forest",
+				"63": "Tropical moist forest",
+				"64": "Tropical savanna",
 				"65": "Warm ocean",
 				"66": "Wasteland"
 			}
@@ -112,7 +112,7 @@
 				"21": "A musician wants to put on a show here",
 				"22": "A nation is drawing artificial borders through it",
 				"23": "A nation wishes to colonize it",
-				"24": "A neocolonial force wants it back",
+				"24": "A neocolonial force wants control",
 				"25": "A studio wants it for a shooting location",
 				"26": "A think tank wants it for their secret laboratory",
 				"31": "Agency brass wants it monitored 24/7 (`/matrix faction agency`)",

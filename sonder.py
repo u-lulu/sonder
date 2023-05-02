@@ -986,7 +986,7 @@ async def experiment(ctx):
 	desc = result[1]
 	feature = result[2]
 	mistake = result[3]
-	if creation == "Uncontrolled\u2014Roll 1D6 extra features.":
+	if creation == "Uncontrolled\u2014Roll 1D6 extra features":
 		feature = [feature]
 		more = rnd.randint(1,6)
 		for i in range(more):
@@ -1162,6 +1162,11 @@ async def insurgents(ctx):
 	desc = result[1]
 	feature = result[2]
 	strategy = result[3]
+	if desc == "Spin a new image of their ideology, reroll description":
+		desc2 = roll_intelligence_matrix(intelligence['facs_insurgents'][1])
+		while desc2 == desc:
+			desc2 = roll_intelligence_matrix(intelligence['facs_insurgents'][1])
+		desc = f"{desc} (being spun as {desc2})"
 	message = f"Description: {desc}\nFeature: {feature}\nFoothold: {foothold}\nStrategy: {strategy}"
 	await ctx.respond(message)
 

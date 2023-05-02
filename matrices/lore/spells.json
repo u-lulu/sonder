@@ -116,7 +116,7 @@
 		"Roll":"D66",
 		"Values":
 			{
-				"11": "Activates a buried magitech robot (`/matrix enemy robot`)",
+				"11": "Activates a buried magitech super-mecha",
 				"12": "An elder god is awoken to end the world (`/matrix syllables`)",
 				"13": "Attracts followers to your cause",
 				"14": "Births a new being without a soul",
@@ -151,7 +151,7 @@
 				"63": "Turns those who cross a boundary into stone",
 				"64": "Useful resources spill bountifully from thin air",
 				"65": "Wealth and power inexplicably flow your way",
-				"66": "Wizard aliens take it as a combat challenge (`/matrix faction aliens`)"
+				"66": "Wizards take it as a combat challenge"
 			}
 	}
 ]

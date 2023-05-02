@@ -18,7 +18,7 @@
 			}
 	},
 	{
-		"Title":"IDEOLOGY",
+		"Title":"DESCRIPTION",
 		"Roll":"D66",
 		"Values":
 			{
@@ -137,7 +137,7 @@
 				"53": "Seize control of and convert a structure (`/matrix location structure`)",
 				"54": "Send a starbound SOS for alien assistance",
 				"55": "Shock the public with a televised execution",
-				"56": "Spin a new perception of their ideology",
+				"56": "Spin a new image of their ideology, reroll description",
 				"61": "Steal and weaponize an experiment (`/matrix enemy experiment`)",
 				"62": "Take down a key production center",
 				"63": "Topple a symbolically important monument",

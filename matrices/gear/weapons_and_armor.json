@@ -127,7 +127,7 @@
 				},
 				"34": {
 					"Name":"ICE",
-					"Effect":"Deals double DAMAGE to anything which needs warmth to function."
+					"Effect":"Makes surfaces slick and deals double DAMAGE to anything that requires warmth to function."
 				},
 				"35": {
 					"Name":"INCENDIARY",
