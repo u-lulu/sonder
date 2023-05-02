@@ -545,20 +545,20 @@ file.close()
 async def cassette(ctx):
 	log("/matrix cassette")
 	audio = rnd.choice(intelligence["cassettes"])
-    if audio == "[Combination tape, roll 1D6 tapes]":
-        tapes = ["[Combination tape, roll 1D6 tapes]"]
-        while "[Combination tape, roll 1D6 tapes]" in tapes:
-            tapes = rnd.sample(intelligence["cassettes"], rnd.randint(2,6))
-        for i in range(len(tapes)):
-            if not '[' in tapes[i]:
-                search = VideosSearch(tapes[i],limit=1)
-                result = search.result()['result'][0]
-                tapes[i] = f"[{tapes[i]}](<{result['link']}>)"
-        audio = "Combination tape:\n- " + "\n- ".join(tapes)
-    elif not '[' in audio:
-        search = VideosSearch(audio,limit=1)
-        result = search.result()['result'][0]
-        audio = f"[{audio}](<{result['link']}>)"
+	if audio == "[Combination tape, roll 1D6 tapes]":
+		tapes = ["[Combination tape, roll 1D6 tapes]"]
+		while "[Combination tape, roll 1D6 tapes]" in tapes:
+			tapes = rnd.sample(intelligence["cassettes"], rnd.randint(2,6))
+		for i in range(len(tapes)):
+			if not '[' in tapes[i]:
+				search = VideosSearch(tapes[i],limit=1)
+				result = search.result()['result'][0]
+				tapes[i] = f"[{tapes[i]}](<{result['link']}>)"
+		audio = "Combination tape:\n- " + "\n- ".join(tapes)
+	elif not '[' in audio:
+		search = VideosSearch(audio,limit=1)
+		result = search.result()['result'][0]
+		audio = f"[{audio}](<{result['link']}>)"
 	await ctx.respond(audio)
 
 gear_group = matrix_group.create_subgroup("gear", "Gear Intelligence Matrices")
@@ -1299,11 +1299,11 @@ intelligence["lore_artifacts"] = json.load(file)
 file.close()
 
 def starts_with_vowel(word):
-    vowels = ['a', 'e', 'i', 'o', 'u']
-    if word[0].lower() in vowels:
-        return "an"
-    else:
-        return "a"
+	vowels = ['a', 'e', 'i', 'o', 'u']
+	if word[0].lower() in vowels:
+		return "an"
+	else:
+		return "a"
 
 @lore_group.command(description="Forges a random Artifact")
 async def artifact(ctx):
