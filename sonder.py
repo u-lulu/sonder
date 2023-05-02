@@ -548,7 +548,7 @@ async def cassette(ctx):
     if not '[' in audio:
         search = VideosSearch(audio,limit=1)
         result = search.result()['result'][0]
-        audio += f"\n<{result['link']}>"
+        audio = f"[audio](<{result['link']}>)"
 	await ctx.respond(audio)
 
 gear_group = matrix_group.create_subgroup("gear", "Gear Intelligence Matrices")
