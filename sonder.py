@@ -544,7 +544,7 @@ file.close()
 async def cassette(ctx):
 	log("/matrix cassette")
 	audio = rnd.choice(intelligence["cassettes"])
-	await ctx.respond(audio,ephemeral=True)
+	await ctx.respond(audio)
 
 gear_group = matrix_group.create_subgroup("gear", "Gear Intelligence Matrices")
 
