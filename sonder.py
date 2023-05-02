@@ -547,7 +547,7 @@ file.close()
 @matrix_group.command(description="Plays a random Cassette Tape")
 async def cassette(ctx):
 	log("/matrix cassette")
-	audio = rnd.choice(intelligence["cassettes"])
+	audio = "[Combination tape, roll 1D6 tapes]"#rnd.choice(intelligence["cassettes"])
 	if audio == "[Combination tape, roll 1D6 tapes]":
 		tapes = ["[Combination tape, roll 1D6 tapes]"]
 		while "[Combination tape, roll 1D6 tapes]" in tapes:
