@@ -1167,7 +1167,7 @@ async def insurgents(ctx):
 	desc = result[1]
 	feature = result[2]
 	strategy = result[3]
-	if desc == "Spin a new image of their ideology, reroll description":
+	if strategy == "Spin a new image of their ideology, reroll description":
 		desc2 = roll_intelligence_matrix(intelligence['facs_insurgents'][1])
 		while desc2 == desc:
 			desc2 = roll_intelligence_matrix(intelligence['facs_insurgents'][1])
