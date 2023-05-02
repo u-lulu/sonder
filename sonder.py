@@ -536,10 +536,15 @@ async def downtime(ctx):
 	result = roll_intelligence_matrix(intelligence["misc"][13])
 	await ctx.respond(result)
 
+file = open('matrices/cassettes.json')
+intelligence["cassettes"] = json.load(file)
+file.close()
+
 @matrix_group.command(description="Plays a random Cassette Tape")
 async def cassette(ctx):
 	log("/matrix cassette")
-	await ctx.respond("Not yet implemented! Check back later.",ephemeral=True)
+	audio = rnd.choice(intelligence["cassettes"])
+	await ctx.respond(audio,ephemeral=True)
 
 gear_group = matrix_group.create_subgroup("gear", "Gear Intelligence Matrices")
 
