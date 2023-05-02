@@ -541,15 +541,6 @@ file = open('matrices/cassettes.json')
 intelligence["cassettes"] = json.load(file)
 file.close()
 
-cassette_links = {}
-log("Fetching cassette links...")
-for song in intelligence["cassettes"]:
-	if not '[' in song:
-		search = VideosSearch(song,limit=1)
-		result = search.result()['result'][0]
-		cassette_links[song] = result['link']
-		log(f"{song}: {cassette_links[song]}")
-
 @matrix_group.command(description="Plays a random Cassette Tape")
 async def cassette(ctx):
 	log("/matrix cassette")
@@ -559,11 +550,15 @@ async def cassette(ctx):
 		while "[Combination tape, roll 1D6 tapes]" in tapes:
 			tapes = rnd.sample(intelligence["cassettes"], rnd.randint(2,6))
 		for i in range(len(tapes)):
-			if tapes[i] in cassette_links:
-				tapes[i] = f"[{tapes[i]}](<{cassette_links[tapes[i]]}>)"
+			if not '[' in tapes[i]:
+				search = VideosSearch(tapes[i],limit=1)
+				result = search.result()['result'][0]
+				tapes[i] = f"[{tapes[i]}](<{result['link']}>)"
 		audio = "Combination tape:\n- " + "\n- ".join(tapes)
-	elif audio in cassette_links:
-		audio = f"[{audio}](<{cassette_links[audio]}>)"
+	elif not '[' in audio:
+		search = VideosSearch(audio,limit=1)
+		result = search.result()['result'][0]
+		audio = f"[{audio}](<{result['link']}>)"
 	await ctx.respond(audio)
 
 gear_group = matrix_group.create_subgroup("gear", "Gear Intelligence Matrices")
