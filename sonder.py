@@ -8,6 +8,7 @@ from datetime import date
 import os
 import rolldice # pip install py-rolldice
 from func_timeout import func_timeout, FunctionTimedOut # pip install func-timeout
+from youtubesearchpython import VideosSearch #pip install youtube-search-python
 
 bot = discord.Bot(activity=discord.Game(name='FIST: Ultra Edition'))
 
@@ -544,6 +545,10 @@ file.close()
 async def cassette(ctx):
 	log("/matrix cassette")
 	audio = rnd.choice(intelligence["cassettes"])
+    if not '[' in audio:
+        search = VideosSearch(audio,limit=1)
+        result = search.result()['result'][0]
+        audio += f"\n<{result['link']}>"
 	await ctx.respond(audio)
 
 gear_group = matrix_group.create_subgroup("gear", "Gear Intelligence Matrices")
