@@ -292,7 +292,7 @@
 				"63": "WEIRD You begin losing your grip",
 				"64": "WEIRD You get a bad nosebleed",
 				"65": "WEIRD You slowly develop a new trait",
-				"66": "WEIRD You're struck by lighting"
+				"66": "WEIRD You're struck by lightning"
 			}
 	},
 	{
@@ -304,7 +304,7 @@
 				"3": "Single/group of 1D6 monsters/experiments",
 				"4": "Faction representative",
 				"5": "Single/group of animals",
-				"6": "A random NPC",
+				"6": "A random pre-made NPC",
 				"7": "1D6 soldiers and/or a squad",
 				"8": "1D6 random NPCs",
 				"9": "New location becomes available",
