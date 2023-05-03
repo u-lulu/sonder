@@ -104,7 +104,7 @@
       "White labcoat, shiny glasses, goofy voice"
     ],
     "Notes": [
-      "GENIUS: It's been a while since this CYCLOPS scientist left the confines of High Command, or their own mind. No matter what, one attack against the scientist always fails\u2014describe the absurd backup plan they created to avoid it. This CYCLOPS ARCHIVIST is emotionally paralyzed by the lost knowledge they bear witness to on the daily. Too afraid of the truth to leave, but itching with a desire to be free of their keepers, they may some day reach out to FIST\u2014or while away their short life looking for simple answers. GALT is more than a frenemy to FIST, and is prone to acting as an quadruple agent who seemingly exists for the sole purpose of incomprehensible mission interference. \"FIST!\" Galt will often cry, \"We may have matched wits this time, but know this\u2014you haven't yet seen the last of me!\""
+      "GENIUS: It's been a while since this CYCLOPS scientist left the confines of High Command, or their own mind. No matter what, one attack against the scientist always fails\u2014describe the absurd backup plan they created to avoid it."
     ]
   },
   {
@@ -250,7 +250,7 @@
       "Visible wounds, tear-stained cheeks"
     ],
     "Notes": [
-      "SPECTRE: A ghostly sobbing lingers near the site of a killing. The murder victim cannot move on from life until their murder is solved. They don't remember a thing, save for a single clue. The MEN IN BLACK are not aligned with CYCLOPS\u2014in fact, stolen CYCLOPS documentation suggests that the men in black rank almost as high as FIST on CYCLOPS' list of archenemies. Their motivations and planet of origin will always remain unknown... unless one could be captured."
+      "SPECTRE: A ghostly sobbing lingers near the site of a killing. The murder victim cannot move on from life until their murder is solved. They don't remember a thing, save for a single clue."
     ]
   },
   {
@@ -421,6 +421,18 @@
     ],
     "Notes": [
       "PRIDE: The liberationist firmly believes that the ultrahuman experience has been relegated to the shadows for too long. If one of the player characters has the PARTISAN role, the liberationist will automatically become FIST's ally. If a player has the REPRESENTATIVE (p. 69) role, there is a 3-in-1D6 chance of alliance. Even without these roles, the liberationist may still frequently contact and work with FIST."
+    ]
+  },
+  {
+    "Head": "WHISTLEBLOWER (2 HP, CHOKE 5: Call off the meeting)",
+    "Features": [
+      "M1919 revolver (1D6+1 DAMAGE, whistleblower deals worst-of-2D6+1 due to nerves and lack of training)",
+      "Manila file folder (contains critical info)",
+      "Go bag (stocked with a week's worth of sundries)",
+      "Raincoat, hood up, furtive behavior"
+    ],
+    "Notes": [
+      "WANTED: The whistleblower's knowledge of a top-secret coverup (`/matrix lore coverup`) is burning a hole in their brain. At any given time, 3 other NPCs are gunning for the whistleblower to take them down before the info is leaked."
     ]
   }
 ]
