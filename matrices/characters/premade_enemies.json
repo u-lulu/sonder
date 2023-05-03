@@ -34,7 +34,7 @@
       "High Standard HDM pistol (1D6 DAMAGE, silenced)",
       "Kevlar weave bodysuit (1 ARMOR)",
       "Psychic headset (sync with goons, one use)",
-      "2D6 CYCLOPS gadgets (reroll duplicates, p. 86)",
+      "2D6 CYCLOPS gadgets (reroll duplicates, `/matrix cyclops gadget`)",
       "Night vision goggles (see at night)",
       "Experimental nano-gel (heal 2D6 HP, one use)",
       "Authoritative presence and cat-like reflexes"
@@ -61,7 +61,7 @@
       "3-in-1D6: Spring-loaded heel blades (1D6 DAMAGE)",
       "2-in-1D6: Wrist rockets (1D6 DAMAGE, REMOTE, six uses)",
       "1-in-1D6: Pressurized gas grapple line (50 feet, roll +RFX to avoid being grappled)",
-      "Cyborg exoskeleton (1 ARMOR, grants abilities equivalent to CYBORG (p. 43))"
+      "Cyborg exoskeleton (1 ARMOR, grants abilities equivalent to CYBORG)"
     ],
     "Notes": [
       "PAIN: For the cyborg ninja, pain is the beginning and the end. Pain is the color of the world. Pain is the only thing that can make them feel alive again. When the cyborg ninja drops below 4 HP, rolls to attack them have a -2 penalty."
@@ -103,7 +103,7 @@
       "Long jacket, pleated pants"
     ],
     "Notes": [
-      "INVASIVE: Federal agents can always show up where they're not wanted at the worst possible time, so long as there's an unsolved mystery to follow. \"Backup\" usually means beat cops (p. 125)."
+      "INVASIVE: Federal agents can always show up where they're not wanted at the worst possible time, so long as there's an unsolved mystery to follow. \"Backup\" usually means **beat cops**."
     ]
   },
   {
@@ -135,7 +135,7 @@
       "Big black eyes, long arms, potbelly, blank stare"
     ],
     "Notes": [
-      "COLLECTORS: These artificial homunculi, made famous by the Roswell incident, are actually the servants of another alien (p. 107) species. If all the players are beta-wave knocked out at once, they will awaken strapped to tables and primed for dissection aboard an orbiting ship."
+      "COLLECTORS: These artificial homunculi, made famous by the Roswell incident, are actually the servants of another alien (`/matrix faction aliens`) species. If all the players are beta-wave knocked out at once, they will awaken strapped to tables and primed for dissection aboard an orbiting ship."
     ]
   },
   {
@@ -161,7 +161,7 @@
       "Ancient chitinous plating (6 ARMOR)"
     ],
     "Notes": [
-      "MONARCH: Ikara, a squid-form kaiju almost as old as the oceans themselves, first appears in the coastal waters (or mysteriously rain-soaked outskirts) of a city (p. 114) whose leaders are dumping toxic waste into the water. Before making landfall, Ikara will deploy her Herald in an effort to avert her righteous destruction.",
+      "MONARCH: Ikara, a squid-form kaiju almost as old as the oceans themselves, first appears in the coastal waters (or mysteriously rain-soaked outskirts) of a city (`/matrix location city`) whose leaders are dumping toxic waste into the water. Before making landfall, Ikara will deploy her Herald in an effort to avert her righteous destruction.",
 	  "HERALD (BOSS MOVE): An ethereal sea wizard rises from the water to speak to any authority figures present in the city. The herald warns of Ikara's wrath if the dumping is not stopped, but the leaders never listen.",
 	  "LESSON (BOSS MOVE): If six hours have passed since the Herald's arrival, Ikara will move to destroy the city. Ikara gains \"CHOKE 6: Return to the ocean,\" but only CHOKES when taking more than 6 DAMAGE."
     ]
@@ -197,7 +197,7 @@
       "AK-74u assault rifle (1D6+1 DAMAGE)",
       "Frag grenade (1D6+1 DAMAGE, one use)",
       "Flare gun (six uses)",
-      "Insurgent (p. 112) manifesto (dog-eared)",
+      "Insurgent (`/matrix faction insurgents`) manifesto (dog-eared)",
       "Balaclava (hides identity)",
       "Camouflage fatigues (has six patterns available)",
       "Faction color beret"
@@ -211,7 +211,7 @@
     "Features": [
       "Attached autoturret (1D6 DAMAGE, ACCURATE)",
       "Reinforced chassis (2 ARMOR)",
-      "2D6 cargo crates  (p. 85)",
+      "2D6 cargo crates (`/matrix gear crate`)",
       "Bumper stickers (layered and peeling)",
       "Digitally compressed farm animal noises"
     ],
@@ -255,7 +255,7 @@
       "Neural uplink cockpit (brainwave controls)"
     ],
     "Notes": [
-      "CLASSIFIED: Mobile Platform CANTICLE is the most powerful mechanized bipedal weapons system in the world, and is kept absolutely topsecret by the faction (p. 107-112) who owns it.",
+      "CLASSIFIED: Mobile Platform CANTICLE is the most powerful mechanized bipedal weapons system in the world, and is kept absolutely topsecret by the faction (`/matrix faction`) who owns it.",
 	  "EJECT (BOSS MOVE): If CANTICLE drops below 20 HP, the pilot may eject with the neural uplink headgear (accessory) equipped and control the mech remotely.",
 	  "LAUNCH (BOSS MOVE): The pilot may activate the onboard ICBM nuclear warhead at will. This immobilizes the mech and starts a 60-second countdown only stoppable from the cockpit."
     ]
@@ -280,7 +280,7 @@
       "Tattered uniform"
     ],
     "Notes": [
-      "BATTLEFIELD: Everywhere the ghost goes, the war follows with it. A random battlefield (p. 113) spreads from the ghost when it becomes agitated, likely inviting further Pacific theater ghosts in. If the ghost becomes convinced the war was won by their side (true or not) it disappears, taking the battlefield with it."
+      "BATTLEFIELD: Everywhere the ghost goes, the war follows with it. A random battlefield (`/matrix location battlefield`) spreads from the ghost when it becomes agitated, likely inviting further Pacific theater ghosts in. If the ghost becomes convinced the war was won by their side (true or not) it disappears, taking the battlefield with it."
     ]
   },
   {
@@ -307,7 +307,7 @@
       "Bare feet, always slightly off the ground"
     ],
     "Notes": [
-      "ESCAPEE: The rampant ESPer has broken free of the laboratory-cum-prison which still haunts their mind back to the first memory they can recall, with a cold, calculating scientist (p. 98) in hot pursuit. If the ESPer can be placated, there is no need for further suffering inflicted by your hands\u2014or their beautiful mind."
+      "ESCAPEE: The rampant ESPer has broken free of the laboratory-cum-prison which still haunts their mind back to the first memory they can recall, with a cold, calculating scientist (`/matrix character scientist`) in hot pursuit. If the ESPer can be placated, there is no need for further suffering inflicted by your hands\u2014or their beautiful mind."
     ]
   },
   {
@@ -360,7 +360,7 @@
       "Painful lime-colored boils"
     ],
     "Notes": [
-      "MUTAGENIC: The sewer beasts were born from neo-primordial toxic-waste-dumping soup in the water supply of a well-known city (p. 114), but have since spread throughout the world. When a character is dealt 6 or more DAMAGE by a sewer beast, there is a 1-in-1D6 chance they will begin to spontaneously, gruelingly develop a new, random trait (p. 39-66)."
+      "MUTAGENIC: The sewer beasts were born from neo-primordial toxic-waste-dumping soup in the water supply of a well-known city (`/matrix location city`), but have since spread throughout the world. When a character is dealt 6 or more DAMAGE by a sewer beast, there is a 1-in-1D6 chance they will begin to spontaneously, gruelingly develop a new, random trait (`/trait random`)."
     ]
   },
   {

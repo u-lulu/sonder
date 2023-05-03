@@ -864,7 +864,7 @@ chars_group = matrix_group.create_subgroup("character", "Character Intelligence 
 
 def format_premade(structure):
 	output = "**"
-	output += structure["Head"].replace(" (", "** (")
+	output += structure["Head"].replace(" (", "** (", 1)
 	for feat in structure["Features"]:
 		output += "\n- " + feat
 	for note in structure["Notes"]:
@@ -982,6 +982,17 @@ async def spy(ctx):
 	await ctx.respond(message)
 
 enemy_group = matrix_group.create_subgroup("enemy", "Enemy Intelligence Matrices")
+
+file = open('matrices/characters/premade_enemies.json')
+intelligence["chars_enemy_premade"] = json.load(file)
+file.close()
+
+@enemy_group.command(description="Spawns a random pre-made Enemy")
+async def premade(ctx):
+	log("/matrix enemy premade")
+	result = rnd.choice(intelligence["chars_enemy_premade"])
+	message = format_premade(result)
+	await ctx.respond(message)
 
 file = open('matrices/characters/animals.json')
 intelligence["chars_animals"] = json.load(file)

@@ -18,7 +18,7 @@
       "Oversized camo jacket, scraggly hair"
     ],
     "Notes": [
-      "TIMEBOMB: The ATF magnet can't stop building bombs. They're not going to do anything with them\u2014it's just a hobby, or an artform, or a sick obsession. Maybe blowing things up is just fun. The magnet has had so many run-ins with what they like to call the \"alphabet boys\" that feds can smell them just about anywhere. The ATF magnet may be a good ally for demolition missions, but wherever they go, beat cops (p. 125) and federal agents (p. 128) are sure to follow."
+      "TIMEBOMB: The ATF magnet can't stop building bombs. They're not going to do anything with them\u2014it's just a hobby, or an artform, or a sick obsession. Maybe blowing things up is just fun. The magnet has had so many run-ins with what they like to call the \"alphabet boys\" that feds can smell them just about anywhere. The ATF magnet may be a good ally for demolition missions, but wherever they go, **beat cops** and **federal agents** are sure to follow."
     ]
   },
   {
@@ -41,21 +41,31 @@
       "Black longcoat, wide-armed gestures"
     ],
     "Notes": [
-      "DEAL: If FIST can figure out how to contact the ethically-vacuous arms dealer, they will agree to meet in a neutral location, and list the entire weapons and armor section (p. 83) for sale, tags included. Affording them is another issue. BOUNTY CLERK (CHOKE 2: Call the police) Bounty files (three missions with classified intel are listed) Starched shirt, horn-rimmed glasses, scowl",
-      "STAMP: The bounty clerk offers crime-fighting missions, with a large cash reward (equivalent to mission reward 12, p. 76). FIST must find a way to pass as trustworthy, normal bounty hunters to receive the bounty clerk's seal of approval. A clerk can also introduce the PCs to 1D6 actual bounty hunters (p. 125) with different skillsets."
+      "DEAL: If FIST can figure out how to contact the ethically-vacuous arms dealer, they will agree to meet in a neutral location, and list the entire weapons and armor section for sale, tags included. Affording them is another issue."
+    ]
+  },
+  {
+    "Head": "BOUNTY CLERK (CHOKE 2: Call the police)",
+    "Features": [
+      "Bounty files (three missions with classified intel are listed)",
+      "Hidden bulletproof vest (1 ARMOR)",
+      "Starched shirt, horn-rimmed glasses, scowl"
+    ],
+    "Notes": [
+      "STAMP: The bounty clerk offers crime-fighting missions, with a large cash reward (equivalent to mission reward 12). FIST must find a way to pass as trustworthy, normal bounty hunters to receive the bounty clerk's seal of approval. A clerk can also introduce the PCs to 1D6 actual **bounty hunters** with different skillsets."
     ]
   },
   {
     "Head": "CQC EXPERT (10 HP, CHOKE 6: CQC misstep)",
     "Features": [
       "Hand wraps (3 DAMAGE)",
-      "CQC training (equivalent to FIGHTER, p. 45)",
+      "CQC training (equivalent to FIGHTER)",
       "Perfect stance (1 ARMOR)",
       "Coca leaf (chew to gain 1D6 HP)",
       "Trailing headband, fatigues, battle scar"
     ],
     "Notes": [
-      "TRAIN: If a player character can beat the CQC expert in a hand-to-hand fight, they will take them on as their pupil and train them in closequarters combat for free. Characters being trained must sit out missions, while the player uses another character. If the pupil character skips one mission to train, they gain UNARMED (p. 64). If they train for two, they also gain FIGHTER. A full three-mission training retreat adds OBJECTS (p. 53). The CQC expert warns that the training will be grueling, and the trainee may not survive: there is an X-in-1D6 chance that the operative will die during training, with X equal to the amount of missions spent training."
+      "TRAIN: If a player character can beat the CQC expert in a hand-to-hand fight, they will take them on as their pupil and train them in closequarters combat for free. Characters being trained must sit out missions, while the player uses another character. If the pupil character skips one mission to train, they gain UNARMED. If they train for two, they also gain FIGHTER. A full three-mission training retreat adds OBJECTS. The CQC expert warns that the training will be grueling, and the trainee may not survive: there is an X-in-1D6 chance that the operative will die during training, with X equal to the amount of missions spent training."
     ]
   },
   {
@@ -64,21 +74,21 @@
       "Contraband shiv (3 DAMAGE)",
       "Mangled pack of cigarettes",
       "Coffee thermos (+1D6 HP, one use)",
-      "Sensitive documents (PURPLE clearance, p. 100)",
+      "Sensitive documents (PURPLE clearance, see SPY table)",
       "Heavily annotated book (holds unnerving sigils)",
       "Tape recorder (has an anomalous infinite tape)",
       "Tweed suit, round glasses, floppy hair"
     ],
     "Notes": [
-      "THOUGHTCRIME: The archivist has researched and learned a random spell (p. 124) that they are debating whether or not to share with their CYCLOPS superiors. They are prone to muttering commentary into their tape recorder, frequently naming a listener who may or may not exist."
+      "THOUGHTCRIME: The archivist has researched and learned a random spell (`/matrix lore spell`) that they are debating whether or not to share with their CYCLOPS superiors. They are prone to muttering commentary into their tape recorder, frequently naming a listener who may or may not exist."
     ]
   },
   {
     "Head": "CYCLOPS PLANT (4 HP, CHOKE 5: Take the capsule)",
     "Features": [
       "Concealed Welrod pistol (1D6 DAMAGE, silenced)",
-      "CYCLOPS dynamic ID (p. 86)",
-      "CYCLOPS comm wire (p. 86)",
+      "CYCLOPS dynamic ID",
+      "CYCLOPS comm wire",
       "Cyanide capsule (one use)",
       "Friendly smile, normal outfit"
     ],
@@ -87,7 +97,7 @@
     ]
   },
   {
-    "Head": "CYCLOPS SCIENTIST (3 HP, CHOKE 4: Release a dangerous experiment (p. 103))",
+    "Head": "CYCLOPS SCIENTIST (3 HP, CHOKE 4: Release a dangerous experiment (`/matrix enemy experiment`))",
     "Features": [
       "CYCLOPS tranquilizer gun (0 DAMAGE, NON-LETHAL)",
       "Incomprehensible notebook (details 1D6 more experiments)",
@@ -113,7 +123,7 @@
     "Features": [
       "Helm of Januarius (accessory)",
       "Field medic's attire (1 ARMOR)",
-      "The Goat-skin Grimoire (2D6 spells (p. 124))"
+      "The Goat-skin Grimoire (2D6 spells (`/matrix lore spell`))"
     ],
     "Notes": [
       "MAGE: Once an MSF field medic deployed to Jerusalem, Stigmata was introduced to magic when they found an eleventh-century helmet in the rubble that possessed them with the spirit of a mad crusader. The two now bickeringly share a body\u2014and spells, with anyone they deem worthy."
@@ -163,7 +173,7 @@
       "Pilot's headset (relay intel to FIST at any time)",
       "Balaclava (theoretically hides identity)",
       "Stunning eye makeup (very identifiable)",
-      "Supply drop apparatus (random crate , p. 85)"
+      "Supply drop apparatus (random crate, `/matrix gear crate`)"
     ],
     "Notes": [
       "SUPPORT: Libra Sun may be used by the ref as FIST's chief of transport\u2014a convenient bit of plot to ferry them between missions. Libra may also provide voiceover backstory for major characters FIST encounters, or remind them of game mechanics they may have forgotten. Cheery, casual, and competent, Libra Sun is the type of support agent most operatives can only dream of. She has a tendency to go off on tangents, and likes to refer to game terms directly, like wishing the team \"good rolls.\""
@@ -209,7 +219,7 @@
     "Head": "MAN IN BLACK (HP not applicable, 1D6 appear)",
     "Features": [
       "Three-piece black suit (6 ARMOR)",
-      "Anti-mnemonic syringe (p. 86)",
+      "Anti-mnemonic syringe",
       "Dark sunglasses (completely opaque)",
       "Perfectly straight posture, expressionless face"
     ],
@@ -246,7 +256,7 @@
   {
     "Head": "NARCO-SUBMARINE (18 HP)",
     "Features": [
-      "Criminal (p. 110) crew (4D6 crewmembers)",
+      "Criminal (`/matrix faction criminals) crew (4D6 crewmembers)",
       "Worn-down hull (2 ARMOR)",
       "Retrofitted torpedoes (2D6 DAMAGE, six uses)",
       "Drug payload (roll 1D6 for payload type: 1. Cannabis    4. Cocaine 2. Magic mushrooms 5. Heroin 3. Artifical psychedelics 6. Prescription drugs"
@@ -276,14 +286,14 @@
       "Wrinkled suit, receding hairline"
     ],
     "Notes": [
-      "COWORKERS: At times, FIST may need to press public servants for information or alterations to their work routine to ensure mission success. Of course, any average bean-counter would turn pale and turn tail at the sight of a supernatural mercenary, so a chase may ensue, leading to further complications. If the public servant dies, two federal agents (p. 128) are soon dispatched to investigate."
+      "COWORKERS: At times, FIST may need to press public servants for information or alterations to their work routine to ensure mission success. Of course, any average bean-counter would turn pale and turn tail at the sight of a supernatural mercenary, so a chase may ensue, leading to further complications. If the public servant dies, two **federal agents** are soon dispatched to investigate."
     ]
   },
   {
     "Head": "PUPPET SENSEI (60 HP, CHOKE 6: Pause to deliver a relevant koan)",
     "Features": [
       "Walking stick (3 DAMAGE)",
-      "Telekinetic mastery (equivalent to TELEKINETIC (p. 62) but with all physical materials, as well as essential life energy)",
+      "Telekinetic mastery (equivalent to TELEKINETIC but with all physical materials, as well as essential life energy)",
       "Anomalous felt and rubber body (1 ARMOR)",
       "Six pack of light beer (heal 1D6 HP, six uses)",
       "Sunglasses, lawn chair, cigarette smell"
@@ -295,7 +305,7 @@
   {
     "Head": "REBUILT SURVIVOR (20 HP, CHOKE 3: Activate cybernetic enhancements)",
     "Features": [
-      "Expensive body (abilities equivalent to RUNNER, SLOW-MO, and WEIGHTLIFTER, p. 57, 59, 65)",
+      "Expensive body (abilities equivalent to RUNNER, SLOW-MO, and WEIGHTLIFTER)",
       "Eye lasers (3D6 DAMAGE to 1D6 targets standing near each other as the survivor stumbles)",
       "Fashionable outfit, thoughtful gaze"
     ],
@@ -308,7 +318,7 @@
     "Features": [
       "2-in-1D6: Quadruple-barrelled blunderbuss (2D6 DAMAGE, MESSY, LOUD, sends the user flying backwards)",
       "Seaweed-draped cutlass (1D6 DAMAGE)",
-      "Salt-mottled bones (ARMOR as SKELETON, p. 59)",
+      "Salt-mottled bones (ARMOR as SKELETON)",
       "Bottle of rum (trickles down the ribs)",
       "Colorful rags and jaunty pirate hats"
     ],
@@ -320,7 +330,7 @@
     "Head": "SERUM INVENTOR (3 HP, CHOKE 2: Fretfully shout, \"My serum!\" and then drop it, which destroys it)",
     "Features": [
       "Syringe gun (infuses targets with the serum)",
-      "Experimental serum (grants 2D6 random traits, p. 39-66, six syringes' worth, reroll for each dose)",
+      "Experimental serum (grants 2D6 random traits, `/trait random`, six syringes' worth, reroll for each dose)",
       "6 \u00d7 serum syringes (empty)",
       "Rejected patent (torn in half, repaired with tape)",
       "Rubber gloves, reflective goggles, white hair"
@@ -344,8 +354,8 @@
     "Head": "STREET RACER (5 HP, 1D6 appear)",
     "Features": [
       "Muscle car (8 HP, 1 ARMOR, has a nitro system which blasts the car forward, one use)",
-      "Steady hands (abilities equivalent to the ACE trait, p. 39)",
-      "Carjacking hit (equivalent to the HIJACK trait, p. 48)",
+      "Steady hands (abilities equivalent to the ACE trait)",
+      "Carjacking hit (equivalent to the HIJACK trait)",
       "Tight shirt, square jaw"
     ],
     "Notes": [
@@ -363,7 +373,7 @@
       "Synthesized speech with visualizer screen"
     ],
     "Notes": [
-      "COCKY: This exquisitely high-tech motorcyle comes equipped with a fast-talking onboard intelligence. The motorcycle lives for thrills and will pressure its riders to do cool tricks and daring manuevers whenever possible\u2014if they play along, they gain the ACE trait (p. 39) while riding the motorcycle."
+      "COCKY: This exquisitely high-tech motorcyle comes equipped with a fast-talking onboard intelligence. The motorcycle lives for thrills and will pressure its riders to do cool tricks and daring manuevers whenever possible\u2014if they play along, they gain the ACE trait while riding the motorcycle."
     ]
   },
   {
@@ -406,11 +416,11 @@
       "Baseball bat (1D6 DAMAGE)",
       "3 \u00d7 molotov cocktail (1D6 DAMAGE, INCENDIARY)",
       "Denim battle jacket, full of pins (1 ARMOR)",
-      "Random trait (p. 39-66) or equivalent ability",
+      "Random trait (`/trait random`) or equivalent ability",
       "Bold tattoos, bright makeup, confident aura"
     ],
     "Notes": [
-      "PRIDE: The liberationist firmly believes that the ultrahuman experience has been relegated to the shadows for too long. If one of the player characters has the PARTISAN role (p. 68), the liberationist will automatically become FIST's ally. If a player has the REPRESENTATIVE (p. 69) role, there is a 3-in-1D6 chance of alliance. Even without these roles, the liberationist may still frequently contact and work with FIST."
+      "PRIDE: The liberationist firmly believes that the ultrahuman experience has been relegated to the shadows for too long. If one of the player characters has the PARTISAN role, the liberationist will automatically become FIST's ally. If a player has the REPRESENTATIVE (p. 69) role, there is a 3-in-1D6 chance of alliance. Even without these roles, the liberationist may still frequently contact and work with FIST."
     ]
   }
 ]
