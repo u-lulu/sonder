@@ -1,0 +1,391 @@
+[
+  {
+    "Head": "CYCLOPS GOON (3 HP, 2D6 appear)",
+    "Features": [
+      "4-in-1D6: M16 assault rifle (1D6+1 DAMAGE)",
+      "M1911 pistol (1D6 DAMAGE)",
+      "Worst-of-2D6 frag grenades (1D6+1 DAMAGE)",
+      "Bulletproof vest (1 ARMOR)",
+      "Black fatigues, balaclava, nondescript personality"
+    ],
+    "Notes": [
+      "SUPPRESS: Between their limited capacity for lateral thinking and their dubious ability to aim, CYCLOPS goons are not particularly threatening on their own\u2014shooting goons who would deal more than 3 DAMAGE miss the target instead. Groups of three or more goons all piling on the same target may ignore this penalty."
+    ]
+  },
+  {
+    "Head": "CYCLOPS HEAVY TROOPER (5 HP, 1D6 appear)",
+    "Features": [
+      "3-in-1D6: M2 flamethrower (1D6+2 DAMAGE)",
+      "M1918 light machine gun (1D6+1 DAMAGE)",
+      "1D6 stun grenades (temporary blinding, one use)",
+      "Ceramic battle armor (2 ARMOR)",
+      "Riot shield (1 ARMOR, equip as weapon)",
+      "Riot helmet (1 ARMOR, accessory)",
+      "Feet apart and shoulders square"
+    ],
+    "Notes": [
+      "CONTROL: CYCLOPS Command employs heavy troopers for evidence removal, crowd control, and the application of excessive force. CYCLOPS heavy troopers deal +1 DAMAGE against civilians."
+    ]
+  },
+  {
+    "Head": "CYCLOPS SPECIALIST (7 HP)",
+    "Features": [
+      "2-in-1D6: 6.5\u00d752mm Carcano sniper rifle (1D6+2 DAMAGE, silenced, used only for assassinations)",
+      "High Standard HDM pistol (1D6 DAMAGE, silenced)",
+      "Kevlar weave bodysuit (1 ARMOR)",
+      "Psychic headset (sync with goons, one use)",
+      "2D6 CYCLOPS gadgets (reroll duplicates, p. 86)",
+      "Night vision goggles (see at night)",
+      "Experimental nano-gel (heal 2D6 HP, one use)",
+      "Authoritative presence and cat-like reflexes"
+    ],
+    "Notes": [
+      "COORDINATE: Soldiers who are lucky enough to become CYCLOPS specialists are subjected to a strict hypnotic training program designed to tone the body and temper the psyche. In the field, specialists may use their psychic headset to synchronize with up to six subordinates and take partial or full DAMAGE on their behalf. A CYCLOPS SPECIALIST wordlessly orders her goon squad around via headset. This particular specialist has been tasked with staging an ecoterrorist bombing on a coalburning power plant, and carries a fingerprint neutralizer, portable fusion generator, and dynamic ID for the job. Infamous cyborg ninja RED LIGHTNING is augmented with Soviet-designed cybernetics\u2014but they answer to no one, save for themselves. Lightning can speak six languages: English, Russian, French, Arabic, Swahili, and Yoruba. \"Hurt me,\" they often declare, \"and I will show you my worst.\""
+    ]
+  },
+  {
+    "Head": "CLOSET FASCIST (2 HP)",
+    "Features": [
+      "Civilian clothing (0 ARMOR)",
+      "Propaganda pamphlet (reduces dogwhistleeffect CHOKE score to 5, one use)",
+      "Ontologically evil"
+    ],
+    "Notes": [
+      "DOGWHISTLE: The closet fascist is a curious beast. They don't wear armbands and jackboots, they say they mean no harm, they claim to be \"just asking questions.\" When this enemy is present (and begins asking questions), all NPCs that a) aren't obviously anti-fascist, or b) haven't been thoroughly vetted as anti-fascist gain a new CHOKE score, \"CHOKE 6: Humor the fascist.\" Upon choking, the NPC transforms into another \"closet fascist\" enemy, but retains any previous items and abilties."
+    ]
+  },
+  {
+    "Head": "CYBORG NINJA (12 HP)",
+    "Features": [
+      "High-frequency vibration katana (1D6+3 DAMAGE)",
+      "3-in-1D6: Spring-loaded heel blades (1D6 DAMAGE)",
+      "2-in-1D6: Wrist rockets (1D6 DAMAGE, REMOTE, six uses)",
+      "1-in-1D6: Pressurized gas grapple line (50 feet, roll +RFX to avoid being grappled)",
+      "Cyborg exoskeleton (1 ARMOR, grants abilities equivalent to CYBORG (p. 43))"
+    ],
+    "Notes": [
+      "PAIN: For the cyborg ninja, pain is the beginning and the end. Pain is the color of the world. Pain is the only thing that can make them feel alive again. When the cyborg ninja drops below 4 HP, rolls to attack them have a -2 penalty."
+    ]
+  },
+  {
+    "Head": "DEMON CUR (6 HP, 1-3 appear)",
+    "Features": [
+      "Flamethrower maw (1D6 DAMAGE, INCENDIARY)",
+      "Onyx jaws (3 DAMAGE)",
+      "Ashen pawprints",
+      "Spiked collar (cutesy name)"
+    ],
+    "Notes": [
+      "SPRAY: Hell is an utterly unforgiving plane, and the creatures who live there have necessarily adapted to survive its extreme climate. When this murderous hellhound takes melee damage, its boiling blood deals 1 DAMAGE to all nearby."
+    ]
+  },
+  {
+    "Head": "ENHANCED SUPERSOLDIER (8 HP, CHOKE 6: Sacrifice themselves)",
+    "Features": [
+      "HK G11 rifle (1D6+2 DAMAGE, ACCURATE)",
+      "Magnum Research Desert Eagle pistol (1D6 DAMAGE, ARMOR-PIERCING)",
+      "Tactical full-body armor (2 ARMOR)",
+      "Ultra-grenade (2D6 DAMAGE, one use)",
+      "Muscle stimulant (user takes 2 DAMAGE then gains super strength, one use)"
+    ],
+    "Notes": [
+      "REGENERATION: Square jaw. Square shoulders. Square hairdo. This next-generation soldier\u2014a patriot, a hero, and one of America's finest\u2014 is so square, you just can't knock them down. The enhanced supersoldier can heal 1 HP every time a player rolls a failure, hungrily murderous thoughts scrolling across their digital eyes as their steel fingers reach to caress the trigger."
+    ]
+  },
+  {
+    "Head": "FEDERAL AGENT  (5 HP, 1-2 appear, CHOKE 5: Call in backup)",
+    "Features": [
+      "M1911 pistol (1D6 DAMAGE)",
+      "Concealed bulletproof vest (1 ARMOR)",
+      "Disposable silencer (one use)",
+      "Flip-open badge (confers institutional authority)",
+      "Idiosyncratic trinket (Rubik's cube, UFO keychain, lollipop, etc)",
+      "Long jacket, pleated pants"
+    ],
+    "Notes": [
+      "INVASIVE: Federal agents can always show up where they're not wanted at the worst possible time, so long as there's an unsolved mystery to follow. \"Backup\" usually means beat cops (p. 125)."
+    ]
+  },
+  {
+    "Head": "GAMMA STAIN (3 HP, 2D6 appear)",
+    "Features": [
+      "Psionic blast (1D6 DAMAGE, roll +CRE to avert a sloppy-crying breakdown)",
+      "Gamma tendrils (3 DAMAGE twice, one target or two)",
+      "Atom-thin body, a human silhouette"
+    ],
+    "Notes": [
+      "TORTURED: The wails of the gamma stains seem to come from every direction at once, crying out in incorporeal pain from a nightmare place beyond the world that is. These poor scientists, exposed to a sudden burst of extreme radiation, live on as shadows on the wall of a dead reactor."
+    ]
+  },
+  {
+    "Head": "GIANT SNAKE (12 HP)",
+    "Features": [
+      "Venomous fangs (1D6 DAMAGE, POISONED)",
+      "Mesmerizing gaze (roll +CRE to avoid becoming momentarily dazed)",
+      "Slick scales, iridescent sheen"
+    ],
+    "Notes": [
+      "CONSTRICT: Perhaps it's a product of magic, genetic engineering, or toxic waste, but the giant snake is larger than it should be, with a predatory reptilian superintelligence to match. When the giant snake deals damage, it may wrap itself around the target, making them (and the snake) unable to move."
+    ]
+  },
+  {
+    "Head": "GREY OBSERVER (3 HP, 3D6 appear)",
+    "Features": [
+      "Beta wave blast (3 DAMAGE, roll +CRE to avoid passing out)",
+      "Big black eyes, long arms, potbelly, blank stare"
+    ],
+    "Notes": [
+      "COLLECTORS: These artificial homunculi, made famous by the Roswell incident, are actually the servants of another alien (p. 107) species. If all the players are beta-wave knocked out at once, they will awaken strapped to tables and primed for dissection aboard an orbiting ship."
+    ]
+  },
+  {
+    "Head": "HIT-DROID (12 HP)",
+    "Features": [
+      "Beretta 70 pistol (1D6 DAMAGE, silenced)",
+      "Briefcase (foam insert for hiding pistol parts)",
+      "Backpack (face plates hidden beneath clothes)",
+      "Three removable face plates (swappable)",
+      "Upper-class outfit (tuxedo, ball gown, etc.)",
+      "Middle-class outfit (leisure suit, track suit, etc.)",
+      "Lower-class outfit (bowling shirt, tube top, etc.)"
+    ],
+    "Notes": [
+      "SWAP: Behind the smiling face of the stateof-the-art Hit-Droid lies a terrifying, skullish visage made from printed circuits, color-coded wires, and cathode-ray tubes. You don't have to take our word for it\u2014in its single-minded path towards neutralizing its target, the HitDroid can remove its face and snap a new one on in a matter of seconds. This inhumanly fast disguise-swapping ability (and the Hit-Droid's uncanny ability to seamlessly switch between friendly neighbor and stone-cold killer) make it a difficult enemy to track down or escape."
+    ]
+  },
+  {
+    "Head": "(BOSS) IKARA, QUEEN OF THE SEA (60 HP)",
+    "Features": [
+      "Titanic tentacles (6D6 DAMAGE, can attack up to eight targets at once)",
+      "Nuclear glare (3D6 DAMAGE, or 10D6 damage if charged up for thirty minutes)",
+      "Ancient chitinous plating (6 ARMOR)"
+    ],
+    "Notes": [
+      "MONARCH: Ikara, a squid-form kaiju almost as old as the oceans themselves, first appears in the coastal waters (or mysteriously rain-soaked outskirts) of a city (p. 114) whose leaders are dumping toxic waste into the water. Before making landfall, Ikara will deploy her Herald in an effort to avert her righteous destruction.",
+	  "HERALD (BOSS MOVE): An ethereal sea wizard rises from the water to speak to any authority figures present in the city. The herald warns of Ikara's wrath if the dumping is not stopped, but the leaders never listen.",
+	  "LESSON (BOSS MOVE): If six hours have passed since the Herald's arrival, Ikara will move to destroy the city. Ikara gains \"CHOKE 6: Return to the ocean,\" but only CHOKES when taking more than 6 DAMAGE."
+    ]
+  },
+  {
+    "Head": "INTERNATIONAL SPY (5 HP, CHOKE 4: Waste time on a one-liner)",
+    "Features": [
+      "Walther PPK (1D6 DAMAGE, QUICK-DRAW)",
+      "Laser watch (3 DAMAGE)",
+      "Bulletproof suit (1 ARMOR)",
+      "Disguise kit (one use)",
+      "Souped-up getaway car (10 HP, 2 ARMOR)"
+    ],
+    "Notes": [
+      "SLIPPERY: If the players ever let their attention wander, the spy can escape without a trace."
+    ]
+  },
+  {
+    "Head": "KANDAHAR GIANT (18 HP, 1-3 appear)",
+    "Features": [
+      "Sycamore cudgel (1D6+2 DAMAGE)",
+      "Six-fingered fists (1D6 DAMAGE)",
+      "Bulletproof gray hide (6 ARMOR)",
+      "Red hair, hemp loincloth, two rows of teeth"
+    ],
+    "Notes": [
+      "ELUSIVE: Native to the caves, hills, and knolls of Kandahar, Aghanistan, these gentle giants are typically peaceful hermits, agitated only by the foolish, jubilant violence of occupying soldiers. IKARA's title, Queen of the Sea, is well-earned as she has spent centuries of her millennia-long lifespan tending to and presiding over the ocean floor. When she wants to come up for air (or musically converse with her Temple of Heralds), she visits her secret tropical island in the Pacific."
+    ]
+  },
+  {
+    "Head": "LOCAL GUERILLA (3 HP, 2D6 appear, CHOKE 2: Disappear into bushes and start shooting)",
+    "Features": [
+      "AK-74u assault rifle (1D6+1 DAMAGE)",
+      "Frag grenade (1D6+1 DAMAGE, one use)",
+      "Flare gun (six uses)",
+      "Insurgent (p. 112) manifesto (dog-eared)",
+      "Balaclava (hides identity)",
+      "Camouflage fatigues (has six patterns available)",
+      "Faction color beret"
+    ],
+    "Notes": [
+      "JUMPY: Depending on their beliefs, history, and goals, the local guerillas may function as FIST's allies or enemies\u2014eventually, that is. Upon first meeting FIST, local guerillas of any political leaning will assume the players are government mercenaries and initiate a fight. Talking them down will require hard proof and people skills."
+    ]
+  },
+  {
+    "Head": "MULE FRAME (12 HP)",
+    "Features": [
+      "Attached autoturret (1D6 DAMAGE, ACCURATE)",
+      "Reinforced chassis (2 ARMOR)",
+      "2D6 cargo crates  (p. 85)",
+      "Bumper stickers (layered and peeling)",
+      "Digitally compressed farm animal noises"
+    ],
+    "Notes": [
+      "SKITTISH: Invented as a bipedal cargo transport system (but never introduced for widespread use), the four-meter-tall titanium MULE frame is a marvel of Cold War robotics. Unfortunately for its creators (and their would-be legacy), the MULE is programmed with an artificial animal intelligence that takes over at inopportune times, making it useless for standard military deployment. If the frame drops to 6 HP, it gains \"CHOKE 3: Turn and run.\""
+    ]
+  },
+  {
+    "Head": "MARIAN APPARITION (HP not applicable)",
+    "Features": [
+      "Stone body (possesses existing statues of Mary)",
+      "Bleeding eyes (blood bubbles up from the stone)",
+      "Faint Gregorian chanting"
+    ],
+    "Notes": [
+      "CATHOLIC: When a statue of Mary is viewed by a player, and no one else is around, there is a 1-in1D6 chance a Marian apparition will be revealed to the viewer. If they do anything but evacuate ASAP, they will be overcome with the guilt of past sins, changing their role to REPENTANT."
+    ]
+  },
+  {
+    "Head": "MECHAGATOR (8 HP, 1D6 appear)",
+    "Features": [
+      "Telescopic laser cannon (1D6 DAMAGE, UNSTABLE, hidden inside throat)",
+      "Locking jaws (1D6 DAMAGE, inescapable grip)",
+      "Metal scales (1 ARMOR)",
+      "Aquatic jet boosters (cannot be outrun in water)",
+      "Electronic hiss"
+    ],
+    "Notes": [
+      "DEACTIVATION: If the mechagator's fearsome, glowing red eyes are both pressed at the same time, it ceases all functions."
+    ]
+  },
+  {
+    "Head": "(BOSS) MOBILE PLATFORM CANTICLE (40 HP)",
+    "Features": [
+      "Core-mounted mega-laser (4D6 DAMAGE, INCENDIARY, must charge up for ten minutes)",
+      "Ultra-missile launcher (3D6 DAMAGE, six uses)",
+      "Thousand-ton stomp (2D6 DAMAGE)",
+      "M61 Vulcan heavy machine gun (1D6+2 DAMAGE)",
+      "Layered titanium plating (4 ARMOR)",
+      "Shielding generator dome (2 ARMOR, 10 HP)",
+      "Neural uplink cockpit (brainwave controls)"
+    ],
+    "Notes": [
+      "CLASSIFIED: Mobile Platform CANTICLE is the most powerful mechanized bipedal weapons system in the world, and is kept absolutely topsecret by the faction (p. 107-112) who owns it.",
+	  "EJECT (BOSS MOVE): If CANTICLE drops below 20 HP, the pilot may eject with the neural uplink headgear (accessory) equipped and control the mech remotely.",
+	  "LAUNCH (BOSS MOVE): The pilot may activate the onboard ICBM nuclear warhead at will. This immobilizes the mech and starts a 60-second countdown only stoppable from the cockpit."
+    ]
+  },
+  {
+    "Head": "NIGHTWALKER (8 HP)",
+    "Features": [
+      "Sickle claws (1D6 DAMAGE, MENACING)",
+      "Transparent skin (shows innards)",
+      "Pupilless eyes (always watching)",
+      "Surrounded by mist (supernaturally cold)"
+    ],
+    "Notes": [
+      "TWILIGHT: If a nightwalker is defeated at night (considered for these purposes to end when the sun breaks over the horizon), it fades into the darkness, only to return again the following night at full HP, with an additional +1 MAX HP."
+    ]
+  },
+  {
+    "Head": "PACIFIC THEATER GHOST (3 HP)",
+    "Features": [
+      "Spectral M1 Garand or Arisaka Type 99 (D6 DAMAGE, ARMOR-PIERCING)",
+      "Bullet wound eyes",
+      "Tattered uniform"
+    ],
+    "Notes": [
+      "BATTLEFIELD: Everywhere the ghost goes, the war follows with it. A random battlefield (p. 113) spreads from the ghost when it becomes agitated, likely inviting further Pacific theater ghosts in. If the ghost becomes convinced the war was won by their side (true or not) it disappears, taking the battlefield with it."
+    ]
+  },
+  {
+    "Head": "PIRATE HIND (16 HP)",
+    "Features": [
+      "Side-mounted DP light machine gun (1D6+1 DAMAGE, ARMOR-PIERCING)",
+      "Rusted-but-reinforced chassis (1 ARMOR)",
+      "Second gunner seat (opposite the mounted gun)",
+      "Spray-painted faction symbols",
+      "Colorful, trailing banners"
+    ],
+    "Notes": [
+      "VULTURE: This illicitly-acquired Hind D helicopter has been put to use by pirates. The onboard radio can pick up stray SOS signals faster than coastal authorities, allowing them to swoop in, commandeer helpless ships, and call in nautical backup. Pirates may also use the Hind D as support during ship-on-ship naval battles."
+    ]
+  },
+  {
+    "Head": "RAMPANT ESPER (5 HP, CHOKE 3: Psionic shockwave, 1D6 DAMAGE to everyone nearby)",
+    "Features": [
+      "Orbiting cloud of objects and vehicles (4 ARMOR)",
+      "Thrown objects (1D6 DAMAGE)",
+      "Thrown vehicles (2D6 DAMAGE, 1D6 uses)",
+      "Shaved head with EEG electrodes",
+      "Straitjacket, trailing straps",
+      "Bare feet, always slightly off the ground"
+    ],
+    "Notes": [
+      "ESCAPEE: The rampant ESPer has broken free of the laboratory-cum-prison which still haunts their mind back to the first memory they can recall, with a cold, calculating scientist (p. 98) in hot pursuit. If the ESPer can be placated, there is no need for further suffering inflicted by your hands\u2014or their beautiful mind."
+    ]
+  },
+  {
+    "Head": "SECURITY CONTRACTOR (4 HP, CHOKE 4: Take frustration out on someone innocent)",
+    "Features": [
+      "Colt AR-15 rifle (1D6+1 DAMAGE)",
+      "Glock .44 pistol (1D6 DAMAGE)",
+      "Bulletproof vest (1 ARMOR)",
+      "Glaring flashlight (temporarily blinding)",
+      "Conservative commentary magazine",
+      "Sunglasses, excessive camo, dogwhistle patch"
+    ],
+    "Notes": [
+      "ORDERS: There is a 3-in-1D6 chance the security contractor has been given a completely bogus briefing and is unaware of the specifics of the job they have taken."
+    ]
+  },
+  {
+    "Head": "SCORPION MINE (1 HP, 1D6 appear)",
+    "Features": [
+      "Disc-shaped body (explodes for 2D6 DAMAGE)",
+      "Blocky metal plating (1 ARMOR)",
+      "Skittering actuated legs (extremely fast)",
+      "Blinking warning light, piercing alarm"
+    ],
+    "Notes": [
+      "SURPRISE: The robotic scorpion mine is a mobile evolution of the classic, stationary landmine. Its design and programming are simple: lie quietly in wait beneath a tarp or bit of rubble, suddenly zip beneath the feet or between the tires of moving targets, and explode after a brief alarm."
+    ]
+  },
+  {
+    "Head": "SERIAL KILLER (6 HP)",
+    "Features": [
+      "Signature weapon (1D6+1 DAMAGE, MESSY, SAPIENT, SHREDDER, roll 1D6 for weapon type: 1.  Axe  4. Sword 2. Chainsaw  5. Bat 3. Knife  6. Crowbar)",
+      "Horrible mask (instantly iconic)",
+      "Polaroid camera (temporarily blinding)",
+      "Grisly photographs (shows dead bodies arranged in a particular pattern)",
+      "Bottle of chloroform (combine with rag to knock someone out, three uses)",
+      "Rag (always looks dirty)",
+      "Coveralls, damaged hair, squeaky shoes"
+    ],
+    "Notes": [
+      "RESILIENT: This slasher villain has a grim and constant companion: their fearsome signature weapon, a valuable treasure to be had if the killer can be defeated. After being defeated, the killer can return for a final attack at 1 HP."
+    ]
+  },
+  {
+    "Head": "SEWER BEAST (6 HP, 1D6 appear)",
+    "Features": [
+      "Festering maw (1D6 DAMAGE, POISONED)",
+      "Radioactive bile spurt (1D6+2 DAMAGE, one use)",
+      "Putrescent skin (slippery)",
+      "Painful lime-colored boils"
+    ],
+    "Notes": [
+      "MUTAGENIC: The sewer beasts were born from neo-primordial toxic-waste-dumping soup in the water supply of a well-known city (p. 114), but have since spread throughout the world. When a character is dealt 6 or more DAMAGE by a sewer beast, there is a 1-in-1D6 chance they will begin to spontaneously, gruelingly develop a new, random trait (p. 39-66)."
+    ]
+  },
+  {
+    "Head": "UNFROZEN OSTEOMORPH (8 HP)",
+    "Features": [
+      "Serrated claws (1D6+1 DAMAGE)",
+      "Injector tail (1D6 DAMAGE, STUN)",
+      "Bony exoskeleton (2 ARMOR, negated by crushing or bludgeoning damage)",
+      "Thermal vision (at home in darkness)",
+      "Eerie chittering, cryostasis burns"
+    ],
+    "Notes": [
+      "AMBUSH: If the unfrozen osteomorph gets the drop on the PCs, the first risky player action taken during the fight has a -2 penalty."
+    ]
+  },
+  {
+    "Head": "(BOSS) WRITHING MASS OF FLESH (16 HP)",
+    "Features": [
+      "Thick tendrils of gore (2D6 DAMAGE, can split damage between up to three targets)",
+      "Regenerative healing factor (3 ARMOR)",
+      "Melting faces frozen in terror, bits of bloody rib"
+    ],
+    "Notes": [
+      "COMPULSION: The writhing mass of flesh is born when artifical flesh-eating parasites are allowed to escape containment. Unbeknownst to their original engineers, these parasites exhibit odd contagious behavior that encourages infected victims to converge on one spot and fuse. If a PC's skin is exposed to the pathogen, they must roll to resist this parasitic compulsion.",
+	  "ABSORB (BOSS MOVE): When hurt, the writhing mass of flesh may try to absorb a FIST operative in a bid to bulk up its biomass. When this move is activated, the writhing mass's next attack will be against the most-injured PC. If it kills them, the mass heals equal to their max HP. The WRITHING MASS OF FLESH has no rational intelligence. Its behavior is similar to a slime mold seen on time-lapse film: stretch, shrink, split, and fungally yearn toward its next source of food\u2014or towards dark, safe spots in a labyrinth which it can only marginally perceive."
+    ]
+  }
+]

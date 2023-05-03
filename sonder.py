@@ -862,6 +862,26 @@ async def weather(ctx):
 
 chars_group = matrix_group.create_subgroup("character", "Character Intelligence Matrices")
 
+def format_premade(structure):
+	output = "**"
+	output += structure["Head"].replace(" (", "** (")
+	for feat in structure["Features"]:
+		output += "\n- " + feat
+	for note in structure["Notes"]:
+		output += "\n**" + note.replace(":", ":**", 1)
+	return output
+
+file = open('matrices/characters/premade_npcs.json')
+intelligence["chars_premade"] = json.load(file)
+file.close()
+
+@chars_group.command(description="Spawns a random pre-made NPC")
+async def premade(ctx):
+	log("/matrix character premade")
+	result = rnd.choice(intelligence["chars_premade"])
+	message = format_premade(result)
+	await ctx.respond(message)
+
 file = open('matrices/characters/celebrities.json')
 intelligence["chars_celebs"] = json.load(file)
 file.close()

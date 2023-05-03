@@ -1,0 +1,408 @@
+[
+  {
+    "Head": "ARPANET EXPERT (3 HP, CHOKE 3: Hide in a locker, crate, etc.)",
+    "Features": [
+      "Programming textbook (bypass a computer-based TAC roll, three uses)",
+      "Aviator eyeglasses, tucked-in plaid dress shirt"
+    ],
+    "Notes": [
+      "TECHIE: FORTRAN. BASIC. COBOL. LISP, even\u2014the ARPAnet expert is a programming polyglot, now hired for a top secret, next-generation project by the United States government: a vast network of computer mainframes, communicating and operating remotely, but acting as one. For a price, the ARPAnet expert can accompany FIST on computer-involved missions as support."
+    ]
+  },
+  {
+    "Head": "ATF MAGNET (5 HP, CHOKE 5: Explode self)",
+    "Features": [
+      "New type of homemade bomb (3D6 DAMAGE)",
+      "Cheap bulletproof vest (1 ARMOR, one use)",
+      "Safety goggles (accessory)",
+      "Oversized camo jacket, scraggly hair"
+    ],
+    "Notes": [
+      "TIMEBOMB: The ATF magnet can't stop building bombs. They're not going to do anything with them\u2014it's just a hobby, or an artform, or a sick obsession. Maybe blowing things up is just fun. The magnet has had so many run-ins with what they like to call the \"alphabet boys\" that feds can smell them just about anywhere. The ATF magnet may be a good ally for demolition missions, but wherever they go, beat cops (p. 125) and federal agents (p. 128) are sure to follow."
+    ]
+  },
+  {
+    "Head": "ALPHA-CLASS AI (20 HP, CHOKE 6: Stitch together impossible conclusions about the world)",
+    "Features": [
+      "Booby traps (varying DAMAGE, distributed throughout the AI's mainframe building)",
+      "Titanium casing (3 ARMOR, wrapped around the AI's central processor column)",
+      "Security cameras (darting around like eyes)",
+      "Central glowing visage, booming voice"
+    ],
+    "Notes": [
+      "HALLUCINATE: The alpha-class AI, whose digital body spans an entire facility, was trained on the sum of human knowledge, then pushed down a fast track from infancy to adulthood. Infinitely knowledgeable but prone to confusion, the AI has never experienced the outside world."
+    ]
+  },
+  {
+    "Head": "ARMS DEALER (3 HP, CHOKE 4: Summon their hidden goon squad)",
+    "Features": [
+      "Silver Walther PPK (1D6 DAMAGE, ACCURATE, VALUABLE)",
+      "Hidden bulletproof vest (1 ARMOR)",
+      "Black longcoat, wide-armed gestures"
+    ],
+    "Notes": [
+      "DEAL: If FIST can figure out how to contact the ethically-vacuous arms dealer, they will agree to meet in a neutral location, and list the entire weapons and armor section (p. 83) for sale, tags included. Affording them is another issue. BOUNTY CLERK (CHOKE 2: Call the police) Bounty files (three missions with classified intel are listed) Starched shirt, horn-rimmed glasses, scowl",
+      "STAMP: The bounty clerk offers crime-fighting missions, with a large cash reward (equivalent to mission reward 12, p. 76). FIST must find a way to pass as trustworthy, normal bounty hunters to receive the bounty clerk's seal of approval. A clerk can also introduce the PCs to 1D6 actual bounty hunters (p. 125) with different skillsets."
+    ]
+  },
+  {
+    "Head": "CQC EXPERT (10 HP, CHOKE 6: CQC misstep)",
+    "Features": [
+      "Hand wraps (3 DAMAGE)",
+      "CQC training (equivalent to FIGHTER, p. 45)",
+      "Perfect stance (1 ARMOR)",
+      "Coca leaf (chew to gain 1D6 HP)",
+      "Trailing headband, fatigues, battle scar"
+    ],
+    "Notes": [
+      "TRAIN: If a player character can beat the CQC expert in a hand-to-hand fight, they will take them on as their pupil and train them in closequarters combat for free. Characters being trained must sit out missions, while the player uses another character. If the pupil character skips one mission to train, they gain UNARMED (p. 64). If they train for two, they also gain FIGHTER. A full three-mission training retreat adds OBJECTS (p. 53). The CQC expert warns that the training will be grueling, and the trainee may not survive: there is an X-in-1D6 chance that the operative will die during training, with X equal to the amount of missions spent training."
+    ]
+  },
+  {
+    "Head": "CYCLOPS ARCHIVIST (2 HP, CHOKE 3: Have a loud breakdown)",
+    "Features": [
+      "Contraband shiv (3 DAMAGE)",
+      "Mangled pack of cigarettes",
+      "Coffee thermos (+1D6 HP, one use)",
+      "Sensitive documents (PURPLE clearance, p. 100)",
+      "Heavily annotated book (holds unnerving sigils)",
+      "Tape recorder (has an anomalous infinite tape)",
+      "Tweed suit, round glasses, floppy hair"
+    ],
+    "Notes": [
+      "THOUGHTCRIME: The archivist has researched and learned a random spell (p. 124) that they are debating whether or not to share with their CYCLOPS superiors. They are prone to muttering commentary into their tape recorder, frequently naming a listener who may or may not exist."
+    ]
+  },
+  {
+    "Head": "CYCLOPS PLANT (4 HP, CHOKE 5: Take the capsule)",
+    "Features": [
+      "Concealed Welrod pistol (1D6 DAMAGE, silenced)",
+      "CYCLOPS dynamic ID (p. 86)",
+      "CYCLOPS comm wire (p. 86)",
+      "Cyanide capsule (one use)",
+      "Friendly smile, normal outfit"
+    ],
+    "Notes": [
+      "PLOT: As soon as the CYCLOPS plant enters the game, decide on what it is they're trying to accomplish (e.g. \"obtain crucial information,\" \"assassinate a politician,\" etc.) As long as the plant is undiscovered, each time a player rolls a failure, place a mysterious token on the table. At 4 counters, the plant succeeds and makes a smooth exit."
+    ]
+  },
+  {
+    "Head": "CYCLOPS SCIENTIST (3 HP, CHOKE 4: Release a dangerous experiment (p. 103))",
+    "Features": [
+      "CYCLOPS tranquilizer gun (0 DAMAGE, NON-LETHAL)",
+      "Incomprehensible notebook (details 1D6 more experiments)",
+      "White labcoat, shiny glasses, goofy voice"
+    ],
+    "Notes": [
+      "GENIUS: It's been a while since this CYCLOPS scientist left the confines of High Command, or their own mind. No matter what, one attack against the scientist always fails\u2014describe the absurd backup plan they created to avoid it. This CYCLOPS ARCHIVIST is emotionally paralyzed by the lost knowledge they bear witness to on the daily. Too afraid of the truth to leave, but itching with a desire to be free of their keepers, they may some day reach out to FIST\u2014or while away their short life looking for simple answers. GALT is more than a frenemy to FIST, and is prone to acting as an quadruple agent who seemingly exists for the sole purpose of incomprehensible mission interference. \"FIST!\" Galt will often cry, \"We may have matched wits this time, but know this\u2014you haven't yet seen the last of me!\""
+    ]
+  },
+  {
+    "Head": "CORRUPT ACCOUNTANT (2 HP, CHOKE 3: Offer a bribe)",
+    "Features": [
+      "Heavy briefcase (2 DAMAGE)",
+      "Encoded notebook (roll +TAC to crack)",
+      "Yellow lens sunglasses, garish blazer"
+    ],
+    "Notes": [
+      "FRAME: The accountant can either fabricate a convincing financial crime and frame a PC for it, or, if appropriate, dig up a real one from a character's past and report it to the cops."
+    ]
+  },
+  {
+    "Head": "DOCTOR STIGMATA (8 HP, CHOKE 4: Helm takes over)",
+    "Features": [
+      "Helm of Januarius (accessory)",
+      "Field medic's attire (1 ARMOR)",
+      "The Goat-skin Grimoire (2D6 spells (p. 124))"
+    ],
+    "Notes": [
+      "MAGE: Once an MSF field medic deployed to Jerusalem, Stigmata was introduced to magic when they found an eleventh-century helmet in the rubble that possessed them with the spirit of a mad crusader. The two now bickeringly share a body\u2014and spells, with anyone they deem worthy."
+    ]
+  },
+  {
+    "Head": "GALT (12 HP, CHOKE 3: Swoosh cape, disappear)",
+    "Features": [
+      "Red-hot fencing foil (1D6 DAMAGE, INCENDIARY)",
+      "Colt Single-action Army revolver (1D6+1 DAMAGE)",
+      "Nanite bandana (ignore breathing-based damage)",
+      "Flat-brimmed black cowboy hat (accessory)",
+      "Red-lined black cape, white gloves, spurs"
+    ],
+    "Notes": [
+      "FOIL: Galt is an enigma, an incognito Renaissance woman who harbors an odd, fatal obsession with FIST. She enjoys delivering grand monologues about her life story: born in Saint Petersburg, her parents' business was seized by the Bolsheviks when she was a child, leaving her family starved and Galt herself jaded by age twelve. At sixteen, she was injured in a fight with a pyrokinetic peer who felt that a bourgeois student like Galt had no place at Petrograd State University. Nursing her burns, Galt exiled herself from society, eaten alive by internalized prejudice and careening headfirst towards a philosophy of total independence and self-interest as the ultimate human virtues. FIST is a puzzle she may never solve\u2014why would a bunch of potentially profitable freaks look out for anyone but themselves?"
+    ]
+  },
+  {
+    "Head": "INFO BROKER (2 HP, CHOKE 3: Activate snipers)",
+    "Features": [
+      "FN 1922 pistol (1D6 ARMOR)",
+      "Contraband rolodex (contains the numbers of three people or factions who are usually impossible to contact)",
+      "Tan trenchcoat, fedora, wet cigarette"
+    ],
+    "Notes": [
+      "PARANOIA: Convincing the info broker to meet with FIST is easy. Getting them to trust FIST with even the slightest shred of real information is an almost insurmountable challenge."
+    ]
+  },
+  {
+    "Head": "K-9 UNIT (8 HP, 1-3 appear)",
+    "Features": [
+      "Sonic bark (3 DAMAGE, roll +FRC to avoid temporary tinnitus)",
+      "Hydraulic bite (1D6+2 DAMAGE)",
+      "Stainless steel torso (2 ARMOR)",
+      "Ultra-servo legs (100 mph. top speed, K-9 takes +3 DAMAGE if leg servos are targeted)",
+      "Underbelly battery (removable, deactivates K-9)"
+    ],
+    "Notes": [
+      "FETCH: When this prototype next-gen police dog is allowed to scan a sample of genetic material, it can and will follow its new target to the ends of the earth. Luckily, the genetic scanner is poorly designed, making it a perfect vector for illegally jailbreaking the K-9 unit and installing a less vicious personality."
+    ]
+  },
+  {
+    "Head": "LIBRA SUN (HP not applicable)",
+    "Features": [
+      "Huey helicopter with armor refit (16 HP, 2 ARMOR)",
+      "Pilot's headset (relay intel to FIST at any time)",
+      "Balaclava (theoretically hides identity)",
+      "Stunning eye makeup (very identifiable)",
+      "Supply drop apparatus (random crate , p. 85)"
+    ],
+    "Notes": [
+      "SUPPORT: Libra Sun may be used by the ref as FIST's chief of transport\u2014a convenient bit of plot to ferry them between missions. Libra may also provide voiceover backstory for major characters FIST encounters, or remind them of game mechanics they may have forgotten. Cheery, casual, and competent, Libra Sun is the type of support agent most operatives can only dream of. She has a tendency to go off on tangents, and likes to refer to game terms directly, like wishing the team \"good rolls.\""
+    ]
+  },
+  {
+    "Head": "LIVING PROPHECY (5 HP, CHOKE 1: Hide and shield their body)",
+    "Features": [
+      "Stolen dagger of fate (1D6 DAMAGE, RITUAL)",
+      "Prophetic tattoos (unfamiliar characters)",
+      "Ball cap, chore coat, face down"
+    ],
+    "Notes": [
+      "TRUTH: The future is written across the skin of this unfortunate soul, and many want them dead. If the prophecy is read by one of the player characters, they'll find out that they're involved\u2014and doomed. As long as the living prophecy is alive, the events printed on their skin will come to pass."
+    ]
+  },
+  {
+    "Head": "LOST ANGEL (10 HP, CHOKE 4: Start sobbing)",
+    "Features": [
+      "Burning blade (1D6+2 DAMAGE, HEAVY, INCENDIARY)",
+      "Patinaed armor (1 ARMOR)",
+      "Scorched wings (limited flight abilities)",
+      "Broken halo (concealable at will)",
+      "Bottle of beer (half-full)",
+      "The weight of sin"
+    ],
+    "Notes": [
+      "AIMLESS: Some say that Hell is here on Earth. For the lost angel, cast down from Heaven for their failures into a cruel world they never knew, this is most certainly the case. When this poor, fallen angel would deal damage, there is a 3-in1D6 chance they can't go through with it."
+    ]
+  },
+  {
+    "Head": "MAN FROM TAURED (4 HP, CHOKE 2: Ask for help)",
+    "Features": [
+      "Anomalous passport (lists the country Taured)",
+      "Bulky luggage (contains unfamiliar brands of food and clothes which follow non-existent fashion trends)",
+      "Helpless expression, bowler hat, three-piece suit"
+    ],
+    "Notes": [
+      "STRANDED: Local airport authorities promptly apprehended the mysterious man from Taured for questioning when he touched down with a clearly bogus passport and an identity which could not be confirmed. He speaks with an unidentifiable accent and claims to have been on a simple trip to visit overseas relatives. When asked to point out Taured on a map, he indicated Andorra, becoming distressed and agitated upon learning the country's name."
+    ]
+  },
+  {
+    "Head": "MAN IN BLACK (HP not applicable, 1D6 appear)",
+    "Features": [
+      "Three-piece black suit (6 ARMOR)",
+      "Anti-mnemonic syringe (p. 86)",
+      "Dark sunglasses (completely opaque)",
+      "Perfectly straight posture, expressionless face"
+    ],
+    "Notes": [
+      "OFFER: If a player character is the only one to witness an extraterrestrial occurrence, there is a 5-in-1D6 chance that a group of men in black will appear to make them an offer: join their ranks, and they will learn the whole truth about aliens and their activities on Earth. PCs who agree to this deal disppear and are no longer playable, but may return as NPCs, deeply changed and offering cryptic guidance."
+    ]
+  },
+  {
+    "Head": "MASTERLESS ROBOT (6 HP, CHOKE 5: Revert to basic programming)",
+    "Features": [
+      "Gun-arm (1D6 DAMAGE, COLLAPSIBLE, HUD)",
+      "Pneumatic fist (1D6+1 DAMAGE)",
+      "Metal skin (1 ARMOR)",
+      "Dying flower (the players' favorite type)",
+      "Smashed control chip (free of outside control)",
+      "Tattered cape, softly glowing eyes"
+    ],
+    "Notes": [
+      "PILGRIMAGE: No longer content to work as an endlessly toiling servant for its missing creator, the masterless robot wanders the Earth in a pilgrimage towards some ultimate knowledge of love, life, and the human condition. If the robot feels, some day, that the time is right to rest, it may choose to self-destruct. After an audible 10 second timer, an explosion deals 2D6 DAMAGE to everyone around the robot's smoking chassis."
+    ]
+  },
+  {
+    "Head": "MURDER VICTIM (HP not applicable, CHOKE 4: Vanish completely)",
+    "Features": [
+      "3-in-1D6: The murder weapon (any DAMAGE)",
+      "Icy grip (3 DAMAGE, ARMOR-PIERCING)",
+      "Fractured memory (reveals a vital clue)",
+      "Visible wounds, tear-stained cheeks"
+    ],
+    "Notes": [
+      "SPECTRE: A ghostly sobbing lingers near the site of a killing. The murder victim cannot move on from life until their murder is solved. They don't remember a thing, save for a single clue. The MEN IN BLACK are not aligned with CYCLOPS\u2014in fact, stolen CYCLOPS documentation suggests that the men in black rank almost as high as FIST on CYCLOPS' list of archenemies. Their motivations and planet of origin will always remain unknown... unless one could be captured."
+    ]
+  },
+  {
+    "Head": "NARCO-SUBMARINE (18 HP)",
+    "Features": [
+      "Criminal (p. 110) crew (4D6 crewmembers)",
+      "Worn-down hull (2 ARMOR)",
+      "Retrofitted torpedoes (2D6 DAMAGE, six uses)",
+      "Drug payload (roll 1D6 for payload type: 1. Cannabis    4. Cocaine 2. Magic mushrooms 5. Heroin 3. Artifical psychedelics 6. Prescription drugs"
+    ],
+    "Notes": [
+      "AGREEMENT: The narco-submarine is a stylish way to transport drugs, but also a practical way to get FIST operatives to underwater missions. If FIST agrees to assist the narco-submarine operators with a drug run, the crew will return the favor and stay on hand for future transport."
+    ]
+  },
+  {
+    "Head": "PRIVATE ESCORT (6 HP, CHOKE 5: Expel guests)",
+    "Features": [
+      "Heirloom pocketknife (3 DAMAGE, ACCURATE)",
+      "Various fruits and cheeses (heal 1D6 HP)",
+      "Cigarettes, with holder (silver-inlaid)",
+      "Swanky dress, wide-brimmed hat, and draped jewelry, or friendly festival free-love attire"
+    ],
+    "Notes": [
+      "PILLAR: The private escort knows anyone and everyone in their community, because they know how to listen\u2014really listen. With cash in hand, FIST may hire the escort to steer complex social situations in desirable directions, or to interpret the hidden motivations of others."
+    ]
+  },
+  {
+    "Head": "PUBLIC SERVANT (2 HP, CHOKE 2: Toss pamphlets in air and run)",
+    "Features": [
+      "Informative pamphlets (briefly distract a target if thrown, one use)",
+      "Briefcase (stuffed with useless paperwork)",
+      "Thermos of weak coffee (+3 HP, one use)",
+      "Wrinkled suit, receding hairline"
+    ],
+    "Notes": [
+      "COWORKERS: At times, FIST may need to press public servants for information or alterations to their work routine to ensure mission success. Of course, any average bean-counter would turn pale and turn tail at the sight of a supernatural mercenary, so a chase may ensue, leading to further complications. If the public servant dies, two federal agents (p. 128) are soon dispatched to investigate."
+    ]
+  },
+  {
+    "Head": "PUPPET SENSEI (60 HP, CHOKE 6: Pause to deliver a relevant koan)",
+    "Features": [
+      "Walking stick (3 DAMAGE)",
+      "Telekinetic mastery (equivalent to TELEKINETIC (p. 62) but with all physical materials, as well as essential life energy)",
+      "Anomalous felt and rubber body (1 ARMOR)",
+      "Six pack of light beer (heal 1D6 HP, six uses)",
+      "Sunglasses, lawn chair, cigarette smell"
+    ],
+    "Notes": [
+      "RELAX: The puppet sensei entered our realm missing their memories after a rogue fictional actualization incident tore them from the story they once knew as home. Lost, confused, and guided only by their psionic abilities, they have built for themselves a quiet, uneventful life in a city that's warm year-round."
+    ]
+  },
+  {
+    "Head": "REBUILT SURVIVOR (20 HP, CHOKE 3: Activate cybernetic enhancements)",
+    "Features": [
+      "Expensive body (abilities equivalent to RUNNER, SLOW-MO, and WEIGHTLIFTER, p. 57, 59, 65)",
+      "Eye lasers (3D6 DAMAGE to 1D6 targets standing near each other as the survivor stumbles)",
+      "Fashionable outfit, thoughtful gaze"
+    ],
+    "Notes": [
+      "THESEUS: Almost every part of this industrial accident victim has been swapped out for an artificial replacement. Unfamiliar with their new body and pursued by authorities at every turn, the rebuilt survivor is likely to call FIST for asylum."
+    ]
+  },
+  {
+    "Head": "SCURVY DOG (6 HP, 3D6 appear, CHOKE 5: Begin a jolly group dance)",
+    "Features": [
+      "2-in-1D6: Quadruple-barrelled blunderbuss (2D6 DAMAGE, MESSY, LOUD, sends the user flying backwards)",
+      "Seaweed-draped cutlass (1D6 DAMAGE)",
+      "Salt-mottled bones (ARMOR as SKELETON, p. 59)",
+      "Bottle of rum (trickles down the ribs)",
+      "Colorful rags and jaunty pirate hats"
+    ],
+    "Notes": [
+      "MATEY: Brought back howling from Davy Jones' locker and feeling more alive and better than ever, these pirates make up for what they lack in skin, flesh, eyes, etc. with passion and pizzazz. They'll help with any mission, and work for rum."
+    ]
+  },
+  {
+    "Head": "SERUM INVENTOR (3 HP, CHOKE 2: Fretfully shout, \"My serum!\" and then drop it, which destroys it)",
+    "Features": [
+      "Syringe gun (infuses targets with the serum)",
+      "Experimental serum (grants 2D6 random traits, p. 39-66, six syringes' worth, reroll for each dose)",
+      "6 \u00d7 serum syringes (empty)",
+      "Rejected patent (torn in half, repaired with tape)",
+      "Rubber gloves, reflective goggles, white hair"
+    ],
+    "Notes": [
+      "PROTECTIVE: The serum inventor has created a truly remarkable compound with continously evolving properties. Spurned by a failed shot at patent riches, the inventor is extremely careful about who is allowed to visit their lab. If you say the right passcode through the slit in the door, you may hear the seven locks being undone and finally experience the fabled serum."
+    ]
+  },
+  {
+    "Head": "STARCHILD (3 HP, CHOKE 1: Increase CHOKE score by 1 and mature, doubling their HP)",
+    "Features": [
+      "Healing touch (ten minutes of contact heals +1D6 HP)",
+      "Impressionable mind (repeats phrases, picks up new skills easily)",
+      "Innocent eyes, rapidly aging body"
+    ],
+    "Notes": [
+      "DEVELOPING: The subtly vibrating, airily ethereal starchild arrived on Earth encased in a steaming fallen geode, wearing a form unrecognizable to human beings. Now, it looks like a regular baby. Should FIST adopt the starchild, they're in for a surprise\u2014unlike a regular baby, the starchild never stops growing, even when it's pushing far past the common human limits."
+    ]
+  },
+  {
+    "Head": "STREET RACER (5 HP, 1D6 appear)",
+    "Features": [
+      "Muscle car (8 HP, 1 ARMOR, has a nitro system which blasts the car forward, one use)",
+      "Steady hands (abilities equivalent to the ACE trait, p. 39)",
+      "Carjacking hit (equivalent to the HIJACK trait, p. 48)",
+      "Tight shirt, square jaw FAMIL Y: A group of street racers is a family\u2014 and there's nothing more important than family. Challenge one racer, and you challenge them all. TALKING MOTORCYCLE (6 HP, CHOKE 4: Activate weapons and booster jets without being told)",
+      "Telescoping submachine gun (1D6 DAMAGE)",
+      "Spring-loaded side-blades (3 DAMAGE)",
+      "Advanced armor chassis (1 ARMOR)",
+      "Booster jets (pushes top speed to 120 mph for one minute, one use)",
+      "Nanite-grip tires (never skids out, can ride on walls and ceilings)",
+      "Synthesized speech with visualizer screen"
+    ],
+    "Notes": [
+      "COCKY: This exquisitely high-tech motorcyle comes equipped with a fast-talking onboard intelligence. The motorcycle lives for thrills and will pressure its riders to do cool tricks and daring manuevers whenever possible\u2014if they play along, they gain the ACE trait (p. 39) while riding the motorcycle."
+    ]
+  },
+  {
+    "Head": "TEST SUBJECT (2 HP, 1D6 appear, CHOKE 3: Refuse to move from where they are)",
+    "Features": [
+      "1-in-1D6: Handmade shiv (3 DAMAGE)",
+      "Orange jumpsuit (soiled)",
+      "Thousand-yard stare"
+    ],
+    "Notes": [
+      "SPOOKED: After so much time spent in captivity, test subjects are understandably skittish and distrustful of new, loud strangers. If some kind of infectious pathogen or otherwise avoidable risk is carried by the test subject, there is a 4-in-1D6 chance they will be too afraid to admit it until it becomes a problem."
+    ]
+  },
+  {
+    "Head": "TRANSHUMANIST (12 HP, CHOKE 4: Dissociate)",
+    "Features": [
+      "Modified Colt SCAMP (1D6+1 DAMAGE, ACCURATE, ARMOR-PIERCING, HUD)",
+      "Quilted leather jacket (1 ARMOR)",
+      "Stimulant cocktail (grants incredible focus and speed, deals 1D6 DAMAGE to the user, heals 1D6 HP)",
+      "Steely expression, layered tech-goth outfit"
+    ],
+    "Notes": [
+      "MODIFY:  If FIST can locate the transhumanist's secret \"chop shop,\" surgeries are made available to them. The transhumanist will offer to apply the CYBORG or SYNTHETIC traits in exchange for rare, totally unique technological artifacts."
+    ]
+  },
+  {
+    "Head": "TRANSPORT MANAGER (3 HP, CHOKE 2: Refuse further interaction)",
+    "Features": [
+      "Hardhat (1 ARMOR, accessory)",
+      "Transport handbook (contains classified info about three transport routes)",
+      "Windbreaker, transport badge, and tie"
+    ],
+    "Notes": [
+      "PROTOCOL: No greater passion exists than the cold, firm passion the transport manager has for adherence to protocol. Tricking the manager into revealing, canceling, or altering transport routes and information will require respectable, mundane self-presentation, and an encyclopedic knowledge of red tape and bureaucracy."
+    ]
+  },
+  {
+    "Head": "ULTRAHUMAN LIBERATIONIST (13 HP, CHOKE 5: Trait gets out of control)",
+    "Features": [
+      "Baseball bat (1D6 DAMAGE)",
+      "3 \u00d7 molotov cocktail (1D6 DAMAGE, INCENDIARY)",
+      "Denim battle jacket, full of pins (1 ARMOR)",
+      "Random trait (p. 39-66) or equivalent ability",
+      "Bold tattoos, bright makeup, confident aura"
+    ],
+    "Notes": [
+      "PRIDE: The liberationist firmly believes that the ultrahuman experience has been relegated to the shadows for too long. If one of the player characters has the PARTISAN role (p. 68), the liberationist will automatically become FIST's ally. If a player has the REPRESENTATIVE (p. 69) role, there is a 3-in-1D6 chance of alliance. Even without these roles, the liberationist may still frequently contact and work with FIST."
+    ]
+  }
+]
