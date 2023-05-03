@@ -346,7 +346,15 @@
       "Muscle car (8 HP, 1 ARMOR, has a nitro system which blasts the car forward, one use)",
       "Steady hands (abilities equivalent to the ACE trait, p. 39)",
       "Carjacking hit (equivalent to the HIJACK trait, p. 48)",
-      "Tight shirt, square jaw FAMIL Y: A group of street racers is a family\u2014 and there's nothing more important than family. Challenge one racer, and you challenge them all. TALKING MOTORCYCLE (6 HP, CHOKE 4: Activate weapons and booster jets without being told)",
+      "Tight shirt, square jaw"
+    ],
+    "Notes": [
+      "FAMILY: A group of street racers is a family\u2014 and there's nothing more important than family. Challenge one racer, and you challenge them all."
+    ]
+  },
+  {
+    "Head": "TALKING MOTORCYCLE (6 HP, CHOKE 4: Activate weapons and booster jets without being told)",
+    "Features": [
       "Telescoping submachine gun (1D6 DAMAGE)",
       "Spring-loaded side-blades (3 DAMAGE)",
       "Advanced armor chassis (1 ARMOR)",
