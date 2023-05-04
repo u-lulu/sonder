@@ -154,12 +154,12 @@ def roll_extra_possibility(input_string):
 @bot.event
 async def on_ready():
 	log(f"{bot.user} is ready and online!")
-    boot_time = int(time.time())
+	boot_time = int(time.time())
 
 @bot.command(description="Checks how long the bot has been online")
 async def uptime(ctx):
-    log("/uptime")
-    await ctx.respond(f"Last booted up on <t:{boot_time}:D> at <t:{boot_time}:T> (<t:{boot_time}:R>)",ephemeral=True)
+	log("/uptime")
+	await ctx.respond(f"Last booted up on <t:{boot_time}:D> at <t:{boot_time}:T> (<t:{boot_time}:R>)",ephemeral=True)
 
 @bot.command(description="Measures this bot's latency")
 async def ping(ctx):
