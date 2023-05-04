@@ -5,9 +5,12 @@ import re
 import random as rnd
 from datetime import datetime
 from datetime import date
+import time
 import os
 import rolldice # pip install py-rolldice
 from func_timeout import func_timeout, FunctionTimedOut # pip install func-timeout
+
+boot_time = int(time.time())
 
 bot = discord.Bot(activity=discord.Game(name='FIST: Ultra Edition'))
 
@@ -151,8 +154,14 @@ def roll_extra_possibility(input_string):
 @bot.event
 async def on_ready():
 	log(f"{bot.user} is ready and online!")
+    boot_time = int(time.time())
 
-@bot.command(description="Measure's this bot's latency")
+@bot.command(description="Checks how long the bot has been online")
+async def uptime(ctx):
+    log("/uptime")
+    await ctx.respond(f"Last booted up on <t:{boot_time}:D> at <t:{boot_time}:T> (<t:{boot_time}:R>)",ephemeral=True)
+
+@bot.command(description="Measures this bot's latency")
 async def ping(ctx):
 	log("/ping")
 	await ctx.respond(f"Pong! Latency is {bot.latency}")
