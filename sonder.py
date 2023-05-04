@@ -595,7 +595,7 @@ async def bupgrade_autocomp(ctx):
 	return bupgrade_names
 
 @gear_group.command(description="Applies a random Base Upgrade")
-async def baseupgrade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Base Upgrade instead",autocomplete=discord.utils.basic_autocomplete(npc_lookup_autocomp),required=False,default="")):
+async def baseupgrade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Base Upgrade instead",autocomplete=discord.utils.basic_autocomplete(bupgrade_autocomp),required=False,default="")):
 	log("/matrix gear baseupgrade")
 	message = ""
 	if len(lookup) < 1:
