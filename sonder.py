@@ -1037,7 +1037,14 @@ async def premade(ctx, lookup: discord.Option(str,"Including this argument searc
 		result = rnd.choice(intelligence["chars_enemy_premade"])
 		message = format_premade(result)
 	else:
-		None
+		best_match = difflib.get_close_matches(lookup.upper(), premade_enemy_names, n=1, cutoff=0.0)
+		if len(best_match) > 0:
+			goodchar = {}
+			for char in intelligence["chars_enemy_premade"]:
+				if best_match[0] in char["Head"]:
+					goodchar = char
+					break
+			message = format_premade(goodchar)
 	await ctx.respond(message)
 
 file = open('matrices/characters/animals.json')
