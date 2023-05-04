@@ -884,11 +884,33 @@ file = open('matrices/characters/premade_npcs.json')
 intelligence["chars_premade"] = json.load(file)
 file.close()
 
+premade_npc_names = []
+for char in intelligence["chars_premade"]:
+	name = char["Name"].strip()
+	index = name.find(" (")
+	if index != -1:
+		name = name[:index]
+	premade_npc_names.append(name)
+
+async def npc_lookup_autocomp(ctx):
+	return premade_npc_names
+
 @chars_group.command(description="Spawns a random pre-made NPC")
-async def premade(ctx):
+async def premade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific NPC instead",autocomplete=discord.utils.basic_autocomplete(npc_lookup_autocomp),required=False,default="")):
 	log("/matrix character premade")
-	result = rnd.choice(intelligence["chars_premade"])
-	message = format_premade(result)
+	message = ""
+	if len(lookup) < 1:
+		result = rnd.choice(intelligence["chars_premade"])
+		message = format_premade(result)
+	else:
+		best_match = difflib.get_close_matches(lookup.upper(), premade_npc_names, n=1, cutoff=0.0)
+		if len(best_match) > 0:
+			goodchar = {}
+			for char in intelligence["chars_premade"]:
+				if best_match[0] in char["Name"]:
+					goodchar = char
+					break
+			message = format_premade(goodchar)
 	await ctx.respond(message)
 
 file = open('matrices/characters/celebrities.json')
@@ -996,11 +1018,26 @@ file = open('matrices/characters/premade_enemies.json')
 intelligence["chars_enemy_premade"] = json.load(file)
 file.close()
 
+premade_enemy_names = []
+for char in intelligence["chars_enemy_premade"]:
+	name = char["Name"].replace("(BOSS) ", "").strip()
+	index = name.find(" (")
+	if index != -1:
+		name = name[:index]
+	premade_enemy_names.append(name)
+
+async def enemy_lookup_autocomp(ctx):
+	return premade_enemy_names
+
 @enemy_group.command(description="Spawns a random pre-made Enemy")
-async def premade(ctx):
+async def premade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Enemy instead",autocomplete=discord.utils.basic_autocomplete(enemy_lookup_autocomp),required=False,default="")):
 	log("/matrix enemy premade")
-	result = rnd.choice(intelligence["chars_enemy_premade"])
-	message = format_premade(result)
+	message = ""
+	if len(lookup) < 1:
+		result = rnd.choice(intelligence["chars_enemy_premade"])
+		message = format_premade(result)
+	else:
+		None
 	await ctx.respond(message)
 
 file = open('matrices/characters/animals.json')
