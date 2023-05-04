@@ -886,7 +886,7 @@ file.close()
 
 premade_npc_names = []
 for char in intelligence["chars_premade"]:
-	name = char["Name"].strip()
+	name = char["Head"].strip()
 	index = name.find(" (")
 	if index != -1:
 		name = name[:index]
@@ -907,7 +907,7 @@ async def premade(ctx, lookup: discord.Option(str,"Including this argument searc
 		if len(best_match) > 0:
 			goodchar = {}
 			for char in intelligence["chars_premade"]:
-				if best_match[0] in char["Name"]:
+				if best_match[0] in char["Head"]:
 					goodchar = char
 					break
 			message = format_premade(goodchar)
@@ -1020,7 +1020,7 @@ file.close()
 
 premade_enemy_names = []
 for char in intelligence["chars_enemy_premade"]:
-	name = char["Name"].replace("(BOSS) ", "").strip()
+	name = char["Head"].replace("(BOSS) ", "").strip()
 	index = name.find(" (")
 	if index != -1:
 		name = name[:index]
