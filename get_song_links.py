@@ -1,5 +1,5 @@
 import json
-from youtubesearchpython import VideosSearch #pip install youtube-search-python
+from youtubesearchpython import * #pip install youtube-search-python
 
 file = open("matrices/cassettes.json")
 cassettes = json.load(file)
