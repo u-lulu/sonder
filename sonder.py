@@ -609,7 +609,7 @@ async def baseupgrade(ctx, lookup: discord.Option(str,"Including this argument s
 				if best_match[0] == bup["Name"]:
 					goodbup = bup
 					break
-			message = format_premade(f"**{goodbup['Name']}:** {goodbup['Effect']}")
+			message = f"**{goodbup['Name']}:** {goodbup['Effect']}"
 	await ctx.respond(message)
 
 @gear_group.command(description="Divulges the contents of a random Crate")
