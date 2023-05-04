@@ -1,0 +1,26 @@
+[
+	{
+		"Name": "BACKUP",
+		"Effect": "FIST gets a backup squad of mercenaries who can be sent on missions in lieu of the players. This squad (`/matrix enemy squad`) has a collective score of 0 in FRC, TAC, CRE, and RFX. This upgrade can be taken again to increase any squad attribute by 1, or to add a new squad. Squads can also be brought along on player missions as referee-controlled NPCs. When the players send a backup squad on a mission, the referee should choose an attribute score to represent the mission (e.g. FRC for wiping out an enemy group, RFX for stealth infilitration) and roll for the squad's performance:\n- TWO 1s: The squad dies or (1-in-1D6) defects.\n- FAILURE: The mission consequence plays out.\n- PARTIAL: Mission complete, but no reward.\n- SUCCESS: As above, but players get the reward.\n- TWO 6s: As above, plus +1 to any squad attribute."
+	},
+	{
+		"Name": "DEFENSE",
+		"Effect": "FIST installs new security measures, such as squads of guards, hazards, or traps. For each DEFENSE upgrade installed, FIST may instantly kill one enemy near the upgrade during base invasions."
+	},
+	{
+		"Name": "EXPERT",
+		"Effect": "FIST hires an on-site expert who can provide the team with additional items before the mission begins. Experts in different fields offer different items: a weaponsmith may present the team with weapon tags, a scientist may create new chemical compounds, and a doctor may provide medical supplies. FIST can get one randomized item per expert per mission, or request a specific item and wait until the next mission begins to receive it."
+	},
+	{
+		"Name": "OFFENSE",
+		"Effect": "FIST acquires a weapon of mass destruction which can be used against a chosen target once per mission. Various weapon types are possible, but it should be something dangerous, like a bomber plane, orbital laser, or powerful ancient relic. FIST is also subject to this weapon and so must clear the area before its use, or risk being hurt as well. The weapon deals 3D6 DAMAGE by default, and taking OFFENSE again increases the DAMAGE by 1D6."
+	},
+	{
+		"Name": "STORAGE",
+		"Effect": "FIST builds a warehouse or hangar which can be used to safely store vehicles, hide fugitivies, and contain anomalies without being detected."
+	},
+	{
+		"Name": "SUPPORT",
+		"Effect": "FIST gains a \"man-in-the-chair\" style support agent who can contact them throughout their missions via radio. This support agent will reveal information the players would not usually be able to access when asked, according to their area of expertise: a weapons expert can divulge enemy DAMAGE ratings, a tactician can describe boss moves before they happen, etc. Support agents can answer 1D6 questions per mission."
+	}
+]

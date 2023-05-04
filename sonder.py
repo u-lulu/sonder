@@ -583,6 +583,35 @@ file = open('matrices/gear/vehicles.json')
 intelligence["gear_vehicles"] = json.load(file)
 file.close()
 
+file = open('matrices/gear/base_upgrades.json')
+intelligence["gear_bupgrades"] = json.load(file)
+file.close()
+
+bupgrade_names = []
+for bupgrade in intelligence["gear_bupgrades"]:
+	bupgrade_names.append(bupgrade["Name"])
+
+async def bupgrade_autocomp(ctx):
+	return bupgrade_names
+
+@gear_group.command(description="Applies a random Base Upgrade")
+async def baseupgrade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Base Upgrade instead",autocomplete=discord.utils.basic_autocomplete(npc_lookup_autocomp),required=False,default="")):
+	log("/matrix gear baseupgrade")
+	message = ""
+	if len(lookup) < 1:
+		result = rnd.choice(intelligence["gear_bupgrades"])
+		message = f"**{result['Name']}:** {result['Effect']}"
+	else:
+		best_match = difflib.get_close_matches(lookup.upper(), bupgrade_names, n=1, cutoff=0.0)
+		if len(best_match) > 0:
+			goodbup = {}
+			for bup in intelligence["gear_bupgrades"]:
+				if best_match[0] == bup["Name"]:
+					goodbup = bup
+					break
+			message = format_premade(f"**{goodbup['Name']}:** {goodbup['Effect']}")
+	await ctx.respond(message)
+
 @gear_group.command(description="Divulges the contents of a random Crate")
 async def crate(ctx):
 	log("/matrix gear crate")
@@ -897,7 +926,7 @@ async def npc_lookup_autocomp(ctx):
 
 @chars_group.command(description="Spawns a random pre-made NPC")
 async def premade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific NPC instead",autocomplete=discord.utils.basic_autocomplete(npc_lookup_autocomp),required=False,default="")):
-	log("/matrix character premade")
+	log(f"/matrix character premade {lookup}")
 	message = ""
 	if len(lookup) < 1:
 		result = rnd.choice(intelligence["chars_premade"])
@@ -1031,7 +1060,7 @@ async def enemy_lookup_autocomp(ctx):
 
 @enemy_group.command(description="Spawns a random pre-made Enemy")
 async def premade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Enemy instead",autocomplete=discord.utils.basic_autocomplete(enemy_lookup_autocomp),required=False,default="")):
-	log("/matrix enemy premade")
+	log(f"/matrix enemy premade {lookup}")
 	message = ""
 	if len(lookup) < 1:
 		result = rnd.choice(intelligence["chars_enemy_premade"])
