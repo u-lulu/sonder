@@ -159,7 +159,7 @@ async def on_ready():
 @bot.command(description="Checks how long the bot has been online")
 async def uptime(ctx):
 	log("/uptime")
-	await ctx.respond(f"Last booted up on <t:{boot_time}:D> at <t:{boot_time}:T> (<t:{boot_time}:R>)",ephemeral=True)
+	await ctx.respond(f"Online since <t:{boot_time}:D> at <t:{boot_time}:T> (<t:{boot_time}:R>)",ephemeral=True)
 
 @bot.command(description="Measures this bot's latency")
 async def ping(ctx):
