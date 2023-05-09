@@ -848,6 +848,7 @@ async def gadget(ctx):
 	log("/matrix cyclops gadget")
 	result = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
 	message = f"**{result['Name']}**: {result['Effect']}"
+	await ctx.respond(message)
 
 @cyclops_group.command(description="Divulges where CYCLOPS High Command is (allegedly) located")
 async def location(ctx):
