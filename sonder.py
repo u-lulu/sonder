@@ -839,15 +839,33 @@ file = open('matrices/cyclops/gadgets.json')
 intelligence["cyclops_gadgets"] = json.load(file)
 file.close()
 
+gadget_names = []
+for gadget in intelligence["cyclops_gadgets"][0]["Values"].values():
+	gadget_names.append(gadget["Name"])
+
+async def gadget_autocomp(ctx):
+	return gadget_names
+
 file = open('matrices/cyclops/rumors.json')
 intelligence["cyclops_rumors"] = json.load(file)
 file.close()
 
 @cyclops_group.command(description="Grants a random CYCLOPS Gadget")
-async def gadget(ctx):
-	log("/matrix cyclops gadget")
-	result = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
-	message = f"**{result['Name']}**: {result['Effect']}"
+async def gadget(ctx lookup: discord.Option(str,"Including this argument searches for a specific Gadget instead",autocomplete=discord.utils.basic_autocomplete(npc_lookup_autocomp),required=False,default="")):
+	log(f"/matrix cyclops gadget {lookup}")
+	message = ""
+	if len(lookup) < 1:
+		result = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
+		message = f"**{result['Name']}**: {result['Effect']}"
+	else:
+		best_match = difflib.get_close_matches(lookup.upper(), gadget_names, n=1, cutoff=0.0)
+		if len(best_match) > 0:
+			result = {}
+			for gadget in intelligence["cyclops_gadgets"][0]["Values"].values():
+				if best_match[0] in gadget["Name"]:
+					result = gadget
+					break
+			message = f"**{result['Name']}**: {result['Effect']}"
 	await ctx.respond(message)
 
 @cyclops_group.command(description="Divulges where CYCLOPS High Command is (allegedly) located")
@@ -889,7 +907,8 @@ async def year(ctx):
 	log("/matrix world year")
 	start = int(roll_intelligence_matrix(intelligence["misc"][6]))
 	modifier = int(roll_intelligence_matrix(intelligence["misc"][7]))
-	await ctx.respond(str(start + modifier))
+	year = start + modifier
+	await ctx.respond(f"_The year is **{year}**..._")
 
 @world_group.command(description="Randomly modifies the local Temperature and Precipitation")
 async def weather(ctx):
