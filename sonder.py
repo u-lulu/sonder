@@ -851,7 +851,7 @@ intelligence["cyclops_rumors"] = json.load(file)
 file.close()
 
 @cyclops_group.command(description="Grants a random CYCLOPS Gadget")
-async def gadget(ctx lookup: discord.Option(str,"Including this argument searches for a specific Gadget instead",autocomplete=discord.utils.basic_autocomplete(gadget_autocomp),required=False,default="")):
+async def gadget(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Gadget instead",autocomplete=discord.utils.basic_autocomplete(gadget_autocomp),required=False,default="")):
 	log(f"/matrix cyclops gadget {lookup}")
 	message = ""
 	if len(lookup) < 1:
