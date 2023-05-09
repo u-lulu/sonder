@@ -863,7 +863,7 @@ async def gadget(ctx, lookup: discord.Option(str,"Including this argument search
 		if len(best_match) > 0:
 			result = {}
 			for gadget in intelligence["cyclops_gadgets"][0]["Values"].values():
-				log(f"checking {gadget["Name"]}...")
+				log(f"checking {gadget['Name']}...")
 				if best_match[0] == gadget["Name"]:
 					log("Match found")
 					result = gadget
