@@ -859,13 +859,10 @@ async def gadget(ctx, lookup: discord.Option(str,"Including this argument search
 		message = f"**{result['Name']}**: {result['Effect']}"
 	else:
 		best_match = difflib.get_close_matches(lookup.upper(), gadget_names, n=1, cutoff=0.0)
-		log(f"best_match = {best_match}")
 		if len(best_match) > 0:
 			result = {}
 			for gadget in intelligence["cyclops_gadgets"][0]["Values"].values():
-				log(f"checking {gadget["Name"]}...")
 				if best_match[0] == gadget["Name"]:
-					log("Match found")
 					result = gadget
 					break
 			message = f"**{result['Name']}**: {result['Effect']}"
