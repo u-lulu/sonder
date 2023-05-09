@@ -841,7 +841,7 @@ file.close()
 
 gadget_names = []
 for gadget in intelligence["cyclops_gadgets"][0]["Values"].values():
-	gadget_names.append(gadget["Name"])
+	gadget_names.append(gadget["Name"].upper())
 
 async def gadget_autocomp(ctx):
 	return gadget_names
