@@ -839,34 +839,15 @@ file = open('matrices/cyclops/gadgets.json')
 intelligence["cyclops_gadgets"] = json.load(file)
 file.close()
 
-gadget_names = []
-for gadget in intelligence["cyclops_gadgets"][0]["Values"].values():
-	gadget_names.append(gadget["Name"])
-
-async def gadget_autocomp(ctx):
-	return gadget_names
-
 file = open('matrices/cyclops/rumors.json')
 intelligence["cyclops_rumors"] = json.load(file)
 file.close()
 
 @cyclops_group.command(description="Grants a random CYCLOPS Gadget")
-async def gadget(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Gadget instead",autocomplete=discord.utils.basic_autocomplete(gadget_autocomp),required=False,default="")):
-	log(f"/matrix cyclops gadget {lookup}")
-	message = ""
-	if len(lookup) < 1:
-		result = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
-		message = f"**{result['Name']}**: {result['Effect']}"
-	else:
-		best_match = difflib.get_close_matches(lookup.upper(), gadget_names, n=1, cutoff=0.0)
-		if len(best_match) > 0:
-			result = {}
-			for gadget in intelligence["cyclops_gadgets"][0]["Values"].values():
-				if best_match[0] == gadget["Name"]:
-					result = gadget
-					break
-			message = f"**{result['Name']}**: {result['Effect']}"
-	await ctx.respond(message)
+async def gadget(ctx):
+	log("/matrix cyclops gadget")
+	result = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
+	message = f"**{result['Name']}**: {result['Effect']}"
 
 @cyclops_group.command(description="Divulges where CYCLOPS High Command is (allegedly) located")
 async def location(ctx):
