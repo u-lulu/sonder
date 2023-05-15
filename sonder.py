@@ -49,6 +49,9 @@ num_to_die = {
 	6: "<:revolver_dice_6:1029946662531113011>"
 }
 
+def d6():
+	rnd.randint(1,6)
+
 def trait_message_format(trait):
 	return f"**{trait['Name']}** ({trait['Number']})\n{trait['Effect']}\n- {trait['Item']}, {trait['Stat']}"
 
@@ -104,7 +107,7 @@ def search_for_role(role):
 def roll_intelligence_matrix(table):
 	roll_type = table["Roll"].upper()
 	if roll_type == "2D6":
-		roll_result = rnd.randint(1,6) + rnd.randint(1,6)
+		roll_result = d6() + d6()
 		return table["Values"][str(roll_result)]
 	else:
 		return rnd.choice(list(table["Values"].values()))
@@ -280,16 +283,16 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 	}
 	
 	if extra_thing == 1:
-		stats["MAX"] += rnd.randint(1,6)
+		stats["MAX"] += d6()
 	elif extra_thing == 2:
-		stats["WAR"] += rnd.randint(1,6)
+		stats["WAR"] += d6()
 	
 	for trait in traits:
 		bonus = trait["Stat"].split(" ")
 		num = 0
 		if bonus[1] in stats:
 			if bonus[0] == "+1D6":
-				num = rnd.randint(1,6)
+				num = d6()
 			else:	
 				num = 0
 				numerical = bonus[0]
@@ -346,7 +349,7 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 @player_group.command(description="Rolls against the Emergency Insertion table")
 async def emergencyinsertion(ctx):
 	log("/player emergencyinsertion")
-	results = [rnd.randint(1,6), rnd.randint(1,6)]
+	results = [d6(), d6()]
 	sum = results[0] + results[1]
 	
 	message = f"{num_to_die[results[0]]} + {num_to_die[results[1]]} = **{sum}**: "
@@ -364,17 +367,35 @@ async def emergencyinsertion(ctx):
 	await ctx.respond(message)
 
 @player_group.command(description="Rolls a skill check")
-async def roll(ctx, modifier: discord.Option(discord.SlashCommandOptionType.integer, "The skill modifier for the roll", required=False, default=0)):
+async def roll(ctx, 
+	modifier: discord.Option(discord.SlashCommandOptionType.integer, "The skill modifier for the roll", required=False, default=0),
+	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
+	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
+	):
 	log(f"/player roll {modifier}")
-	results = [rnd.randint(1,6), rnd.randint(1,6)]
-	sum = results[0] + results[1] + modifier
+	results = [d6(), d6()]
+	if superior_dice ^ inferior_dice:
+		results.append(d6())
+	
+	dice_string = ""
+	for d in results:
+		dice_string += " " + num_to_die[d]
+	dice_string.strip()
+	
+	sorted_results = sorted(results)
+	if superior_dice and not inferior_dice:
+		results = sorted_results[-2:]
+	elif inferior_dice and not superior_dice:
+		results = sorted_results[:2]
+	
+	sum = sum(results) + modifier
 	
 	message = ""
 	
 	if modifier != 0:
-		message = f"{num_to_die[results[0]]} {num_to_die[results[1]]} + {modifier} = **{sum}**: "
+		message = f"({dice_string}) + {modifier} = **{sum}**: "
 	else:
-		message = f"{num_to_die[results[0]]} {num_to_die[results[1]]} = **{sum}**: "
+		message = f"{dice_string} = **{sum}**: "
 	
 	if results == [6,6]:
 		message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
@@ -453,7 +474,7 @@ file.close()
 async def syllables(ctx):
 	log("/matrix syllables")
 	result = ""
-	count = rnd.randint(1,6)
+	count = d6()
 	for i in range(count):
 		result += roll_intelligence_matrix(intelligence["misc"][0])
 	await ctx.respond(result)
@@ -1122,13 +1143,13 @@ async def experiment(ctx):
 	mistake = result[3]
 	if creation == "Uncontrolled\u2014Roll 1D6 extra features":
 		feature = [feature]
-		more = rnd.randint(1,6)
+		more = d6()
 		for i in range(more):
 			feature.append(roll_intelligence_matrix(intelligence["chars_experiments"][2]))
 		feature = ", ".join(feature)
 	elif creation == "Accidental\u2014Roll 1D6 extra mistakes":
 		mistake = [mistake]
-		more = rnd.randint(1,6)
+		more = d6()
 		for i in range(more):
 			mistake.append(roll_intelligence_matrix(intelligence["chars_experiments"][3]))
 		mistake = ", ".join(mistake)
@@ -1176,7 +1197,7 @@ async def robot(ctx):
 		feature = ", ".join(feature)
 	elif budget == "Corporate\u2014mash together 1D6 descriptions":
 		possible_descs = list(intelligence["chars_robots"][1]["Values"].values())
-		desc = rnd.sample(possible_descs,rnd.randint(1,6))
+		desc = rnd.sample(possible_descs,d6())
 		desc = ", ".join(desc)
 	
 	message = f"Description: {desc}\nBudget: {budget}\nFeature: {feature}\nProgramming: {prog}"
@@ -1194,7 +1215,7 @@ async def squad(ctx):
 	command = result[1]
 	name = result[2]
 	feature = result[3]
-	if rnd.randint(1,6) <= 3:
+	if d6() <= 3:
 		feature = f"{feature} __*and*__ {roll_intelligence_matrix(intelligence['chars_squads'][3])}"
 	theme = result[4]
 	message = f"Name: {name}\nReputation: {rep}\nFeature: {feature}\nTheme: {theme}"
@@ -1245,7 +1266,7 @@ async def corporation(ctx):
 	if sector == "Megacorp (roll 1D6 sectors)":
 		possible_sectors = list(intelligence["facs_corporations"][0]["Values"].values())
 		possible_sectors.remove("Megacorp (roll 1D6 sectors)")
-		subsectors = rnd.sample(possible_sectors, rnd.randint(1,6))
+		subsectors = rnd.sample(possible_sectors, d6())
 		sector = f"Megacorp ({', '.join(subsectors)})"
 	name = result[1]
 	feature = result[2]
@@ -1352,7 +1373,7 @@ async def nature(ctx):
 		claim += " __*and*__ " + roll_intelligence_matrix(intelligence["locs_nature"][3])
 	elif situation in ["Powder keg\u2014roll 1D6 claims, tensions are high","War\u2014roll 1D6 claims, active conflict in the area"]:
 		possible_claims = list(intelligence["locs_nature"][3]["Values"].values())
-		subclaims = rnd.sample(possible_claims, rnd.randint(1,6))
+		subclaims = rnd.sample(possible_claims, d6())
 		claim = '\n- ' + '\n- '.join(subclaims)
 	message = f"Description: {desc}\nFeature: {feature}\nSituation: {situation}\nClaim: {claim}"
 	await ctx.respond(message)
@@ -1512,7 +1533,7 @@ async def legend(ctx):
 	desc = result[1]
 	feature = result[2]
 	achieve = result[3]
-	while rnd.randint(1,6) <= 2:
+	while d6() <= 2:
 		possible_achieves = list(intelligence["lore_legends"][3]["Values"].values())
 		achieve += f" (or maybe {rnd.choice(possible_achieves)})"
 	message = f"Description: {desc}\nFeature: {feature}\nAchievement: {achieve}\nUltimate Fate: {fate}"
@@ -1529,7 +1550,7 @@ async def spell(ctx):
 	level = result[0]
 	obscurity = result[1]
 	name = result[2]
-	if rnd.randint(1,6) <= 2:
+	if d6() <= 2:
 		names = rnd.sample(list(intelligence["lore_spells"][2]["Values"].values()),2)
 		names[0] = names[0].rsplit(" ", 1)
 		names[1] = names[1].rsplit(" ", 1)
