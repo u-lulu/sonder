@@ -50,7 +50,7 @@ num_to_die = {
 }
 
 def d6():
-	rnd.randint(1,6)
+	return rnd.randint(1,6)
 
 def trait_message_format(trait):
 	return f"**{trait['Name']}** ({trait['Number']})\n{trait['Effect']}\n- {trait['Item']}, {trait['Stat']}"
