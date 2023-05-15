@@ -372,7 +372,7 @@ async def roll(ctx,
 	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
 	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
 	):
-	log(f"/player roll {modifier}")
+	log(f"/player roll {modifier}{' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
 	results = [d6(), d6()]
 	if superior_dice ^ inferior_dice:
 		results.append(d6())
