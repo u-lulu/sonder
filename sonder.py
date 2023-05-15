@@ -388,20 +388,20 @@ async def roll(ctx,
 	elif inferior_dice and not superior_dice:
 		results = sorted_results[:2]
 	
-	sum = sum(results) + modifier
+	total = sum(results) + modifier
 	
 	message = ""
 	
 	if modifier != 0:
-		message = f"({dice_string}) + {modifier} = **{sum}**: "
+		message = f"({dice_string}) + {modifier} = **{total}**: "
 	else:
-		message = f"{dice_string} = **{sum}**: "
+		message = f"{dice_string} = **{total}**: "
 	
 	if results == [6,6]:
 		message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
-	elif sum <= 6:
+	elif total <= 6:
 		message += "Your roll is a **failure.** You don’t do what you wanted to do, and things go wrong somehow."
-	elif sum <= 9:
+	elif total <= 9:
 		message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
 	else:
 		message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
