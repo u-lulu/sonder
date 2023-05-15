@@ -380,7 +380,7 @@ async def roll(ctx,
 	dice_string = ""
 	for d in results:
 		dice_string += " " + num_to_die[d]
-	dice_string.strip()
+	dice_string = dice_string.strip()
 	
 	sorted_results = sorted(results)
 	if superior_dice and not inferior_dice:
