@@ -869,8 +869,12 @@ async def gadget(ctx,
 	count: discord.Option(discord.SlashCommandOptionType.integer, "The number of CYCLOPS Gadgets to produce", required=False, default=1),
 	duplicates: discord.Option(bool, "Mark FALSE to prevent duplicate items being rolled if count > 1", required=False, default=True)
 	):
-	log("/matrix cyclops gadget")
+	log(f"/matrix cyclops gadget {count}{' duplicates' if duplicates else ''}")
 	message = ""
+	limit = 250
+	if count > limit:
+		await ctx.respond(f"Please do not produce more than {limit} gadgets.")
+		return
 	if count <= 1:
 		result = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
 		message = f"**{result['Name']}**: {result['Effect']}"
