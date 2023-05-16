@@ -890,7 +890,7 @@ async def gadget(ctx,
 				else:
 					message += f"{key}\n"
 		else:
-			gs = intelligence["cyclops_gadgets"][0]["Values"].values()
+			gs = list(intelligence["cyclops_gadgets"][0]["Values"].values())
 			outs = rnd.sample(gs, min([len(gs),count]))
 			for item in outs:
 				message.append(f"{item['Name']}\n")
