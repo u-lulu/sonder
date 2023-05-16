@@ -876,7 +876,7 @@ async def gadget(ctx,
 		message = f"**{result['Name']}**: {result['Effect']}"
 	else:
 		if duplicates:
-			results: {}
+			results = {}
 			for i in range(count):
 				g = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
 				name = g["Name"]
