@@ -893,7 +893,7 @@ async def gadget(ctx,
 			gs = list(intelligence["cyclops_gadgets"][0]["Values"].values())
 			outs = rnd.sample(gs, min([len(gs),count]))
 			for item in outs:
-				message.append(f"{item['Name']}\n")
+				message += f"{item['Name']}\n"
 	await ctx.respond(message)
 
 @cyclops_group.command(description="Divulges where CYCLOPS High Command is (allegedly) located")
