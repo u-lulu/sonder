@@ -865,10 +865,35 @@ intelligence["cyclops_rumors"] = json.load(file)
 file.close()
 
 @cyclops_group.command(description="Grants a random CYCLOPS Gadget")
-async def gadget(ctx):
+async def gadget(ctx, 
+	count: discord.Option(discord.SlashCommandOptionType.integer, "The number of CYCLOPS Gadgets to produce", required=False, default=1),
+	duplicates: discord.Option(bool, "Mark FALSE to prevent duplicate items being rolled if count > 1", required=False, default=True)
+	):
 	log("/matrix cyclops gadget")
-	result = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
-	message = f"**{result['Name']}**: {result['Effect']}"
+	message = ""
+	if count <= 1:
+		result = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
+		message = f"**{result['Name']}**: {result['Effect']}"
+	else:
+		if duplicates:
+			results: {}
+			for i in range(count):
+				g = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
+				name = g["Name"]
+				if name in results:
+					results[name] = results[name] + 1
+				else:
+					results[name] = 1
+			for key in results:
+				if results[key] > 1:
+					message += f"{key} **(x{results[key]})**\n"
+				else:
+					message += f"{key}\n"
+		else:
+			gs = intelligence["cyclops_gadgets"][0]["Values"].values()
+			outs = rnd.sample(gs, min([len(gs),count]))
+			for item in outs:
+				message.append(f"{item['Name']}\n")
 	await ctx.respond(message)
 
 @cyclops_group.command(description="Divulges where CYCLOPS High Command is (allegedly) located")
