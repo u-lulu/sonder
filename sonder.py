@@ -869,7 +869,7 @@ async def gadget(ctx,
 	count: discord.Option(discord.SlashCommandOptionType.integer, "The number of CYCLOPS Gadgets to produce", required=False, default=1),
 	duplicates: discord.Option(bool, "Mark FALSE to prevent duplicate items being rolled if count > 1", required=False, default=True)
 	):
-	log(f"/matrix cyclops gadget {count}{' duplicates' if duplicates else ''}")
+	log(f"/matrix cyclops gadget {count}{' no_duplicates' if not duplicates else ''}")
 	message = ""
 	limit = 250
 	if count > limit:
