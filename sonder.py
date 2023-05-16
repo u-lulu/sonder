@@ -873,9 +873,9 @@ async def gadget(ctx,
 	message = ""
 	limit = 250
 	if count > limit:
-		await ctx.respond(f"Please do not produce more than {limit} gadgets.")
+		await ctx.respond(f"Please do not produce more than {limit} gadgets.",ephemeral=True)
 		return
-	if count <= 1:
+	elif count <= 1:
 		result = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
 		message = f"**{result['Name']}**: {result['Effect']}"
 	else:
