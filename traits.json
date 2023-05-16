@@ -1206,7 +1206,7 @@
   {
     "Number": 555,
     "Name": "STAND",
-    "Effect": "You command a flamboyant spirit with its own trait, tangible only to you but able to affect the corporeal world. Roll a random trait for your stand (D666) and choose a hyper-specific additional bonus, like \"can be used twice per mission if my blood is removed and replaced\" or \"deals double DAMAGE if the target is left-handed.\" Everyone else at the table should democratically decide on a hyper-specific condition or downside, such as \"can only be used when Mercury is in retrograde\" or \"causes a random bone in the user's body to break when used.\"",
+    "Effect": "You command a flamboyant spirit with its own trait, tangible only to you but able to affect the corporeal world. Roll a random trait for your stand (`/trait random`) and choose a hyper-specific additional bonus, like \"can be used twice per mission if my blood is removed and replaced\" or \"deals double DAMAGE if the target is left-handed.\" Everyone else at the table should democratically decide on a hyper-specific condition or downside, such as \"can only be used when Mercury is in retrograde\" or \"causes a random bone in the user's body to break when used.\"",
     "Item": "Stand (immortal and invisible)",
     "Stat": "+1 FORCEFUL"
   },
