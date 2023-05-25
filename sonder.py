@@ -529,7 +529,7 @@ async def factionmission(ctx):
 		result.append(roll_intelligence_matrix(intelligence["misc"][5]))
 		result.remove("Double mission (roll two objectives)")
 	result = " __*and*__ ".join(result)
-	message = f"A faction tasks you with this objective: {result}"
+	message = f"A faction tasks you with this objective: **{result}**"
 	await ctx.respond(message)
 
 @matrix_group.command(description="Assigns a random CHOKE Score")
