@@ -248,16 +248,22 @@ player_group = discord.SlashCommandGroup("player", "Player Commands")
 def trait_sort_key(trait):
 	return trait["Name"]
 
+file = open('ripley_codenames.json')
+merc_codenames = json.load(file)
+file.close()
+
 @player_group.command(description="Produces a random character sheet")
 async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionType.integer, "The number of traits this character should have. Defaults to 2.", required=False, default=2)):
 	log(f"/player character {traitcount}")
+	
+	message = f"# {rnd.choice(merc_codenames)}"
 	if traitcount < 1:
 		await ctx.respond("Generated characters must have at least 1 trait.",ephemeral=True)
 		return
 	if traitcount > 40:
 		await ctx.respond("Cannot generate a character with that many traits.",ephemeral=True)
 		return
-	message = "ROLE: "
+	message += "\nROLE: "
 	
 	traits = rnd.sample(trait_data, traitcount)
 	role = rnd.choice(role_data)
@@ -521,9 +527,10 @@ async def factionmission(ctx):
 	while "Double mission (roll two objectives)" in result:
 		result.append(roll_intelligence_matrix(intelligence["misc"][5]))
 		result.append(roll_intelligence_matrix(intelligence["misc"][5]))
-		result.remove("Compound injury (roll two hit locations)")
+		result.remove("Double mission (roll two objectives)")
 	result = " __*and*__ ".join(result)
-	await ctx.respond(result)
+	message = f"A faction tasks you with this objective: {result}"
+	await ctx.respond(message)
 
 @matrix_group.command(description="Assigns a random CHOKE Score")
 async def choke(ctx):
@@ -1219,7 +1226,7 @@ async def robot(ctx):
 		prog_conflict = roll_intelligence_matrix(intelligence["chars_robots"][3])
 		while prog_conflict == prog:
 			prog_conflict = roll_intelligence_matrix(intelligence["chars_robots"][3])
-		prog = f"{prog} (conflicts with {prog_conflict})"
+		prog = f"{prog} (conflicts with: {prog_conflict})"
 	elif budget == "CYCLOPS\u2014add 1D6 additional features":
 		possible_features = list(intelligence["chars_robots"][2]["Values"].values())
 		feature = rnd.sample(possible_features,rnd.randint(2,7))
