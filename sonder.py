@@ -1229,11 +1229,11 @@ async def robot(ctx):
 		prog = f"{prog} (conflicts with: {prog_conflict})"
 	elif budget == "CYCLOPS\u2014add 1D6 additional features":
 		possible_features = list(intelligence["chars_robots"][2]["Values"].values())
-		feature = rnd.sample(possible_features,rnd.randint(2,7))
+		feature = rnd.sample(possible_features,1+d6())
 		feature = ", ".join(feature)
 	elif budget == "Corporate\u2014mash together 1D6 descriptions":
 		possible_descs = list(intelligence["chars_robots"][1]["Values"].values())
-		desc = rnd.sample(possible_descs,d6())
+		desc = rnd.sample(possible_descs,rnd.randint(2,6))
 		desc = ", ".join(desc)
 	
 	message = f"Description: {desc}\nBudget: {budget}\nFeature: {feature}\nProgramming: {prog}"
@@ -1302,7 +1302,7 @@ async def corporation(ctx):
 	if sector == "Megacorp (roll 1D6 sectors)":
 		possible_sectors = list(intelligence["facs_corporations"][0]["Values"].values())
 		possible_sectors.remove("Megacorp (roll 1D6 sectors)")
-		subsectors = rnd.sample(possible_sectors, d6())
+		subsectors = rnd.sample(possible_sectors,rnd.randint(2,6))
 		sector = f"Megacorp ({', '.join(subsectors)})"
 	name = result[1]
 	feature = result[2]
