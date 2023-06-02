@@ -211,14 +211,14 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 	else:
 		try:
 			msg = await channel.fetch_message(id)
-			if msg.pinned:
+			if not msg.pinned:
 				await msg.pin()
 				await ctx.respond(f"Pinned a message: {msg.jump_url}")
 			else:
 				await msg.unpin()
 				await ctx.respond(f"Unpinned a message: {msg.jump_url}")
 		except Exception as e:
-			await ctx.respond(f"There was an error processing this command: `{e}`")
+			await ctx.respond(f"There was an error processing this command: `{e}`",ephemeral=True)
 
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
