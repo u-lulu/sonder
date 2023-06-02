@@ -198,7 +198,7 @@ async def spin(ctx):
 	log("/spin")
 	await ctx.respond("[very funny](https://cdn.discordapp.com/attachments/1098474379383423018/1098475477116669952/spin_lq.mp4)",ephemeral=True)
 
-@bot.command(description="Pin a message inside a thread, if you own the thread")
+@bot.command(description="Pin (or unpin) a message inside a thread, if you own the thread")
 async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin.", required=True)):
 	try:
 		id = int(id.strip())
@@ -213,10 +213,10 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 			msg = await channel.fetch_message(id)
 			if not msg.pinned:
 				await msg.pin()
-				await ctx.respond(f"Pinned a message: {msg.jump_url}")
+				await ctx.respond(f"📌 Pinned a message: {msg.jump_url}")
 			else:
 				await msg.unpin()
-				await ctx.respond(f"Unpinned a message: {msg.jump_url}")
+				await ctx.respond(f"❌ Unpinned a message: {msg.jump_url}")
 	except Exception as e:
 		log(f"Caught: {e}")
 		await ctx.respond(f"There was an error processing this command: \n```{e}```",ephemeral=True)
