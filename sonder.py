@@ -200,16 +200,16 @@ async def spin(ctx):
 
 @bot.command(description="Pin a message inside a thread, if you own the thread")
 async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin.", required=True)):
-	id = int(id.strip())
-	channel = ctx.channel
-	if type(channel) != discord.Thread:
-		await ctx.respond("This command does not work outside of a thread.",ephemeral=True)
-		return
-	elif channel.owner_id != ctx.author.id:
-		await ctx.respond(f"Only <@{channel.owner_id}> may use that command within this thread.",ephemeral=True)
-		return
-	else:
-		try:
+	try:
+		id = int(id.strip())
+		channel = ctx.channel
+		if type(channel) != discord.Thread:
+			await ctx.respond("This command does not work outside of a thread.",ephemeral=True)
+			return
+		elif channel.owner_id != ctx.author.id:
+			await ctx.respond(f"Only <@{channel.owner_id}> may use that command within this thread.",ephemeral=True)
+			return
+		else:
 			msg = await channel.fetch_message(id)
 			if not msg.pinned:
 				await msg.pin()
@@ -217,8 +217,9 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 			else:
 				await msg.unpin()
 				await ctx.respond(f"Unpinned a message: {msg.jump_url}")
-		except Exception as e:
-			await ctx.respond(f"There was an error processing this command: `{e}`",ephemeral=True)
+	except Exception as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"There was an error processing this command: `{e}`",ephemeral=True)
 
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
