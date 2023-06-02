@@ -202,7 +202,6 @@ async def spin(ctx):
 async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin.", required=True)):
 	log(f"/threadpin {id}")
 	try:
-		id = int(id.strip())
 		channel = ctx.channel
 		if type(channel) != discord.Thread:
 			await ctx.respond("This command does not work outside of a thread.",ephemeral=True)
@@ -211,6 +210,7 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 			await ctx.respond(f"Only <@{channel.owner_id}> may use that command within this thread.",ephemeral=True)
 			return
 		else:
+			id = int(id.strip())
 			msg = await channel.fetch_message(id)
 			if not msg.pinned:
 				await msg.pin(reason=f"/threadpin performed by {ctx.author.name}#{ctx.author.discriminator}")
