@@ -223,7 +223,7 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 		await ctx.respond(f"There was an error processing this command: \n```{e}```\nThis command does not function properly by default. This bot must have the **read message history** and **manage messages** permissions.")
 	except (discord.NotFound,ValueError) as e:
 		log(f"Caught: {e}")
-		await ctx.respond(f"There was an error processing this command: \n```{e}```\nYou must provide a valid message ID. Check [this article](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-) for more details.")
+		await ctx.respond(f"There was an error processing this command: \n```{e}```\nYou must provide a valid message ID. Check [this article](<https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID->) for more details.")
 	except Exception as e:
 		log(f"Caught: {e}")
 		await ctx.respond(f"There was an error processing this command: \n```{e}```")
