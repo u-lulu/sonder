@@ -200,6 +200,7 @@ async def spin(ctx):
 
 @bot.command(description="Pin (or unpin) a message inside a thread, if you own the thread")
 async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin.", required=True)):
+	log(f"/threadpin {id}")
 	try:
 		id = int(id.strip())
 		channel = ctx.channel
