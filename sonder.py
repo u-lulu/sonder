@@ -213,10 +213,10 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 		else:
 			msg = await channel.fetch_message(id)
 			if not msg.pinned:
-				await msg.pin()
+				await msg.pin(reason=f"/threadpin performed by {ctx.author.name}#{ctx.author.discriminator}")
 				await ctx.respond(f"📌 Pinned a message: {msg.jump_url}")
 			else:
-				await msg.unpin()
+				await msg.unpin(reason=f"/threadpin performed by {ctx.author.name}#{ctx.author.discriminator}")
 				await ctx.respond(f"❌ Unpinned a message: {msg.jump_url}")
 	except discord.Forbidden as e:
 		log(f"Caught: {e}")
