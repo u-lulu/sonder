@@ -206,7 +206,7 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 		if type(channel) != discord.Thread:
 			await ctx.respond("This command does not work outside of a thread.",ephemeral=True)
 		elif channel.owner_id != ctx.author.id:
-			await ctx.respond(f"Only {channel.owner.mention} may use that command within this thread.",ephemeral=True)
+			await ctx.respond(f"Only <@{channel.owner_id}> may use that command within this thread.",ephemeral=True)
 		else:
 			id = int(id.strip())
 			msg = await channel.fetch_message(id)
