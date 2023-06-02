@@ -199,7 +199,8 @@ async def spin(ctx):
 	await ctx.respond("[very funny](https://cdn.discordapp.com/attachments/1098474379383423018/1098475477116669952/spin_lq.mp4)",ephemeral=True)
 
 @bot.command(description="Pin a message inside a thread, if you own the thread")
-async def threadpin(ctx, id: discord.Option(discord.SlashCommandOptionType.integer, "The ID of the message to pin.", required=True)):
+async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin.", required=True)):
+	id = int(id.strip())
 	channel = ctx.channel
 	if type(channel) != discord.Thread:
 		await ctx.respond("This command does not work outside of a thread.",ephemeral=True)
