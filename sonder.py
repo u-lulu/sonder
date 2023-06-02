@@ -217,7 +217,7 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 			else:
 				await msg.unpin()
 				await ctx.respond(f"Unpinned a message: {msg.jump_url}")
-		except e:
+		except Exception as e:
 			await ctx.respond(f"There was an error processing this command: `{e}`")
 
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
