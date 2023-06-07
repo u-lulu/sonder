@@ -221,6 +221,13 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 		log(f"Caught: {e}")
 		await ctx.respond(f"There was an error processing this command:\n```{e}```")
 
+character_data = {}
+# character_data structure:
+# - main object is a dict, keys are user IDs
+# - user IDs point to dicts with 2 keys: "active" and "chars"
+# - "chars" is a dict that contains all characters, with keys being codenames
+# - "active" is a dict; keys are channel IDs, values are character codenames
+
 @bot.command(description="Create a new character to manage")
 async def create(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", required=True)):
 	#todo
@@ -232,7 +239,7 @@ async def list(ctx):
 	return
 
 @bot.command(description="Switch which character is active in this channel")
-async def switch(ctx):
+async def switch(ctx, codename: discord.Option(str, "The codename of the character to switch to.", required=False, default="")):
 	#todo
 	return
 
