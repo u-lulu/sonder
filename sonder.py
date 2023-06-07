@@ -221,6 +221,77 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 		log(f"Caught: {e}")
 		await ctx.respond(f"There was an error processing this command:\n```{e}```")
 
+@bot.command(description="Create a new character to manage")
+async def create(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", required=True)):
+	#todo
+	return
+
+@bot.command(description="List all characters you've created")
+async def list(ctx):
+	#todo
+	return
+
+@bot.command(description="Switch which character is active in this channel")
+async def switch(ctx):
+	#todo
+	return
+
+@bot.command(description="Add a trait or item to a character")
+async def add(ctx):
+	#todo
+	return
+
+@bot.command(description="Remove a trait or item from a character")
+async def remove(ctx):
+	#todo
+	return
+
+@bot.command(description="Adjust one of the stats of your character")
+async def stat(ctx):
+	#todo
+	return
+
+@bot.command(description="Roll +FORCEFUL with your active character")
+async def FRC(ctx):
+	#todo
+	return
+
+@bot.command(description="Roll +REFLEXIVE with your active character")
+async def RFX(ctx):
+	#todo
+	return
+
+@bot.command(description="Roll +TACTICAL with your active character")
+async def TAC(ctx):
+	#todo
+	return
+
+@bot.command(description="Roll +CREATIVE with your active character")
+async def CRE(ctx):
+	#todo
+	return
+
+@bot.command(description="Take damage")
+async def damage(ctx, 
+	amount: discord.Option(str, "Amount of damage to take; supports dice syntax.", required=True),
+	armor_piercing: discord.Option(bool, "Skip armor when applying this damage.", required=False, default=False)):
+	#todo
+	return
+
+@bot.command(description="Set your equipped weapon")
+async def equip_weapon(ctx, 
+	name: discord.Option(str, "The weapon's name.", required=True),
+	damage: discord.Option(str, "Amount of damage to deal; supports dice syntax.", required=True):
+	#todo
+	return
+
+@bot.command(description="Set your equipped armor")
+async def equip_armor(ctx, 
+	name: discord.Option(str, "The armor's name.", required=True),
+	damage: discord.Option(int, "Amount of damage it reduces.", required=True):
+	#todo
+	return
+
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
 async def role_autocomp(ctx):
