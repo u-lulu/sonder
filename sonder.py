@@ -229,7 +229,7 @@ character_data = {}
 # - "active" is a dict; keys are channel IDs, values are character codenames
 
 def output_character(codename, data):
-	out = f"# {codename}"
+	out = f"# {codename.upper()}"
 	if data["role"] == {}:
 		out += "\nROLE: *No role yet.*"
 	else:
@@ -257,6 +257,14 @@ def output_character(codename, data):
 		for item in data['items']:
 			out += f"\n- {item}"
 	return out
+
+def get_active(ctx):
+	uid = ctx.author.id
+	if uid in character_data:
+		your_actives = character_data[uid]['active']
+		if ctx.channel_id in your_actives:
+			return your_actives[ctx.channel_id]
+	return None
 
 @bot.command(description="Create a new character to manage")
 async def create(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", required=True)):
@@ -287,6 +295,11 @@ async def create(ctx, codename: discord.Option(str, "The character's codename, u
 	await ctx.respond(f"Created character with the codename '{codename}'.")
 	return
 
+@bot.command(description="Delete a character from your roster")
+async def delete(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", required=True)):
+	return
+	
+
 @bot.command(description="List all characters you've created")
 async def list(ctx):
 	if ctx.author.id in character_data:
@@ -295,74 +308,83 @@ async def list(ctx):
 			msg = f"Characters created by <@{ctx.author.id}>:\n- " + "\n- ".join(yourchars)
 			await ctx.respond(msg)
 			return
-	await ctx.respond("You haven't created any characters yet!")
+	await ctx.respond("You haven't created any characters yet!",ephemeral=True)
 	return
 	
 @bot.command(description="Displays your current active character's sheet")
 async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", required=False, default="")):
+	if codename == "":
+		codename = get_active(ctx)
+	if codename == None:
+		await ctx.respond("You have not set an active character in this channel. Either set your active character with `/switch`, or specify which character's sheet you want to view using the optional `codename` argument for this command.",ephemeral=True)
+		return
+	if ctx.author.id not in character_data or codename not in character_data[ctx.author.id]['chars']:
+		await ctx.respond(f"You have not created a character with the codename '{codename}'. Check your spelling, or try creating them with `/create`.",ephemeral=True)
+		return
+	
 	ch = character_data[ctx.author.id]['chars'][codename]
 	await ctx.respond(output_character(codename, ch))
 	return
 
 @bot.command(description="Switch which character is active in this channel")
-async def switch(ctx, codename: discord.Option(str, "The codename of the character to switch to.", required=False, default="")):
-	#todo
+async def switch(ctx, codename: discord.Option(str, "The codename of the character to switch to.", required=True)):
+	await ctx.respond("TODO",ephemeral=True)
 	return
 
 @bot.command(description="Add a trait or item to a character")
 async def add(ctx):
-	#todo
+	await ctx.respond("TODO",ephemeral=True)
 	return
 
 @bot.command(description="Remove a trait or item from a character")
 async def remove(ctx):
-	#todo
+	await ctx.respond("TODO",ephemeral=True)
 	return
 
 @bot.command(description="Adjust one of the stats of your character")
 async def stat(ctx):
-	#todo
+	await ctx.respond("TODO",ephemeral=True)
 	return
 
 @bot.command(description="Roll +FORCEFUL with your active character")
 async def frc(ctx):
-	#todo
+	await ctx.respond("TODO",ephemeral=True)
 	return
 
 @bot.command(description="Roll +REFLEXIVE with your active character")
 async def rfx(ctx):
-	#todo
+	await ctx.respond("TODO",ephemeral=True)
 	return
 
 @bot.command(description="Roll +TACTICAL with your active character")
 async def tac(ctx):
-	#todo
+	await ctx.respond("TODO",ephemeral=True)
 	return
 
 @bot.command(description="Roll +CREATIVE with your active character")
 async def cre(ctx):
-	#todo
+	await ctx.respond("TODO",ephemeral=True)
 	return
 
 @bot.command(description="Take damage")
 async def damage(ctx, 
 	amount: discord.Option(str, "Amount of damage to take; supports dice syntax.", required=True),
 	armor_piercing: discord.Option(bool, "Skip armor when applying this damage.", required=False, default=False)):
-	#todo
+	await ctx.respond("TODO",ephemeral=True)
 	return
 
 @bot.command(description="Set your equipped weapon")
 async def equip_weapon(ctx, 
 	name: discord.Option(str, "The weapon's name.", required=True),
 	damage: discord.Option(str, "Amount of damage to deal; supports dice syntax.", required=True)):
-	#todo
+	await ctx.respond("TODO",ephemeral=True)
 	return
 
 @bot.command(description="Set your equipped armor")
 async def equip_armor(ctx, 
 	name: discord.Option(str, "The armor's name.", required=True),
 	damage: discord.Option(int, "Amount of damage it reduces.", required=True)):
-	#todo
+	await ctx.respond("TODO",ephemeral=True)
 	return
 
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
