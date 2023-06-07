@@ -193,11 +193,6 @@ async def server(ctx):
 	log("/server")
 	await ctx.respond("https://discord.gg/VeedQmQc7k",ephemeral=True)
 
-@bot.command(description="spin")
-async def spin(ctx):
-	log("/spin")
-	await ctx.respond("[very funny](https://cdn.discordapp.com/attachments/1098474379383423018/1098475477116669952/spin_lq.mp4)",ephemeral=True)
-
 @bot.command(description="Pin (or unpin) a message inside a thread, if you own the thread")
 async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin.", required=True)):
 	log(f"/threadpin {id}")
