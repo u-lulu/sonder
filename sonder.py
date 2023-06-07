@@ -228,14 +228,80 @@ character_data = {}
 # - "chars" is a dict that contains all characters, with keys being codenames
 # - "active" is a dict; keys are channel IDs, values are character codenames
 
+def output_character(codename, data):
+	out = f"# {codename}"
+	if data["role"] == {}:
+		out += "\nROLE: *No role yet.*"
+	else:
+		out += "\n" + role_message_format(data["role"])
+	
+	out += f"\n\nHP: {data['hp']}/{data['maxhp']}"
+	out += f"\nWAR DICE: {data['wd']}"
+	
+	out += f"\n\nFORCEFUL: {data['frc']}"
+	out += f"\nTACTICAL: {data['tac']}"
+	out += f"\nCREATIVE: {data['cre']}"
+	out += f"\nREFLEXIVE: {data['rfx']}"
+	
+	out += "\n\nTRAITS:\n"
+	if len(data['traits']) <= 0:
+		out += "- *No traits yet.*"
+	else:
+		for trait in data['traits']:
+			out += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
+	
+	out += "\nITEMS:"
+	if len(data['items']) <= 0:
+		out += "\n- *No items yet.*"
+	else:
+		for item in data['items']:
+			out += f"\n- {item}"
+	return out
+
 @bot.command(description="Create a new character to manage")
 async def create(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", required=True)):
-	#todo
+	userid = ctx.author.id
+	if userid not in character_data:
+		character_data[userid] = {
+			"active": {},
+			"chars": {}
+		}
+	
+	codename = codename.lower()
+	if codename in character_data[userid]["chars"]:
+		await ctx.respond(f"You have already created a character with the codename '{codename}'.",ephemeral=True)
+		return
+	
+	character_data[userid]["chars"][codename] = {
+		"role": {},
+		"maxhp": 6,
+		"hp": 6,
+		"wd": 0,
+		"frc": 0,
+		"tac": 0,
+		"rfx": 0,
+		"cre": 0,
+		"traits": [],
+		"items": []
+	}
+	await ctx.respond(f"Created character with the codename '{codename}'.")
 	return
 
 @bot.command(description="List all characters you've created")
 async def list(ctx):
-	#todo
+	if ctx.author.id in character_data:
+		yourchars = character_data[ctx.author.id]['chars'].keys()
+		if len(yourchars) > 0:
+			msg = f"Characters created by <@{ctx.author.id}>:\n- " + "\n- ".join(yourchars)
+			await ctx.respond(msg)
+			return
+	await ctx.respond("You haven't created any characters yet!")
+	return
+	
+@bot.command(description="Displays your current active character's sheet")
+async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", required=False, default="")):
+	ch = character_data[ctx.author.id]['chars'][codename]
+	await ctx.respond(output_character(codename, ch))
 	return
 
 @bot.command(description="Switch which character is active in this channel")
@@ -259,22 +325,22 @@ async def stat(ctx):
 	return
 
 @bot.command(description="Roll +FORCEFUL with your active character")
-async def FRC(ctx):
+async def frc(ctx):
 	#todo
 	return
 
 @bot.command(description="Roll +REFLEXIVE with your active character")
-async def RFX(ctx):
+async def rfx(ctx):
 	#todo
 	return
 
 @bot.command(description="Roll +TACTICAL with your active character")
-async def TAC(ctx):
+async def tac(ctx):
 	#todo
 	return
 
 @bot.command(description="Roll +CREATIVE with your active character")
-async def CRE(ctx):
+async def cre(ctx):
 	#todo
 	return
 
@@ -288,14 +354,14 @@ async def damage(ctx,
 @bot.command(description="Set your equipped weapon")
 async def equip_weapon(ctx, 
 	name: discord.Option(str, "The weapon's name.", required=True),
-	damage: discord.Option(str, "Amount of damage to deal; supports dice syntax.", required=True):
+	damage: discord.Option(str, "Amount of damage to deal; supports dice syntax.", required=True)):
 	#todo
 	return
 
 @bot.command(description="Set your equipped armor")
 async def equip_armor(ctx, 
 	name: discord.Option(str, "The armor's name.", required=True),
-	damage: discord.Option(int, "Amount of damage it reduces.", required=True):
+	damage: discord.Option(int, "Amount of damage it reduces.", required=True)):
 	#todo
 	return
 
