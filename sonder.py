@@ -297,8 +297,8 @@ async def create(ctx, codename: discord.Option(str, "The character's codename, u
 
 @bot.command(description="Delete a character from your roster")
 async def delete(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", required=True)):
+	await ctx.respond("TODO",ephemeral=True)
 	return
-	
 
 @bot.command(description="List all characters you've created")
 async def list(ctx):
@@ -319,7 +319,7 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 		await ctx.respond("You have not set an active character in this channel. Either set your active character with `/switch`, or specify which character's sheet you want to view using the optional `codename` argument for this command.",ephemeral=True)
 		return
 	if ctx.author.id not in character_data or codename not in character_data[ctx.author.id]['chars']:
-		await ctx.respond(f"You have not created a character with the codename '{codename}'. Check your spelling, or try creating them with `/create`.",ephemeral=True)
+		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create`.",ephemeral=True)
 		return
 	
 	ch = character_data[ctx.author.id]['chars'][codename]
@@ -328,6 +328,18 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 
 @bot.command(description="Switch which character is active in this channel")
 async def switch(ctx, codename: discord.Option(str, "The codename of the character to switch to.", required=True)):
+	userid = ctx.author.id
+	if userid not in character_data:
+		await ctx.respond("You have no characters available. Use `/create` to make one.",ephemeral=True)
+		return
+		
+	codename = codename.lower()
+	if codename not in character_data[userid]["chars"]:
+		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create`.",ephemeral=True)
+		return
+	else:
+		character_data[userid]['active'][ctx.channel_id] = codename
+		await ctx.respond(f"<@{userid}> has set their active character in this channel to **{codename}**.")
 	await ctx.respond("TODO",ephemeral=True)
 	return
 
