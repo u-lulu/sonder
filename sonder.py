@@ -198,6 +198,18 @@ async def spin(ctx):
 	log("/spin")
 	await ctx.respond("[very funny](https://cdn.discordapp.com/attachments/1098474379383423018/1098475477116669952/spin_lq.mp4)",ephemeral=True)
 
+@bot.command(description="testing")
+async def debug(ctx, input: discord.Option(str, "data", required=True)):
+	log(f"/debug {input}")
+	if ctx.author.id == ownerid:
+		if len(input) <= 2000:
+			await ctx.channel.send(content=input)
+			await ctx.respond(f"Done.",ephemeral=True)
+		else:
+			await ctx.respond(f"Message too long ({len(input)} > 2000).",ephemeral=True)
+	else:
+		await ctx.respond(f"Only <@{ownerid}> may use this command.",ephemeral=True)
+
 @bot.command(description="Pin (or unpin) a message inside a thread, if you own the thread")
 async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin.", required=True)):
 	log(f"/threadpin {id}")
