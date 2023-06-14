@@ -10,16 +10,22 @@ import os
 import rolldice # pip install py-rolldice
 from func_timeout import func_timeout, FunctionTimedOut # pip install func-timeout
 
+def log(msg):
+	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
+
+log("Initializing...")
 boot_time = int(time.time())
 
 bot = discord.Bot(activity=discord.Game(name='FIST: Ultra Edition'))
 
+log("Loading token")
 token_file = open('token.json')
 token_file_data = json.load(token_file)
 ownerid = token_file_data["owner_id"]
 token = token_file_data["token"]
 token_file.close()
 
+log("Loading traits")
 trait_file = open('traits.json')
 trait_data = json.load(trait_file)
 trait_file.close()
@@ -28,10 +34,12 @@ trait_file = open('secret_trait.json')
 secret_trait = json.load(trait_file)
 trait_file.close()
 
+log("Loading roles")
 role_file = open('roles.json')
 role_data = json.load(role_file)
 role_file.close()
 
+log("Creating role and trait name list")
 trait_names = []
 for trait in trait_data:
 	trait_names.append(trait["Name"])
@@ -49,6 +57,7 @@ num_to_die = {
 	6: "<:revolver_dice_6:1029946662531113011>"
 }
 
+log("Defining helper functions")
 def d6():
 	return rnd.randint(1,6)
 
@@ -124,9 +133,6 @@ def decap_first(string):
 			return string[0].lower() + string[1:]
 	return string
 
-def log(msg):
-	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
-
 def remove_duplicates(lst):
 	unique_lst = []
 
@@ -154,6 +160,7 @@ def roll_extra_possibility(input_string):
 	else:
 		return input_string
 
+log("Creating generic commands")
 @bot.event
 async def on_ready():
 	log(f"{bot.user} is ready and online!")
@@ -238,6 +245,7 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 		log(f"Caught: {e}")
 		await ctx.respond(f"There was an error processing this command:\n```{e}```")
 
+log("Creating trait commands")
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
 async def role_autocomp(ctx):
@@ -262,6 +270,7 @@ async def random(ctx):
 
 bot.add_application_command(trait_group)
 
+log("Creating role commands")
 role_group = discord.SlashCommandGroup("role", "Role Commands")
 
 async def role_autocomp(ctx):
@@ -283,11 +292,13 @@ async def random(ctx):
 
 bot.add_application_command(role_group)
 
+log("Creating player commands")
 player_group = discord.SlashCommandGroup("player", "Player Commands")
 
 def trait_sort_key(trait):
 	return trait["Name"]
 
+log("Loading Ripley's codenames")
 file = open('ripley_codenames.json')
 merc_codenames = json.load(file)
 file.close()
@@ -482,6 +493,7 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax")):
 
 bot.add_application_command(player_group)
 
+log("Creating matrix commands")
 matrix_group = discord.SlashCommandGroup("matrix", "Intelligence Matrix Rollers")
 
 intelligence = {}
