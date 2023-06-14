@@ -193,7 +193,8 @@ async def help(ctx):
 @bot.command(description="Links to the invite page for this bot")
 async def invite(ctx):
 	log("/invite")
-	await ctx.respond("[Invite page](https://discord.com/api/oauth2/authorize?client_id=1096635021395251352&permissions=274877908992&scope=bot%20applications.commands)",ephemeral=True)
+	await ctx.respond("The ability to invite this bot to your own server is currently disabled. This feature may become available again if it becomes verified by Discord.",ephemeral=True)
+	#await ctx.respond("[Invite page](https://discord.com/api/oauth2/authorize?client_id=1096635021395251352&permissions=274877908992&scope=bot%20applications.commands)",ephemeral=True)
 
 @bot.command(description="Links to the support server for this bot")
 async def server(ctx):
