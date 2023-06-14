@@ -1650,4 +1650,5 @@ async def spell(ctx):
 
 bot.add_application_command(matrix_group)
 
+log("Starting bot session")
 bot.run(token)
