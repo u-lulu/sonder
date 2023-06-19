@@ -1,0 +1,97 @@
+[
+	{
+		"Title":"ROOMS",
+		"Roll":"2D6",
+		"Values":
+			{
+				"2":"**BUNKER** (no cover)\nFeatureless save for bolts in the walls.",
+				"3":"**PADDED ROOM** (no cover)\nA paltry cage for a human being.",
+				"4":"**REACTOR ROOM** (low cover)\nA faux reactor dominates the chamber.",
+				"5":"**OFFICE BUILDING** (low cover)\nSinged paper and shattered glass. Open-plan.",
+				"6":"**PARKING LOT** (low cover)\nStreetlights illuminate a dusting of cars.",
+				"7":"**TRENCHES** (medium cover)\nTwo muddy trenches, barbed wire and wood.",
+				"8":"**FACTORY** (medium cover)\nHigh steel catwalks and an assembly line.",
+				"9":"**WAREHOUSE** (high cover)\nA maze of high shelves and shipping containers.",
+				"10":"**HOSPITAL** (high cover)\nBeds and equipment. Many plastic curtains.",
+				"11":"**FOREST** (high cover)\nTransplated cedars densely packed in a cell.",
+				"12":"**JUNGLE** (high cover)\nRealistically impenetrable plastic foliage."
+			}
+	},
+	{
+		"Title":"HAZARDS",
+		"Roll":"2D6",
+		"Values":
+			{
+				"2":"Conveyor belt, crushing pistons (2D6 DAMAGE)",
+				"3":"Flooded, electrified floor (1D6+2 DAMAGE)",
+				"4":"Fillling with poison gas (1D6 damage)",
+				"5":"Overturned barrels leaking crude oil",
+				"6":"Pipes shooting steam (RFX roll or 2 DAMAGE)",
+				"7":"Pitch black, no visibility",
+				"8":"1D6 red barrels (explosion deals 1D6 DAMAGE)",
+				"9":"Hanging chains (RFX to avoid getting tangled)",
+				"10":"Security cameras, alarm system",
+				"11":"Laser security net, alarm system",
+				"12":"Compactor walls, slowly closing (2D6 DAMAGE)"
+			}
+	},
+	{
+		"Title":"ENCOUNTERS",
+		"Roll":"1D6+ROOMS CLEARED",
+		"Values":
+			{
+				"1":"Gun turret, mounted on ceiling",
+				"2":"Training android, standing on guard",
+				"3":"1D6 training androids, patrolling the room",
+				"4":"Heavy android, ready to fight",
+				"5":"Gun turret, on four fast robotic legs",
+				"6":"Wild animal, starving and terrified (-2 HP)",
+				"7":"Control subject, begging for help",
+				"8":"2D6 training androids, on standby mode",
+				"9":"2D6 control subjects bickering pointlessly",
+				"10":"1D6 wild animals, dosed with methamphetamine",
+				"11":"Control subject, dosed with methamphetamine",
+				"12":"1D6 heavy androids, patrolling the room",
+				"13":"Wild animal, 1D6 heavy androids",
+				"14":"2D6 training androids, 1 heavy with +1D6 HP",
+				"15":"Roll 3 × ENCOUNTERS 1D6+0",
+				"16":"Stronger robot duplicate of a player (+6 MAX HP)"
+			}
+	},
+	{
+		"Title":"ITEMS",
+		"Roll":"1D6+ROOMS CLEARED",
+		"Values":
+			{
+				"1":"Armor-piercing ammo (weapon ignores ARMOR)",
+				"2":"Bolt-action rifle (1D6+1 DAMAGE)",
+				"3":"Bulletproof vest (1 ARMOR)",
+				"4":"Claymore mine (2D6 DAMAGE)",
+				"5":"Flashlight (can be attached to weapon)",
+				"6":"Gas grenade (1D6 damage to all in room)",
+				"7":"Gas mask (ignore breathing-based damage)",
+				"8":"Trait item (if needed) or lead pipe (1D6 DAMAGE)",
+				"9":"Light machine gun (1D6+1 DAMAGE)",
+				"10":"Medkit (heal 1D6+TAC HP, three uses)",
+				"11":"MRE field rations (heal 1D6 HP, one use)",
+				"12":"Painkillers (ignore 2 DAMAGE, one use)",
+				"13":"Revolver (1D6+1 DAMAGE)",
+				"14":"Riot shield (1 ARMOR, equip as weapon)",
+				"15":"Silencer (attach to any gun)",
+				"16":"Trait item (if needed) or reroll ITEMS 1D6+8"
+			}
+	},
+	{
+		"Title":"WILD ANIMAL",
+		"Roll":"D6",
+		"Values":
+			{
+				"1":"**ALLIGATOR** (8 HP, 1D6+2 DAMAGE, 1 ARMOR, roll +FRC to escape jaws)",
+				"2":"**BEAR** (10 HP, 1D6+4 DAMAGE)",
+				"3":"**LION** (8 HP, 1D6+4 DAMAGE)",
+				"4":"**RATTLESNAKE** (3 HP, 3 DAMAGE, poison deals 1D6 DAMAGE when the victim next gets hurt)",
+				"5":"1D6 **VULTURES** (3 HP, 3 DAMAGE)",
+				"6":"**ZEBRA** (6 HP, 1D6 DAMAGE)"
+			}
+	}
+]

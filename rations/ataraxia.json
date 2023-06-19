@@ -1,0 +1,28 @@
+[
+	{
+		"Title":"RUMORS",
+		"Roll":"D6",
+		"Values":
+			{
+				"1":"\"They are doing... teleportation experiments, north of here.\" (FALSE, outdated)",
+				"2":"\"Captain Petrov?\" the speaker spits. \"He is a traitor, a capitalist pig.\" (FALSE, misinformed)",
+				"3":"\"I was once taken to the bunker! It is a massive underground complex.\" (FALSE, lying)",
+				"4":"\"People have seen a ghost roaming the mountain pass...\" (TRUE, the Commissar)",
+				"5":"\"That bunker is cursed! Infested with an evil presence!\" (TRUE, the Commissar)",
+				"6":"\"The Commissar is looking for you.\" (TRUE)"
+			}
+	},
+	{
+		"Title":"PASS ENCOUNTERS",
+		"Roll":"D6",
+		"Values":
+			{
+				"1":"A hazy, uniformed figure in a gas mask observes from afar. No matter how much time passes, it never gets closer.",
+				"2":"A hiking party of 1D6 Vizhay villagers passes FIST. They offer a first aid kit (heal 1D6+TAC HP, three uses).",
+				"3":"2D6 SOVIET MOUNTAIN TROOPERS (8 HP, 1D6 DAMAGE) are on patrol with instructions to kill FIST on sight.",
+				"4":"1D6 mountain troopers in a UAZ-469",
+				"5":"Small avalanche (1D6 DAMAGE)",
+				"6":"Large avalanche (2D6 DAMAGE)"
+			}
+	}
+]
