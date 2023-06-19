@@ -1667,7 +1667,7 @@ async def rumor(ctx):
 async def encounter(ctx):
 	log("/ataraxia encounter")
 	result = roll_intelligence_matrix(intelligence["ataraxia"][1])
-	message = f"During your travels through Dyatlov Pass, you spot... {result}"
+	message = f"During your travels through Dyatlov Pass, you run into: **{result}**"
 	await ctx.respond(message)
 
 bot.add_application_command(atrx_group)
