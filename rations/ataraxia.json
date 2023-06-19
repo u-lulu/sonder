@@ -4,12 +4,12 @@
 		"Roll":"D6",
 		"Values":
 			{
-				"1":"\"They are doing... teleportation experiments, north of here.\" (FALSE, outdated)",
-				"2":"\"Captain Petrov?\" the speaker spits. \"He is a traitor, a capitalist pig.\" (FALSE, misinformed)",
-				"3":"\"I was once taken to the bunker! It is a massive underground complex.\" (FALSE, lying)",
-				"4":"\"People have seen a ghost roaming the mountain pass...\" (TRUE, the Commissar)",
-				"5":"\"That bunker is cursed! Infested with an evil presence!\" (TRUE, the Commissar)",
-				"6":"\"The Commissar is looking for you.\" (TRUE)"
+				"1":"\"They are doing... teleportation experiments, north of here.\" ||(FALSE, outdated)||",
+				"2":"\"Captain Petrov?\" the speaker spits. \"He is a traitor, a capitalist pig.\" ||(FALSE, misinformed)||",
+				"3":"\"I was once taken to the bunker! It is a massive underground complex.\" ||(FALSE, lying)||",
+				"4":"\"People have seen a ghost roaming the mountain pass...\" ||(TRUE, the Commissar)||",
+				"5":"\"That bunker is cursed! Infested with an evil presence!\" ||(TRUE, the Commissar)||",
+				"6":"\"The Commissar is looking for you.\" ||(TRUE)||"
 			}
 	},
 	{

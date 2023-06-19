@@ -1650,5 +1650,27 @@ async def spell(ctx):
 
 bot.add_application_command(matrix_group)
 
+atrx_group = discord.SlashCommandGroup("ataraxia", "RATIONS #1: ATARAXIA Commands")
+
+file = open('rations/ataraxia.json')
+intelligence["ataraxia"] = json.load(file)
+file.close()
+
+@atrx_group.command(description="Listens to a rumor from Vizhay")
+async def rumor(ctx):
+	log("/ataraxia rumor")
+	result = roll_intelligence_matrix(intelligence["ataraxia"][0])
+	message = f"You pick up on a rumor in Vizhay: {result}"
+	await ctx.respond(message)
+
+@atrx_group.command(description="Encounter something in Dyatlov Pass")
+async def encounter(ctx):
+	log("/ataraxia encounter")
+	result = roll_intelligence_matrix(intelligence["ataraxia"][1])
+	message = f"During your travels through Dyatlov Pass, you spot... {result}"
+	await ctx.respond(message)
+
+bot.add_application_command(atrx_group)
+
 log("Starting bot session")
 bot.run(token)
