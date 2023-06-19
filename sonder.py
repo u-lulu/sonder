@@ -1722,6 +1722,78 @@ async def item(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType
 	result = options[str(roll)]
 	await ctx.respond(result)
 
+def hazfunc_codename():
+	military_letter_codes = ["ALPHA", "BRAVO", "CHARLIE", "DELTA", "ECHO", "FOXTROT", "GOLF", "HOTEL", "INDIA", "JULIET", "KILO", "LIMA", "MIKE", "NOVEMBER", "OSCAR", "PAPA", "QUEBEC", "ROMEO", "SIERRA", "TANGO", "UNIFORM", "VICTOR", "WHISKEY", "XRAY", "YANKEE", "ZULU"]
+	return f"{rnd.choice(military_letter_codes)}-{rnd.randint(0,9)}"
+
+@hzfc_group.command(description="Produces a random Hazard Function character")
+async def character(ctx):
+	log(f"/hazfunction character")
+	
+	message = f"# {hazfunc_codename()}"
+	message += "\nROLE: **SURVIVOR**\nDescribe why you want to live. If you live until the end of the mission, take another trait and gain a role, change your MAX HP to 6, then take a standard issue item, +1D6 MAX HP, or +1D6 WAR DICE.\n\n"
+	
+	traits = [rnd.choice(trait_data)]
+	
+	stats = {
+		"MAX": d6(),
+		"WAR": 0,
+		"FORCEFUL": 0,
+		"TACTICAL": 0,
+		"CREATIVE": 0,
+		"REFLEXIVE": 0
+	}
+	
+	for trait in traits:
+		bonus = trait["Stat"].split(" ")
+		num = 0
+		if bonus[1] in stats:
+			if bonus[0] == "+1D6":
+				num = d6()
+			else:	
+				num = 0
+				numerical = bonus[0]
+				if numerical[0] in ('+', '-'):
+					num = int(numerical[1:])
+					if numerical[0] == '-':
+						num = -num
+				else:
+					num = int(numerical)
+			
+			stats[bonus[1]] += num
+	
+	message += f"MAX HP: {stats['MAX']}\n"
+	message += f"WAR DICE: {stats['WAR']}\n\n"
+	message += f"FORCEFUL: {stats['FORCEFUL']}\n"
+	message += f"TACTICAL: {stats['TACTICAL']}\n"
+	message += f"CREATIVE: {stats['CREATIVE']}\n"
+	message += f"REFLEXIVE: {stats['REFLEXIVE']}\n\n"
+	
+	message += "TRAITS:\n"
+	altmessage = message
+	for trait in traits:
+		message += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
+		altmessage += f"- **{trait['Name']}** ({trait['Number']}, {trait['Stat']})\n"
+	
+	if len(message) > 2000:
+		message = message.replace("FORCEFUL", "FRC")
+		message = message.replace("CREATIVE", "CRE")
+		message = message.replace("REFLEXIVE", "RFX")
+		message = message.replace("TACTICAL", "TAC")
+		message = message.replace("DAMAGE", "DMG")
+		if len(message) > 2000:
+			message = altmessage
+	if len(message) > 2000:
+		message = message.replace("FORCEFUL", "FRC")
+		message = message.replace("CREATIVE", "CRE")
+		message = message.replace("REFLEXIVE", "RFX")
+		message = message.replace("TACTICAL", "TAC")
+		message = message.replace("DAMAGE", "DMG")
+		if len(message) > 2000:
+			await ctx.respond("The generated character does not fit in the 2,000 character limit for messages. Try lowering the amount of traits.",ephemeral=True)
+			return
+	await ctx.respond(message)
+
 bot.add_application_command(hzfc_group)
 
 ctsh_group = discord.SlashCommandGroup("colony", "RATIONS #3: CULTURE SHOCK Commands")
