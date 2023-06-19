@@ -1822,6 +1822,14 @@ async def canister(ctx, amount: discord.Option(discord.SlashCommandOptionType.in
 			msg += f"\n- **{strain()}**"
 		await ctx.respond(msg)
 
+@ctsh_group.command(description="Roll to see if Colony will spawn.")
+async def spawn(ctx):
+	log(f"/colony spawn")
+	if d6() % 2 == 1:
+		ctx.respond("Colony will spawn in this region.")
+	else:
+		ctx.respond("Colony will not spawn in this region.")
+
 bot.add_application_command(ctsh_group)
 
 log("Starting bot session")
