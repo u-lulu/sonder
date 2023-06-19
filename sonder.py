@@ -1690,6 +1690,12 @@ async def hazard(ctx):
 	result = roll_intelligence_matrix(intelligence["hazfunction"][1])
 	await ctx.respond(result)
 
+@hzfc_group.command(description="Spawn a crucible animal")
+async def animal(ctx):
+	log("/hazfunction animal")
+	result = roll_intelligence_matrix(intelligence["hazfunction"][4])
+	await ctx.respond(result)
+
 @hzfc_group.command(description="Spawn a chamber's encounter")
 async def encounter(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
 	log(f"/hazfunction encounter {rooms_cleared}")
