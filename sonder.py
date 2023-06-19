@@ -1826,9 +1826,9 @@ async def canister(ctx, amount: discord.Option(discord.SlashCommandOptionType.in
 async def spawn(ctx):
 	log(f"/colony spawn")
 	if d6() % 2 == 1:
-		await ctx.respond("Colony will spawn in this region.")
+		await ctx.respond("Colony **will** spawn in this region.")
 	else:
-		await ctx.respond("Colony will not spawn in this region.")
+		await ctx.respond("Colony **will not** spawn in this region.")
 
 bot.add_application_command(ctsh_group)
 
