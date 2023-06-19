@@ -1672,5 +1672,79 @@ async def encounter(ctx):
 
 bot.add_application_command(atrx_group)
 
+hzfc_group = discord.SlashCommandGroup("hazardfunction", "RATIONS #2: HAZARD FUNCTION Commands")
+
+file = open('rations/hazard_function.json')
+intelligence["hazardfunction"] = json.load(file)
+file.close()
+
+@hzfc_group.command(description="Enter a new chamber")
+async def room(ctx):
+	log("/hazardfunction room")
+	result = roll_intelligence_matrix(intelligence["hazardfunction"][0])
+	await ctx.respond(result)
+
+@hzfc_group.command(description="Spawn a chamber's hazard")
+async def hazard(ctx):
+	log("/hazardfunction hazard")
+	result = roll_intelligence_matrix(intelligence["hazardfunction"][1])
+	await ctx.respond(result)
+
+@hzfc_group.command(description="Spawn a chamber's encounter")
+async def encounter(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
+	log(f"/hazardfunction encounter {rooms_cleared}")
+	if rooms_cleared < 0:
+		await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
+		return
+	options = intelligence["hazardfunction"][2]["Values"]
+	roll = d6() + rooms_cleared
+	if roll > 16:
+		roll = 16
+	result = options[str(roll)]
+	await ctx.respond(result)
+
+@hzfc_group.command(description="Spawn a chamber's item")
+async def item(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
+	log(f"/hazardfunction item {rooms_cleared}")
+	if rooms_cleared < 0:
+		await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
+		return
+	options = intelligence["hazardfunction"][3]["Values"]
+	roll = d6() + rooms_cleared
+	if roll > 16:
+		roll = 16
+	result = options[str(roll)]
+	await ctx.respond(result)
+
+bot.add_application_command(hzfc_group)
+
+ctsh_group = discord.SlashCommandGroup("colony", "RATIONS #3: CULTURE SHOCK Commands")
+
+file = open('rations/culture_shock.json')
+intelligence["cultshock"] = json.load(file)
+file.close()
+
+def strain():
+	symptom = roll_intelligence_matrix(intelligence["cultshock"][0])
+	area = roll_intelligence_matrix(intelligence["cultshock"][1])
+	return f"{symptom} {area}"
+
+@ctsh_group.command(description="Provide a new Bacteria Canister from Colony's shop")
+async def canister(ctx, amount: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=False, default=1)):
+	log(f"/colony canister {amount}")
+	if amount < 1:
+		await ctx.respond("Canisters provided must be 1 or more.",ephemeral=True)
+	elif amount > 15:
+		await ctx.respond("Canisters provided must be 15 or less.",ephemeral=True)
+	elif amount == 1:
+		await ctx.respond(f"Colony offers you a Bacteria Canister that's labelled... **{strain()}**. Whatever that means.")
+	else:
+		msg = "Colony offers you several Bacteria Canisters:"
+		for i in range(amount):
+			msg += f"\n- **{strain()}**"
+		await ctx.respond(msg)
+
+bot.add_application_command(ctsh_group)
+
 log("Starting bot session")
 bot.run(token)
