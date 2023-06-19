@@ -1775,6 +1775,9 @@ async def character(ctx):
 		message += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
 		altmessage += f"- **{trait['Name']}** ({trait['Number']}, {trait['Stat']})\n"
 	
+	message += f"\n*Your trait item, **{traits[0]['Item']}**, is not given to you to start. You may be able to acquire it during the Crucible.*"
+	altmessage += f"\n\n*Your trait item, **{traits[0]['Item']}**, is not given to you to start. You may be able to acquire it during the Crucible.*"
+	
 	if len(message) > 2000:
 		message = message.replace("FORCEFUL", "FRC")
 		message = message.replace("CREATIVE", "CRE")
