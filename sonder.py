@@ -1672,31 +1672,31 @@ async def encounter(ctx):
 
 bot.add_application_command(atrx_group)
 
-hzfc_group = discord.SlashCommandGroup("hazardfunction", "RATIONS #2: HAZARD FUNCTION Commands")
+hzfc_group = discord.SlashCommandGroup("hazfunction", "RATIONS #2: HAZARD FUNCTION Commands")
 
 file = open('rations/hazard_function.json')
-intelligence["hazardfunction"] = json.load(file)
+intelligence["hazfunction"] = json.load(file)
 file.close()
 
 @hzfc_group.command(description="Enter a new chamber")
 async def room(ctx):
-	log("/hazardfunction room")
-	result = roll_intelligence_matrix(intelligence["hazardfunction"][0])
+	log("/hazfunction room")
+	result = roll_intelligence_matrix(intelligence["hazfunction"][0])
 	await ctx.respond(result)
 
 @hzfc_group.command(description="Spawn a chamber's hazard")
 async def hazard(ctx):
-	log("/hazardfunction hazard")
-	result = roll_intelligence_matrix(intelligence["hazardfunction"][1])
+	log("/hazfunction hazard")
+	result = roll_intelligence_matrix(intelligence["hazfunction"][1])
 	await ctx.respond(result)
 
 @hzfc_group.command(description="Spawn a chamber's encounter")
 async def encounter(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
-	log(f"/hazardfunction encounter {rooms_cleared}")
+	log(f"/hazfunction encounter {rooms_cleared}")
 	if rooms_cleared < 0:
 		await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
 		return
-	options = intelligence["hazardfunction"][2]["Values"]
+	options = intelligence["hazfunction"][2]["Values"]
 	roll = d6() + rooms_cleared
 	if roll > 16:
 		roll = 16
@@ -1705,11 +1705,11 @@ async def encounter(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptio
 
 @hzfc_group.command(description="Spawn a chamber's item")
 async def item(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
-	log(f"/hazardfunction item {rooms_cleared}")
+	log(f"/hazfunction item {rooms_cleared}")
 	if rooms_cleared < 0:
 		await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
 		return
-	options = intelligence["hazardfunction"][3]["Values"]
+	options = intelligence["hazfunction"][3]["Values"]
 	roll = d6() + rooms_cleared
 	if roll > 16:
 		roll = 16
