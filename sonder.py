@@ -1808,7 +1808,7 @@ def strain():
 	return f"{symptom} {area}"
 
 @ctsh_group.command(description="Provide a new Bacteria Canister from Colony's shop")
-async def canister(ctx, amount: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=False, default=1)):
+async def canister(ctx, amount: discord.Option(discord.SlashCommandOptionType.integer, "The number of canisters to provide", required=False, default=1)):
 	log(f"/colony canister {amount}")
 	if amount < 1:
 		await ctx.respond("Canisters provided must be 1 or more.",ephemeral=True)
