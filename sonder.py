@@ -7,6 +7,7 @@ from datetime import datetime
 from datetime import date
 import time
 import os
+import math
 import rolldice # pip install py-rolldice
 from func_timeout import func_timeout, FunctionTimedOut # pip install func-timeout
 
@@ -200,23 +201,6 @@ async def server(ctx):
 	log("/server")
 	await ctx.respond("https://discord.gg/VeedQmQc7k",ephemeral=True)
 
-@bot.command(description="spin")
-async def spin(ctx):
-	log("/spin")
-	await ctx.respond("[very funny](https://cdn.discordapp.com/attachments/1098474379383423018/1098475477116669952/spin_lq.mp4)",ephemeral=True)
-
-@bot.command(description="testing")
-async def debug(ctx, input: discord.Option(str, "data", required=True)):
-	log(f"/debug {input}")
-	if ctx.author.id == ownerid:
-		if len(input) <= 2000:
-			await ctx.channel.send(content=input)
-			await ctx.respond(f"Done.",ephemeral=True)
-		else:
-			await ctx.respond(f"Message too long ({len(input)} > 2000).",ephemeral=True)
-	else:
-		await ctx.respond(f"Only <@{ownerid}> may use this command.",ephemeral=True)
-
 @bot.command(description="Pin (or unpin) a message inside a thread, if you own the thread")
 async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin.", required=True)):
 	log(f"/threadpin {id}")
@@ -245,14 +229,1057 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 		log(f"Caught: {e}")
 		await ctx.respond(f"There was an error processing this command:\n```{e}```")
 
+log("Loading user character data")
+character_data = {}
+if os.path.exists('player_data.json'):
+	file = open('player_data.json')
+	character_data = json.load(file)
+	file.close()
+else:
+	log("Player data does not exist. Using empty data.")
+
+
+# character_data structure:
+# - main object is a dict, keys are user IDs
+# - user IDs point to dicts with 2 keys: "active" and "chars"
+# - "chars" is a dict that contains all characters, with keys being codenames
+# - "active" is a dict; keys are channel IDs, values are character codenames
+
+reporting_channel = 1101250179899867217
+async def save_character_data():
+	try:
+		with open("player_data.json", "w") as outfile:
+			outfile.write(json.dumps(character_data,indent=2))
+		total_users = 0
+		total_characters = 0
+		for userid in character_data:
+			total_users += 1
+			total_characters += len(character_data[userid]['chars'])
+		log(f"Character data saved. Storing data about {total_characters} characters created by {total_users} users")
+	except Exception as e:
+		log(f"PLAYER DATA SAVING THREW AN ERROR: {e}")
+		report_channel = await bot.fetch_channel(reporting_channel)
+		await report_channel.send(f"**<@{ownerid}> An error occurred while saving character data!**\n```{e}```")
+
+def output_character(codename, data):
+	out = f"# {codename.upper()}"
+	if data["role"] == {}:
+		out += "\nROLE: *No role yet.*"
+	else:
+		r = data["role"]
+		out += f"\nROLE: **{r['Name']}**\n{r['Text']}"
+	
+	out += f"\n\nHP: {data['hp']}/{data['maxhp']}"
+	out += f"\nWAR DICE: {data['wd']}"
+	out += f"\nARMOR: {data['armor_name']} ({data['armor']})"
+	out += f"\nWEAPON: {data['weapon_name']} ({data['damage']})"
+	
+	out += f"\n\nFORCEFUL: {data['frc']}"
+	out += f"\nTACTICAL: {data['tac']}"
+	out += f"\nCREATIVE: {data['cre']}"
+	out += f"\nREFLEXIVE: {data['rfx']}"
+	
+	out += "\n\nTRAITS:\n"
+	if len(data['traits']) <= 0:
+		out += "- *No traits yet.*"
+	else:
+		for trait in data['traits']:
+			out += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
+	
+	out += "\nITEMS:"
+	if len(data['items']) <= 0:
+		out += "\n- *No items yet.*"
+	else:
+		for item in data['items']:
+			out += f"\n- {item}"
+	return out
+
+def get_active_codename(ctx):
+	uid = str(ctx.author.id)
+	if uid in character_data:
+		your_actives = character_data[uid]['active']
+		if str(ctx.channel_id) in your_actives:
+			return your_actives[str(ctx.channel_id)]
+	return None
+
+def get_active_char_object(ctx):
+	codename = get_active_codename(ctx)
+	if codename == None:
+		return None
+	else:
+		return character_data[str(ctx.author.id)]['chars'][codename]
+
+async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
+	log(f"/{stat.lower()} {' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
+	
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	modifier = character[stat.lower()] + extra_mod
+	
+	results = [d6(), d6()]
+	if superior_dice ^ inferior_dice:
+		results.append(d6())
+	
+	dice_string = ""
+	for d in results:
+		dice_string += " " + num_to_die[d]
+	dice_string = dice_string.strip()
+	
+	sorted_results = sorted(results)
+	if superior_dice and not inferior_dice:
+		results = sorted_results[-2:]
+	elif inferior_dice and not superior_dice:
+		results = sorted_results[:2]
+	
+	total = sum(results) + modifier
+	
+	message = f"**{codename.upper()}** rolling +{stat.upper()}:\n> "
+	
+	if extra_mod != 0:
+		message += f"({dice_string}) + {character[stat.lower()]} ({stat.upper()}) + {extra_mod} (bonus) = **{total}**: "
+	else:
+		message += f"({dice_string}) + {character[stat.lower()]} ({stat.upper()}) = **{total}**: "
+	
+	if results == [6,6]:
+		message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
+	elif total <= 6:
+		message += "Your roll is a **failure.** You don’t do what you wanted to do, and things go wrong somehow."
+	elif total <= 9:
+		message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
+	else:
+		message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
+	await ctx.respond(message)
+
+async def character_names_autocomplete(ctx: discord.AutocompleteContext):
+	uid = str(ctx.interaction.user.id)
+	if uid in character_data:
+		return list(character_data[uid]['chars'].keys())
+	else:
+		return []
+
+standard_character_limit = 10
+premium_character_limit = 50
+
+async def ext_character_management(id):
+	if id == str(ownerid):
+		return True
+	support_server = await bot.fetch_guild(1101249440230154300)
+	if support_server is None:
+		return False
+	user = await support_server.fetch_member(id)
+	if user is None:
+		return False
+	role = user.get_role(1120763025465557062)
+	if role is None:
+		return False
+	return True
+
+@bot.command(description="Create a new character to manage")
+async def create_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True),
+	set_as_active: discord.Option(bool, "If TRUE, the new character will become your active character in this channel. FALSE by default.", required=False, default=True)):
+	log(f"/create {codename}")
+	userid = str(ctx.author.id)
+	if userid not in character_data:
+		character_data[userid] = {
+			"active": {},
+			"chars": {}
+		}
+	
+	premium_character = False
+	if len(character_data[userid]["chars"]) >= standard_character_limit:
+		premium_user = await ext_character_management(userid)
+		if not premium_user:
+			await ctx.respond(f"You may not create more than {standard_character_limit} characters.\nYou can increase your character limit to {premium_character_limit} by enrolling in a server subscription at Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+			return
+		elif len(character_data[userid]["chars"]) >= premium_character_limit:
+			await ctx.respond(f"You may not create more than {premium_character_limit} characters.",ephemeral=True)
+			return
+		else:
+			premium_character = True
+	
+	codename = codename.lower()
+	if codename in character_data[userid]["chars"]:
+		await ctx.respond(f"You have already created a character with the codename '{codename}'.",ephemeral=True)
+		return
+	
+	character_data[userid]["chars"][codename] = {
+		"role": {},
+		"maxhp": 6,
+		"hp": 6,
+		"wd": 0,
+		"frc": 0,
+		"tac": 0,
+		"rfx": 0,
+		"cre": 0,
+		"weapon_name": "Unarmed",
+		"damage": "2d6k1",
+		"armor_name": "Nothing",
+		"armor": 0,
+		"traits": [],
+		"items": [],
+		"premium": premium_character,
+		"creation_time": time.time()
+	}
+	
+	msg = f"Created character with the codename '{codename}'."
+	if premium_character:
+		msg += "\n*This character uses a premium slot!*"
+	await ctx.respond(msg)
+	if set_as_active:
+		await switch_character(ctx, codename)
+	else:
+		await save_character_data()
+	
+@bot.command(description="Delete a character from your roster")
+async def delete_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True),
+	i_am_sure: discord.Option(bool, "Confirmation that you want the character deleted.", required=True),
+	i_am_very_sure: discord.Option(bool, "Confirmation that you want the character deleted.", required=True),
+	i_am_completely_absolutely_sure: discord.Option(bool, "Confirmation that you want the character deleted.", required=True)):
+	log(f"/delete {codename}{' affirmative' if i_am_sure else ''}{' affirmative' if i_am_very_sure else ''}{' affirmative' if i_am_completely_absolutely_sure else ''}")
+	
+	if i_am_sure and i_am_very_sure and i_am_completely_absolutely_sure:
+		yourid = str(ctx.author.id)
+		codename = codename.lower()
+		if yourid not in character_data:
+			await ctx.respond("You do not have any character data to delete.",ephemeral=True)
+			return
+		yourstuff = character_data[yourid]
+		if codename not in yourstuff['chars']:
+			await ctx.respond(f"You do not have a character named '{codename}' to delete.",ephemeral=True)
+			return
+		else:
+			message = f"Successfully deleted **{codename.upper()}**."
+			was_premium = yourstuff['chars'][codename]['premium']
+			del yourstuff['chars'][codename]
+			channel_unbinds = 0
+			keys_to_purge = []
+			for key in yourstuff['active']:
+				if yourstuff['active'][key] == codename:
+					channel_unbinds += 1
+					keys_to_purge.append(key)
+			for key in keys_to_purge:
+				del yourstuff['active'][key]
+			if channel_unbinds > 0:
+				message += f"\nThis action has cleared your active character across {channel_unbinds} channels."
+			
+			earliest_time = math.inf
+			earliest_premium_char = None
+			earliest_prem_codename = None
+			if not was_premium:
+				for codename in yourstuff['chars']:
+					if yourstuff['chars'][codename]['premium'] and yourstuff['chars'][codename]['creation_time'] < earliest_time:
+						earliest_time = yourstuff['chars'][codename]['creation_time']
+						earliest_premium_char = yourstuff['chars'][codename]
+						earliest_prem_codename = codename
+				if earliest_premium_char is not None:
+					earliest_premium_char['premium'] = False
+					message += f"\nYou have freed up a non-premium slot. **{codename.upper()}** is no longer a premium character."
+			
+			if len(yourstuff['chars']) <= 0:
+				del character_data[yourid]
+				message += "\nYou have deleted your last character. All data associated with your User ID has been deleted."
+				
+			await ctx.respond(message)
+			await save_character_data()
+	else:
+		await ctx.respond("You must triple-confirm that you want to delete your character.",ephemeral=True)
+
+@bot.command(description="List all characters you've created")
+async def list_characters(ctx):
+	log("/list")
+	yourid = str(ctx.author.id)
+	if yourid in character_data:
+		yourchars = character_data[yourid]['chars']
+		msg = f"Characters created by <@{yourid}>:"
+		for codename in yourchars:
+			msg += f"\n- {codename}"
+			if yourchars[codename]['premium']:
+				msg += "*"
+		await ctx.respond(msg)
+	else:
+		await ctx.respond("You haven't created any characters yet!",ephemeral=True)
+	
+@bot.command(description="Displays your current active character's sheet")
+async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default="")):
+	log(f"/sheet {codename}")
+	codename = codename.lower()
+	yourid = str(ctx.author.id)
+	if codename == "":
+		codename = get_active_codename(ctx)
+	if codename == None:
+		await ctx.respond("You have not set an active character in this channel. Either set your active character with `/switch`, or specify which character's sheet you want to view using the optional `codename` argument for this command.",ephemeral=True)
+		return
+	if yourid not in character_data or codename not in character_data[yourid]['chars']:
+		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create`.",ephemeral=True)
+		return
+	
+	ch = character_data[yourid]['chars'][codename]
+	await ctx.respond(output_character(codename, ch))
+	return
+
+@bot.command(description="Switch which character is active in this channel")
+async def switch_character(ctx, codename: discord.Option(str, "The codename of the character to switch to.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
+	log(f"/switch {codename}")
+	userid = str(ctx.author.id)
+	if userid not in character_data or len(character_data[userid]['chars']) <= 0:
+		await ctx.respond("You have no characters available. Use `/create` to make one.",ephemeral=True)
+		return
+		
+	codename = codename.lower()
+	if codename not in character_data[userid]["chars"]:
+		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create`.",ephemeral=True)
+		return
+	else:
+		character_data[userid]['active'][str(ctx.channel_id)] = codename
+		await ctx.respond(f"Your active character in this channel is now **{codename.upper()}**.")
+		await save_character_data()
+	return	
+
 log("Creating trait commands")
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
 async def role_autocomp(ctx):
+	return role_names
+
+@bot.command(description="Set your active character's role")
+async def set_role(ctx,
+	name: discord.Option(str,"The name of your role.",autocomplete=discord.utils.basic_autocomplete(role_autocomp),required=True),
+	description: discord.Option(str,"The role's description.",required=True)):
+	log(f"/set_role '{name}' '{description}'")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	name = name.upper()
+	character['role'] = {
+		"Name": name,
+		"Text": description
+	}
+	
+	out = f"**{codename.upper()}** has changed their role:"
+	out += f"\n>>> **{name}**\n{description}"
+	await ctx.respond(out)
+	await save_character_data()
+
+async def trait_autocomp(ctx):
 	return trait_names
 
+@bot.command(description="Add a core book trait to your active character")
+async def add_trait(ctx, trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(trait_autocomp), required=True)):
+	log(f"/add_trait {trait}")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	my_new_trait = None
+	for t in trait_data:
+		if  str(t["Number"]) == trait or t["Name"] == trait.upper():
+			my_new_trait = t
+			break
+	
+	if my_new_trait == None:
+		await ctx.respond(f'No core book trait with the exact name or D666 number "{trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
+		return
+	
+	for existing_trait in character['traits']:
+		if existing_trait['Number'] == my_new_trait['Number']:
+			await ctx.respond(f'**{codename.upper()}** already has the trait **{my_new_trait["Name"]} ({my_new_trait["Number"]})**.',ephemeral=True)
+			return
+	
+	character['traits'].append(my_new_trait)
+	character['items'].append(my_new_trait['Item'])
+	
+	stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
+	
+	stats_translator = {
+		"MAX":"maxhp",
+		"WAR":"wd",
+		"FORCEFUL":"frc",
+		"TACTICAL":"tac",
+		"CREATIVE":"cre",
+		"REFLEXIVE":"rfx"
+	}
+	
+	old_max_hp = character['maxhp']
+	
+	bonus = my_new_trait["Stat"].split(" ")
+	num = 0
+	if bonus[1] in stats:
+		translated_stat_bonus = stats_translator[bonus[1]]
+		if bonus[0] == "+1D6":
+			num = d6()
+		else:	
+			numerical = bonus[0]
+			if numerical[0] in ('+', '-'):
+				num = int(numerical[1:])
+				if numerical[0] == '-':
+					num = -num
+			else:
+				num = int(numerical)
+		character[translated_stat_bonus] += num
+		if translated_stat_bonus == 'maxhp':
+			character['hp'] += num
+	
+	out = f"**{codename.upper()}** has gained a trait!"
+	if old_max_hp > character['maxhp'] and character['maxhp'] <= 0:
+		out += f"\n**This character now has a Max HP of {character['maxhp']}!!**"
+	out += f"\n>>> {trait_message_format(my_new_trait)}"
+	await ctx.respond(out)
+	await save_character_data()
+
+#@bot.command(description="Add a custom trait to your character")
+#async def add_custom_trait(ctx,	
+		#title: discord.Option(str, "The name of the trait", required=True), 
+		#description: discord.Option(str, "The trait's description", required=True),
+		#stat_type: discord.Option(str, "The type of stat this trait changes", required=True),
+		#stat_amount: discord.Option(discord.SlashCommandOptionType.integer, "The amount that the stat is changed", required=True),
+		#item_name: discord.Option(str, "The name of the item that this trait grants you", required=True),
+		#item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
+	#await ctx.respond("TODO",ephemeral=True)
+	#await save_character_data()
+
+@bot.command(description="Add an item your active character")
+async def add_item(ctx,
+		name: discord.Option(str, "The name of the item", required=True), 
+		effect: discord.Option(str, "The effect of the item", required=False, default="")):
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	concat = name+effect
+	if "(" in concat or ")" in concat:
+		await ctx.respond("For organizational reasons, please do not use parenthesis in the `name` or `effect` of your item.\nTo include an item's effect, use the optional `effect` argument for this command instead.",ephemeral=True)
+		return
+	
+	item_to_add = name
+	if len(effect) > 0:
+		item_to_add += f" ({effect})"
+	
+	character['items'].append(item_to_add)
+	
+	await ctx.respond(f"**{codename.upper()}** has added **{item_to_add}** to their inventory.")
+	await save_character_data()
+
+async def active_character_traits_autocomp(ctx):
+	uid = str(ctx.interaction.user.id)
+	if uid in character_data:
+		# gotta get active character manually cus this is a different kind of ctx. ugh
+		your_actives = character_data[uid]['active']
+		if str(ctx.interaction.channel_id) in your_actives:
+			current_active = your_actives[str(ctx.interaction.channel_id)]
+			if current_active in character_data[uid]['chars']:
+				current_char = character_data[uid]['chars'][current_active]
+				trait_list = current_char['traits']
+				output = []
+				for trait in trait_list:
+					output.append(trait['Name'])
+				return output
+			else:
+				return []
+		else:
+			return []
+	else:
+		return []
+
+@bot.command(description="Remove a trait from your active character")
+async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to remove.",autocomplete=discord.utils.basic_autocomplete(active_character_traits_autocomp), required=True),
+	keep_item: discord.Option(bool, "If TRUE, the Trait's associated item will not be removed from your inventory.", required=False, default=False)):
+	
+	log(f"/remove_trait {trait}")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	if len(character['traits']) <= 0:
+		await ctx.respond(f"{codename.upper()} does not have any traits.",ephemeral=True)
+		return
+	
+	target_trait = None
+	for current in character['traits']:
+		if current['Name'].lower() == trait.lower():
+			target_trait = current
+			break
+	
+	if target_trait == None:
+		await ctx.respond(f"{codename.upper()} does not a trait called '{trait}'.",ephemeral=True)
+		return
+	else:
+		stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
+		
+		stats_translator = {
+			"MAX":"maxhp",
+			"WAR":"wd",
+			"FORCEFUL":"frc",
+			"TACTICAL":"tac",
+			"CREATIVE":"cre",
+			"REFLEXIVE":"rfx"
+		}
+		
+		bonus = target_trait["Stat"].split(" ")
+		num = 0
+		if bonus[1] in stats:
+			translated_stat_bonus = stats_translator[bonus[1]]
+			if bonus[0] == "+1D6":
+				num = d6()
+			else:	
+				numerical = bonus[0]
+				if numerical[0] in ('+', '-'):
+					num = int(numerical[1:])
+					if numerical[0] == '-':
+						num = -num
+				else:
+					num = int(numerical)
+			character[translated_stat_bonus] -= num
+			if translated_stat_bonus == 'maxhp':
+				character['hp'] -= num
+	
+		character['traits'].remove(target_trait)
+		await ctx.respond(f"{codename.upper()} has lost the trait **{trait.upper()}**.")
+		
+		if not keep_item:
+			try:
+				character['items'].remove(target_trait['Item'])
+			except ValueError as e:
+				log("Caught ValueError in attempt to remove trait item")
+		
+		await save_character_data()
+		return
+
+async def full_item_autocomplete(ctx):
+	uid = str(ctx.interaction.user.id)
+	if uid in character_data:
+		# gotta get active character manually cus this is a different kind of ctx. ugh
+		your_actives = character_data[uid]['active']
+		if str(ctx.interaction.channel_id) in your_actives:
+			current_active = your_actives[str(ctx.interaction.channel_id)]
+			if current_active in character_data[uid]['chars']:
+				current_char = character_data[uid]['chars'][current_active]
+				return current_char['items']
+			else:
+				return []
+		else:
+			return []
+	else:
+		return []
+
+@bot.command(description="Remove an item from your active character")
+async def remove_item(ctx,
+		item: discord.Option(str, "The item to be removed",autocomplete=discord.utils.basic_autocomplete(full_item_autocomplete), required=True)):
+	log(f"/remove_item {item}")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	if len(character['items']) <= 0:
+		await ctx.respond(f"**{codename.upper()}** does not have any items.",ephemeral=True)
+		return
+	
+	try:
+		character['items'].remove(item)
+	except ValueError as e:
+		log(f"Caught ValueError: {e}")
+		out = "The item that you wanted to remove could not be found. Your current items are:"
+		for x in character['items']:
+			out += "\n- x"
+		await ctx.respond(out,ephemeral=True)
+		return
+	
+	await ctx.respond(f"**{codename.upper()}** has removed **{item}** from their inventory.")
+	await save_character_data()
+
+@bot.command(description="Spend a War Die from your active character")
+async def war_die(ctx):
+	log(f"/war_die")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	if character['wd'] > 0:
+		character['wd'] -= 1
+		result = d6()
+		await ctx.respond(f"**{codename.upper()}** spends a War Die: **{num_to_die[result]} ({result})**")
+		await save_character_data()
+	else:
+		await ctx.respond(f"{codename.upper()} has no War Dice to spend!",ephemeral=True)
+
+editable_stats = ["CURRENT HP","MAX HP","WAR DICE","FORCEFUL","TACTICAL","REFLEXIVE","CREATIVE","ARMOR"]
+async def stats_autocomplete(ctx):
+	return editable_stats
+
+@bot.command(description="Adjust one your character's stats")
+async def adjust(ctx,
+	stat: discord.Option(str, "The stat to change.", autocomplete=discord.utils.basic_autocomplete(stats_autocomplete), required=True),
+	amount: discord.Option(str, "Amount to increase the stat by. Supports dice syntax. Negative values will decrease.", required=True)):
+	log(f"/adjust {stat} {amount}")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	stat = stat.upper()
+	stats_translator = {
+		"CURRENT HP":"hp",
+		"MAX HP":"maxhp",
+		"WAR DICE":"wd",
+		"FORCEFUL":"frc",
+		"TACTICAL":"tac",
+		"REFLEXIVE":"rfx",
+		"CREATIVE":"cre",
+		"ARMOR":"armor"
+	}
+	
+	if stat not in stats_translator:
+		opts = ", ".join(editable_stats)
+		await ctx.respond(f"There is no adjustable character stat called '{stat}'.\nYour options are: {opts}",ephemeral=True)
+		return
+	
+	translated_stat = stats_translator[stat]
+	output = ()
+	timeout = 2
+	try:
+		output = func_timeout(timeout, rolldice.roll_dice, args=[amount])
+	except rolldice.rolldice.DiceGroupException as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
+		return
+	except FunctionTimedOut as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
+		return
+	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
+		return
+	
+	character[translated_stat] += output[0]
+	
+	message = f"{codename.upper()} has **{'in' if output[0] >= 0 else 'de'}creased** their **{stat}** by {abs(output[0])}!"
+	if 'd' in amount or 'D' in amount:
+		message += f"\n\nDice results: `{output[1]}`"
+	
+	await ctx.respond(message)
+	await save_character_data()
+
+@bot.command(description="Reset your active character's stats and items to the trait defaults")
+async def refresh(ctx, 
+	reset_hp: discord.Option(bool, "If TRUE, sets your base HP to 6 and recalculates it. FALSE by default.", required=False, default=False), 
+	reset_war_dice: discord.Option(bool, "If TRUE, sets your War Dice to 0 and recalculates it. FALSE by default.", required=False, default=False)):
+	log(f"/refresh {'reset_hp' if reset_hp else ''}")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	weapon_reset = False
+	if character['weapon_name'] != "Unarmed" or character['damage'] != "2d6k1":
+		weapon_reset = True
+	armor_reset = False
+	if character['armor_name'] != "Nothing" or character['armor'] != 0:
+		armor_reset = True
+	
+	character['frc'] = 0
+	character['tac'] = 0
+	character['rfx'] = 0
+	character['cre'] = 0
+	character['weapon_name'] = "Unarmed"
+	character['damage'] = "2d6k1"
+	character['armor_name'] = "Nothing"
+	character['armor'] = 0
+	
+	if reset_hp:
+		character['maxhp'] = 6
+	if reset_war_dice:
+		character['wd'] = 0
+	
+	stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
+	stats_translator = {
+		"MAX":"maxhp",
+		"WAR":"wd",
+		"FORCEFUL":"frc",
+		"TACTICAL":"tac",
+		"CREATIVE":"cre",
+		"REFLEXIVE":"rfx"
+	}
+	
+	for trait in character['traits']:
+		if trait['Item'] not in character['items']:
+			character['items'].append(trait['Item'])
+		
+		bonus = trait["Stat"].split(" ")
+		num = 0
+		# bonus is ELSE (0) and user says no (0) -> 1
+		# bonus is ELSE (0) and user says yes (1) -> 1
+		# bonus is MAX (1) and user says no (0) -> 0
+		# bonus is MAX (1) and user says yes (1) -> 1
+		hp_adjust_is_ok = (not bonus[1] == 'MAX') or reset_hp
+		wd_adjust_is_ok = (not bonus[1] == 'WAR') or reset_war_dice
+		if bonus[1] in stats and hp_adjust_is_ok and wd_adjust_is_ok:
+			translated_stat_bonus = stats_translator[bonus[1]]
+			if bonus[0] == "+1D6":
+				num = d6()
+			else:	
+				numerical = bonus[0]
+				if numerical[0] in ('+', '-'):
+					num = int(numerical[1:])
+					if numerical[0] == '-':
+						num = -num
+				else:
+					num = int(numerical)
+			character[translated_stat_bonus] += num
+			if translated_stat_bonus == 'maxhp':
+				character['hp'] += num
+	
+	character['hp'] = character['maxhp']
+	
+	message = f"**{codename.upper()}** has been reset to their default stats. Use `/sheet` to view updated information."
+	if weapon_reset:
+		message += "\nThis action has reset your equipped weapon to **Unarmed (2d6k1 DAMAGE)**."
+	if armor_reset:
+		message += "\nThis action has reset your equipped weapon to **Nothing (0 ARMOR)**."
+	if reset_hp:
+		message += f"\nYour Max HP has been recalculated from the base 6, and is now **{character['maxhp']}**."
+	if reset_war_dice:
+		message += f"\nYour War Dice have been recalculated from the base 0, and is now **{character['wd']}**."
+	await ctx.respond(message)
+	await save_character_data()
+
+@bot.command(description="Roll +FORCEFUL with your active character")
+async def frc(ctx, 
+	modifier: discord.Option(discord.SlashCommandOptionType.integer, "Extra modifiers for the roll", required=False, default=0),
+	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
+	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
+	):
+	await roll_with_skill(ctx, modifier, superior_dice, inferior_dice, 'frc')
+
+@bot.command(description="Roll +REFLEXIVE with your active character")
+async def rfx(ctx, 
+	modifier: discord.Option(discord.SlashCommandOptionType.integer, "Extra modifiers for the roll", required=False, default=0),
+	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
+	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
+	):
+	await roll_with_skill(ctx, modifier, superior_dice, inferior_dice, 'rfx')
+
+@bot.command(description="Roll +TACTICAL with your active character")
+async def tac(ctx, 
+	modifier: discord.Option(discord.SlashCommandOptionType.integer, "Extra modifiers for the roll", required=False, default=0),
+	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
+	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
+	):
+	await roll_with_skill(ctx, modifier, superior_dice, inferior_dice, 'tac')
+
+@bot.command(description="Roll +CREATIVE with your active character")
+async def cre(ctx, 
+	modifier: discord.Option(discord.SlashCommandOptionType.integer, "Extra modifiers for the roll", required=False, default=0),
+	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
+	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
+	):
+	await roll_with_skill(ctx, modifier, superior_dice, inferior_dice, 'cre')
+
+@bot.command(description="Take damage")
+async def damage(ctx, 
+	amount: discord.Option(str, "Amount of damage to take. Supports dice syntax.", required=True),
+	armor_piercing: discord.Option(bool, "Skip armor when applying this damage.", required=False, default=False)):
+	log(f"/damage {amount}{' armor_piercing' if armor_piercing else ''}")
+	
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	timeout = 2
+	output = ()
+	try:
+		output = func_timeout(timeout, rolldice.roll_dice, args=[amount])
+	except rolldice.rolldice.DiceGroupException as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
+		return
+	except FunctionTimedOut as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
+		return
+	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
+		return
+	
+	before_armor = output[0]
+	if before_armor < 0:
+		before_armor = 0
+	damage_taken = output[0] - character['armor']
+	if damage_taken < 0:
+		damage_taken = 0
+	dice_results = output[1]
+	
+	if armor_piercing:
+		character['hp'] -= before_armor
+	else:
+		character['hp'] -= damage_taken
+	
+	#message = f"**Total: {output[0]}**\n`{output[1]}`"
+	message = f"**{codename.upper()}** has taken **{before_armor} damage!**"
+	if (not armor_piercing and character['armor'] > 0 and before_armor != damage_taken):
+		message += f" (Reduced to **{damage_taken}** by {character['armor']} armor from {character['armor_name']}!)"
+	elif (armor_piercing and character['armor'] > 0):
+		message += f" (Ignores {character['armor']} armor from {character['armor_name']}!)"
+	message += f"\nHP: {character['hp']}/{character['maxhp']}"
+	if ('d' in amount or 'd' in amount):
+		message += f"\n\nDice results: `{dice_results}`"
+		limit = 300
+		if len(message) > limit:
+			message = message[:limit-5]+"...]`"
+	await ctx.respond(message)
+	await save_character_data()
+
+@bot.command(description="Heal damage")
+async def heal(ctx, 
+	amount: discord.Option(str, "Amount of healing to receive. Supports dice syntax.", required=True),
+	):
+	log(f"/heal {amount}")
+	
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	timeout = 2
+	output = ()
+	try:
+		output = func_timeout(timeout, rolldice.roll_dice, args=[amount])
+	except rolldice.rolldice.DiceGroupException as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
+		return
+	except FunctionTimedOut as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
+		return
+	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
+		return
+	
+	healing_taken = output[0]
+	if healing_taken < 0:
+		healing_taken = 0
+	dice_results = output[1]
+	
+	if character['hp'] < 0 and healing_taken > 0:
+		character['hp'] = 0
+	
+	character['hp'] += healing_taken
+	if character['hp'] > character['maxhp']:
+		character['hp'] = character['maxhp']
+	
+	message = f"**{codename.upper()}** has healed **{healing_taken} HP.**"
+	message += f"\nHP: {character['hp']}/{character['maxhp']}"
+	if character['hp'] >= character['maxhp']:
+		message += " (Full restore!)"
+	if ('d' in amount or 'd' in amount):
+		message += f"\n\nDice results: `{dice_results}`"
+		limit = 300
+		if len(message) > limit:
+			message = message[:limit-5]+"...]`"
+	await ctx.respond(message)
+	await save_character_data()
+
+@bot.command(description="Roll your active character's weapon damage")
+async def attack(ctx,
+	bonus_damage: discord.Option(str, "Amount of extra damage to deal; supports dice syntax.", required=False, default="0"),
+	multiplier: discord.Option(int, "Amount to multiply the final damage by.", required=False, default=1)
+	):
+	log(f"/attack {bonus_damage} {multiplier}")
+	try:
+		character = get_active_char_object(ctx)
+		if character == None:
+			await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+			return
+		codename = get_active_codename(ctx)
+		
+		base_damage = character['damage']
+		base_damage = rolldice.roll_dice(base_damage)
+		
+		bonus_damage_result = rolldice.roll_dice(bonus_damage)
+		
+		final_damage = (base_damage[0] + bonus_damage_result[0]) * multiplier
+		
+		message = f"**{codename}** has dealt **{final_damage} damage** using **{character['weapon_name']}**!\n\nBase damage: `{character['damage']}` -> `{base_damage[1]}`"
+		if bonus_damage != "0":
+			message += f"\nBonus damage: `{bonus_damage}` -> `{bonus_damage_result[1]}`"
+		if multiplier != 1:
+			message += f"\nFinal damage multiplier: `{multiplier}`"
+		await ctx.respond(message)
+	except Exception as e:
+		await ctx.respond(f"There was an error performing this command.\n```{e}```",ephemeral=True)
+
+async def held_items_autocomplete(ctx):
+	uid = str(ctx.interaction.user.id)
+	if uid in character_data:
+		# gotta get active character manually cus this is a different kind of ctx. ugh
+		your_actives = character_data[uid]['active']
+		if str(ctx.interaction.channel_id) in your_actives:
+			current_active = your_actives[str(ctx.interaction.channel_id)]
+			if current_active in character_data[uid]['chars']:
+				current_char = character_data[uid]['chars'][current_active]
+				item_list = current_char['items']
+				output = []
+				for item in item_list:
+					cut = item.split(" (")
+					output.append(cut[0])
+				return output
+			else:
+				return []
+		else:
+			return []
+	else:
+		return []
+
+async def held_dice_autocomplete(ctx):
+	uid = str(ctx.interaction.user.id)
+	if uid in character_data:
+		# gotta get active character manually cus this is a different kind of ctx. ugh
+		your_actives = character_data[uid]['active']
+		if str(ctx.interaction.channel_id) in your_actives:
+			current_active = your_actives[str(ctx.interaction.channel_id)]
+			if current_active in character_data[uid]['chars']:
+				current_char = character_data[uid]['chars'][current_active]
+				item_list = current_char['items']
+				dice_outs = set()
+				num_outs = set()
+				current_item_selected = ctx.options["name"]
+				dice_pattern = r'(\d*)[dD](\d+)([+-]\d+)?'
+				number_pattern = r'(\d+)'
+				for item in item_list:
+					cut = item.split(" (")
+					effect = cut[1] if len(cut) > 1 else ""
+					dice_matches = re.findall(dice_pattern, effect)
+					number_matches = re.findall(number_pattern, effect)
+					if current_item_selected != None and item.startswith(current_item_selected):
+						dice_outs = set()
+						num_outs = set()
+						for match in dice_matches:
+							dice_outs.add(f"{match[0]}D{match[1]}{match[2]}")
+						for match in number_matches:
+							num_outs.add(match)
+						break
+					else:
+						for match in dice_matches:
+							dice_outs.add(f"{match[0]}D{match[1]}{match[2]}")
+						for match in number_matches:
+							num_outs.add(match)
+				return list(dice_outs) + list(num_outs)
+			else:
+				return []
+		else:
+			return []
+	else:
+		return []
+
+async def held_numbers_autocomplete(ctx):
+	uid = str(ctx.interaction.user.id)
+	if uid in character_data:
+		# gotta get active character manually cus this is a different kind of ctx. ugh
+		your_actives = character_data[uid]['active']
+		if str(ctx.interaction.channel_id) in your_actives:
+			current_active = your_actives[str(ctx.interaction.channel_id)]
+			if current_active in character_data[uid]['chars']:
+				current_char = character_data[uid]['chars'][current_active]
+				item_list = current_char['items']
+				num_outs = set()
+				current_item_selected = ctx.options["name"]
+				number_pattern = r'(\d+)'
+				for item in item_list:
+					cut = item.split(" (")
+					effect = cut[1] if len(cut) > 1 else ""
+					number_matches = re.findall(number_pattern, effect)
+					if current_item_selected != None and item.startswith(current_item_selected):
+						num_outs = set()
+						for match in number_matches:
+							num_outs.add(int(match))
+						break
+					else:
+						for match in number_matches:
+							num_outs.add(int(match))
+				return list(num_outs)
+			else:
+				return []
+		else:
+			return []
+	else:
+		return []
+	
+@bot.command(description="Set your equipped weapon")
+async def equip_weapon(ctx, 
+	name: discord.Option(str, "The weapon's name.", autocomplete=discord.utils.basic_autocomplete(held_items_autocomplete), required=True),
+	damage: discord.Option(str, "Amount of damage to deal; supports dice syntax.", autocomplete=discord.utils.basic_autocomplete(held_dice_autocomplete), required=True)):
+	
+	character = get_active_char_object(ctx)
+	log(f"/equip_weapon {name} {damage}")
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	timeout = 2
+	try:
+		func_timeout(timeout, rolldice.roll_dice, args=[damage])
+	except FunctionTimedOut as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"You cannot equip this weapon because attemping to roll its damage takes too long (>{timeout}s). Try using less dice.",ephemeral=True)
+		return
+	except Exception as e:
+		await ctx.respond(f"You cannot equip this weapon because attemping to roll its damage throws the following error:\n```{e}```",ephemeral=True)
+		return
+	
+	character['weapon_name'] = name
+	character['damage'] = damage
+	
+	await ctx.respond(f"**{codename.upper()}** has equipped **{name} ({damage} DAMAGE)**")
+	
+	await save_character_data()
+
+@bot.command(description="Set your equipped armor")
+async def equip_armor(ctx, 
+	name: discord.Option(str, "The armor's name.", autocomplete=discord.utils.basic_autocomplete(held_items_autocomplete), required=True),
+	damage: discord.Option(int, "Amount of damage it reduces.", autocomplete=discord.utils.basic_autocomplete(held_numbers_autocomplete), required=True)):
+	log(f"/equip_armor {name} {damage}")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	character['armor_name'] = name
+	character['armor'] = damage
+	
+	await ctx.respond(f"**{codename.upper()}** has equipped **{name} ({damage} ARMOR)**")
+	
+	await save_character_data()
+
+trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
+
 @trait_group.command(description="Looks up a trait by name or d666 number")
-async def lookup(ctx, trait: discord.Option(str,"The trait to search for",autocomplete=discord.utils.basic_autocomplete(role_autocomp))):
+async def lookup(ctx, trait: discord.Option(str,"The trait to search for",autocomplete=discord.utils.basic_autocomplete(trait_autocomp))):
 	log(f"/trait lookup {trait}")
 	message = search_for_trait(trait)
 	hidden = message in ["No trait exists with the given number. Trait numbers must be possible d666 roll outputs.","Could not find a trait with an approximately similar name."]
@@ -272,9 +1299,6 @@ bot.add_application_command(trait_group)
 
 log("Creating role commands")
 role_group = discord.SlashCommandGroup("role", "Role Commands")
-
-async def role_autocomp(ctx):
-	return role_names
 
 @role_group.command(description="Looks up a role by name or d66 number")
 async def lookup(ctx, role: discord.Option(str,"The role to search for",autocomplete=discord.utils.basic_autocomplete(role_autocomp))):
@@ -351,7 +1375,6 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 			if bonus[0] == "+1D6":
 				num = d6()
 			else:	
-				num = 0
 				numerical = bonus[0]
 				if numerical[0] in ('+', '-'):
 					num = int(numerical[1:])
