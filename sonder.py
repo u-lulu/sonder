@@ -885,6 +885,7 @@ async def refresh(ctx,
 	if reset_war_dice:
 		message += f"\nYour War Dice have been recalculated from the base 0, and is now **{character['wd']}**."
 	await ctx.respond(message)
+	await save_character_data()
 
 @bot.command(description="Roll +FORCEFUL with your active character")
 async def frc(ctx, 
