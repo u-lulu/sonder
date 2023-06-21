@@ -580,6 +580,8 @@ async def damage(ctx,
 	
 	before_armor = output[0]
 	damage_taken = output[0] - character['armor']
+	if damage_taken < 0:
+		damage_taken = 0
 	dice_results = output[1]
 	
 	if armor_piercing:
