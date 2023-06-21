@@ -385,7 +385,6 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	await ctx.respond(f"Created character with the codename '{codename}'.")
 	if set_as_active:
 		await switch_character(ctx, codename)
-	await save_character_data()
 	
 @bot.command(description="Delete a character from your roster")
 async def delete_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
