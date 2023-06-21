@@ -470,7 +470,7 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book number of the
 			else:
 				num = int(numerical)
 		character[translated_stat_bonus] += num
-		if translated_stat_bonus == maxhp:
+		if translated_stat_bonus == 'maxhp':
 			character['hp'] += num
 	
 	await ctx.respond(f"**{codename.upper()}** has gained a trait!\n>>> {trait_message_format(my_new_trait)}")
