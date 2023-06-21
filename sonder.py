@@ -341,7 +341,7 @@ async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
 	await ctx.respond(message)
 
 async def character_names_autocomplete(ctx: discord.AutocompleteContext):
-	uid = ctx.interaction.user.id
+	uid = str(ctx.interaction.user.id)
 	if uid in character_data:
 		return list(character_data[uid]['chars'].keys())
 	else:
@@ -474,7 +474,7 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create`.",ephemeral=True)
 		return
 	
-	ch = character_data[ctx.author.id]['chars'][codename]
+	ch = character_data[yourid]['chars'][codename]
 	await ctx.respond(output_character(codename, ch))
 	return
 
@@ -597,7 +597,7 @@ async def add_item(ctx,
 	await save_character_data()
 
 async def active_character_traits_autocomp(ctx):
-	uid = ctx.interaction.user.id
+	uid = str(ctx.interaction.user.id)
 	if uid in character_data:
 		# gotta get active character manually cus this is a different kind of ctx. ugh
 		your_actives = character_data[uid]['active']
@@ -684,7 +684,7 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 		return
 
 async def full_item_autocomplete(ctx):
-	uid = ctx.interaction.user.id
+	uid = str(ctx.interaction.user.id)
 	if uid in character_data:
 		# gotta get active character manually cus this is a different kind of ctx. ugh
 		your_actives = character_data[uid]['active']
@@ -726,6 +726,22 @@ async def remove_item(ctx,
 	
 	await ctx.respond(f"**{codename.upper()}** has removed **{item}** from their inventory.")
 	await save_character_data()
+
+@bot.command(description="Spend a War Die from your active character.")
+async def war_die(ctx):
+	log(f"/war_die")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	if character['wd'] > 0:
+		character['wd'] -= 1
+		result = d6()
+		ctx.respond(f"**{codename.upper()}** spends a War Die: **{num_to_die[result]} ({result})**")
+	else:
+		ctx.respond(f"{codename.upper()} has no War Dice to spend!")
 
 @bot.command(description="Adjust one of the stats of your character")
 async def stat(ctx):
@@ -904,7 +920,7 @@ async def attack(ctx,
 		await ctx.respond(f"There was an error performing this command.\n```{e}```",ephemeral=True)
 
 async def held_items_autocomplete(ctx):
-	uid = ctx.interaction.user.id
+	uid = str(ctx.interaction.user.id)
 	if uid in character_data:
 		# gotta get active character manually cus this is a different kind of ctx. ugh
 		your_actives = character_data[uid]['active']
@@ -926,7 +942,7 @@ async def held_items_autocomplete(ctx):
 		return []
 
 async def held_dice_autocomplete(ctx):
-	uid = ctx.interaction.user.id
+	uid = str(ctx.interaction.user.id)
 	if uid in character_data:
 		# gotta get active character manually cus this is a different kind of ctx. ugh
 		your_actives = character_data[uid]['active']
@@ -967,7 +983,7 @@ async def held_dice_autocomplete(ctx):
 		return []
 
 async def held_numbers_autocomplete(ctx):
-	uid = ctx.interaction.user.id
+	uid = str(ctx.interaction.user.id)
 	if uid in character_data:
 		# gotta get active character manually cus this is a different kind of ctx. ugh
 		your_actives = character_data[uid]['active']
