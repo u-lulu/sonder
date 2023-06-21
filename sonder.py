@@ -492,8 +492,13 @@ async def add_item(ctx,
 	await ctx.respond("TODO",ephemeral=True)
 	return
 
-@bot.command(description="Remove a trait or item from a character")
-async def remove(ctx):
+@bot.command(description="Remove a trait from your active character")
+async def remove_trait(ctx):
+	await ctx.respond("TODO",ephemeral=True)
+	return
+
+@bot.command(description="Remove an item from your active character")
+async def remove_item(ctx):
 	await ctx.respond("TODO",ephemeral=True)
 	return
 
@@ -536,7 +541,7 @@ async def cre(ctx,
 
 @bot.command(description="Take damage")
 async def damage(ctx, 
-	amount: discord.Option(str, "Amount of damage to take; supports dice syntax.", required=True),
+	amount: discord.Option(str, "Amount of damage to take. Supports dice syntax.", required=True),
 	armor_piercing: discord.Option(bool, "Skip armor when applying this damage.", required=False, default=False)):
 	await ctx.respond("TODO",ephemeral=True)
 	return
@@ -554,6 +559,13 @@ async def equip_armor(ctx,
 	damage: discord.Option(int, "Amount of damage it reduces.", required=True)):
 	await ctx.respond("TODO",ephemeral=True)
 	return
+
+@bot.command(description="Dump character data in chat")
+async def dump_character_data(ctx):
+	if ctx.author.id == ownerid:
+		await ctx.respond(json.dumps(character_data,indent=2))
+	else:
+		await ctx.respond(f"Only <@{ownerid}> may use this command.",ephemeral=True)
 
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
