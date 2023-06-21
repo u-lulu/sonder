@@ -11,16 +11,22 @@ import math
 import rolldice # pip install py-rolldice
 from func_timeout import func_timeout, FunctionTimedOut # pip install func-timeout
 
+def log(msg):
+	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
+
+log("Initializing...")
 boot_time = int(time.time())
 
 bot = discord.Bot(activity=discord.Game(name='FIST: Ultra Edition'))
 
+log("Loading token")
 token_file = open('token.json')
 token_file_data = json.load(token_file)
 ownerid = token_file_data["owner_id"]
 token = token_file_data["token"]
 token_file.close()
 
+log("Loading traits")
 trait_file = open('traits.json')
 trait_data = json.load(trait_file)
 trait_file.close()
@@ -29,10 +35,12 @@ trait_file = open('secret_trait.json')
 secret_trait = json.load(trait_file)
 trait_file.close()
 
+log("Loading roles")
 role_file = open('roles.json')
 role_data = json.load(role_file)
 role_file.close()
 
+log("Creating role and trait name list")
 trait_names = []
 for trait in trait_data:
 	trait_names.append(trait["Name"])
@@ -50,6 +58,7 @@ num_to_die = {
 	6: "<:revolver_dice_6:1029946662531113011>"
 }
 
+log("Defining helper functions")
 def d6():
 	return rnd.randint(1,6)
 
@@ -125,9 +134,6 @@ def decap_first(string):
 			return string[0].lower() + string[1:]
 	return string
 
-def log(msg):
-	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
-
 def remove_duplicates(lst):
 	unique_lst = []
 
@@ -155,6 +161,7 @@ def roll_extra_possibility(input_string):
 	else:
 		return input_string
 
+log("Creating generic commands")
 @bot.event
 async def on_ready():
 	log(f"{bot.user} is ready and online!")
@@ -531,6 +538,9 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 		await ctx.respond(f"Your active character in this channel is now **{codename.upper()}**.")
 		await save_character_data()
 	return	
+
+log("Creating trait commands")
+trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
 async def role_autocomp(ctx):
 	return role_names
@@ -1287,6 +1297,7 @@ async def random(ctx):
 
 bot.add_application_command(trait_group)
 
+log("Creating role commands")
 role_group = discord.SlashCommandGroup("role", "Role Commands")
 
 @role_group.command(description="Looks up a role by name or d66 number")
@@ -1305,11 +1316,13 @@ async def random(ctx):
 
 bot.add_application_command(role_group)
 
+log("Creating player commands")
 player_group = discord.SlashCommandGroup("player", "Player Commands")
 
 def trait_sort_key(trait):
 	return trait["Name"]
 
+log("Loading Ripley's codenames")
 file = open('ripley_codenames.json')
 merc_codenames = json.load(file)
 file.close()
@@ -1503,6 +1516,7 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax")):
 
 bot.add_application_command(player_group)
 
+log("Creating matrix commands")
 matrix_group = discord.SlashCommandGroup("matrix", "Intelligence Matrix Rollers")
 
 intelligence = {}
@@ -2659,4 +2673,210 @@ async def spell(ctx):
 
 bot.add_application_command(matrix_group)
 
+atrx_group = discord.SlashCommandGroup("ataraxia", "RATIONS #1: ATARAXIA Commands")
+
+file = open('rations/ataraxia.json')
+intelligence["ataraxia"] = json.load(file)
+file.close()
+
+@atrx_group.command(description="Listens to a rumor from Vizhay")
+async def rumor(ctx):
+	log("/ataraxia rumor")
+	result = roll_intelligence_matrix(intelligence["ataraxia"][0])
+	message = f"You pick up on a rumor in Vizhay: {result}"
+	await ctx.respond(message)
+
+@atrx_group.command(description="Encounter something in Dyatlov Pass")
+async def encounter(ctx):
+	log("/ataraxia encounter")
+	result = roll_intelligence_matrix(intelligence["ataraxia"][1])
+	message = f"During your travels through Dyatlov Pass, you run into: **{result}**"
+	await ctx.respond(message)
+
+bot.add_application_command(atrx_group)
+
+hzfc_group = discord.SlashCommandGroup("hazfunction", "RATIONS #2: HAZARD FUNCTION Commands")
+
+file = open('rations/hazard_function.json')
+intelligence["hazfunction"] = json.load(file)
+file.close()
+
+@hzfc_group.command(description="Enter a new chamber")
+async def room(ctx):
+	log("/hazfunction room")
+	result = roll_intelligence_matrix(intelligence["hazfunction"][0])
+	await ctx.respond(result)
+
+@hzfc_group.command(description="Spawn a chamber's hazard")
+async def hazard(ctx):
+	log("/hazfunction hazard")
+	result = roll_intelligence_matrix(intelligence["hazfunction"][1])
+	await ctx.respond(result)
+
+@hzfc_group.command(description="Spawn a crucible animal")
+async def animal(ctx):
+	log("/hazfunction animal")
+	result = roll_intelligence_matrix(intelligence["hazfunction"][4])
+	await ctx.respond(result)
+
+@hzfc_group.command(description="Spawn a chamber's encounter")
+async def encounter(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
+	log(f"/hazfunction encounter {rooms_cleared}")
+	if rooms_cleared < 0:
+		await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
+		return
+	options = intelligence["hazfunction"][2]["Values"]
+	roll = d6() + rooms_cleared
+	if roll > 16:
+		roll = 16
+	result = options[str(roll)]
+	await ctx.respond(result)
+
+@hzfc_group.command(description="Spawn a chamber's item")
+async def item(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
+	log(f"/hazfunction item {rooms_cleared}")
+	if rooms_cleared < 0:
+		await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
+		return
+	options = intelligence["hazfunction"][3]["Values"]
+	roll = d6() + rooms_cleared
+	if roll > 16:
+		roll = 16
+	result = options[str(roll)]
+	await ctx.respond(result)
+
+@hzfc_group.command(description="Enter a new chamber, and outfit it with an encounter, hazard, and item")
+async def full_room(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
+	log(f"/hazfunction full_room {rooms_cleared}")
+	if rooms_cleared < 0:
+		await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
+		return
+	room = roll_intelligence_matrix(intelligence["hazfunction"][0])
+	haz = roll_intelligence_matrix(intelligence["hazfunction"][1])
+	encounter_options = intelligence["hazfunction"][2]["Values"]
+	item_options = intelligence["hazfunction"][3]["Values"]
+	roll = d6() + rooms_cleared
+	if roll > 16:
+		roll = 16
+	encounter = encounter_options[str(roll)]
+	roll = d6() + rooms_cleared
+	if roll > 16:
+		roll = 16
+	item = item_options[str(roll)]
+	await ctx.respond(f"{room}\n\nHazard: **{haz}**\nEncounter: **{encounter}**\nItem: **{item}**")
+
+def hazfunc_codename():
+	military_letter_codes = ["ALPHA", "BRAVO", "CHARLIE", "DELTA", "ECHO", "FOXTROT", "GOLF", "HOTEL", "INDIA", "JULIET", "KILO", "LIMA", "MIKE", "NOVEMBER", "OSCAR", "PAPA", "QUEBEC", "ROMEO", "SIERRA", "TANGO", "UNIFORM", "VICTOR", "WHISKEY", "XRAY", "YANKEE", "ZULU"]
+	return f"{rnd.choice(military_letter_codes)}-{rnd.randint(0,9)}"
+
+@hzfc_group.command(description="Produces a random Hazard Function character")
+async def character(ctx):
+	log(f"/hazfunction character")
+	
+	message = f"# {hazfunc_codename()}"
+	message += "\nROLE: **SURVIVOR**\nDescribe why you want to live. If you live until the end of the mission, take another trait and gain a role, change your MAX HP to 6, then take a standard issue item, +1D6 MAX HP, or +1D6 WAR DICE.\n\n"
+	
+	traits = [rnd.choice(trait_data)]
+	
+	stats = {
+		"MAX": d6(),
+		"WAR": 0,
+		"FORCEFUL": 0,
+		"TACTICAL": 0,
+		"CREATIVE": 0,
+		"REFLEXIVE": 0
+	}
+	
+	for trait in traits:
+		bonus = trait["Stat"].split(" ")
+		num = 0
+		if bonus[1] in stats:
+			if bonus[0] == "+1D6":
+				num = d6()
+			else:	
+				num = 0
+				numerical = bonus[0]
+				if numerical[0] in ('+', '-'):
+					num = int(numerical[1:])
+					if numerical[0] == '-':
+						num = -num
+				else:
+					num = int(numerical)
+			
+			stats[bonus[1]] += num
+	
+	message += f"MAX HP: {stats['MAX']}\n"
+	message += f"WAR DICE: {stats['WAR']}\n\n"
+	message += f"FORCEFUL: {stats['FORCEFUL']}\n"
+	message += f"TACTICAL: {stats['TACTICAL']}\n"
+	message += f"CREATIVE: {stats['CREATIVE']}\n"
+	message += f"REFLEXIVE: {stats['REFLEXIVE']}\n\n"
+	
+	message += "TRAITS:\n"
+	altmessage = message
+	for trait in traits:
+		message += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
+		altmessage += f"- **{trait['Name']}** ({trait['Number']}, {trait['Stat']})\n"
+	
+	message += f"\n*Your trait item, **{traits[0]['Item']}**, is not given to you to start. You may be able to acquire it during the Crucible.*"
+	altmessage += f"\n\n*Your trait item, **{traits[0]['Item']}**, is not given to you to start. You may be able to acquire it during the Crucible.*"
+	
+	if len(message) > 2000:
+		message = message.replace("FORCEFUL", "FRC")
+		message = message.replace("CREATIVE", "CRE")
+		message = message.replace("REFLEXIVE", "RFX")
+		message = message.replace("TACTICAL", "TAC")
+		message = message.replace("DAMAGE", "DMG")
+		if len(message) > 2000:
+			message = altmessage
+	if len(message) > 2000:
+		message = message.replace("FORCEFUL", "FRC")
+		message = message.replace("CREATIVE", "CRE")
+		message = message.replace("REFLEXIVE", "RFX")
+		message = message.replace("TACTICAL", "TAC")
+		message = message.replace("DAMAGE", "DMG")
+		if len(message) > 2000:
+			await ctx.respond("The generated character does not fit in the 2,000 character limit for messages. Try lowering the amount of traits.",ephemeral=True)
+			return
+	await ctx.respond(message)
+
+bot.add_application_command(hzfc_group)
+
+ctsh_group = discord.SlashCommandGroup("colony", "RATIONS #3: CULTURE SHOCK Commands")
+
+file = open('rations/culture_shock.json')
+intelligence["cultshock"] = json.load(file)
+file.close()
+
+def strain():
+	symptom = roll_intelligence_matrix(intelligence["cultshock"][0])
+	area = roll_intelligence_matrix(intelligence["cultshock"][1])
+	return f"{symptom} {area}"
+
+@ctsh_group.command(description="Provide a new Bacteria Canister from Colony's shop")
+async def canister(ctx, amount: discord.Option(discord.SlashCommandOptionType.integer, "The number of canisters to provide", required=False, default=1)):
+	log(f"/colony canister {amount}")
+	if amount < 1:
+		await ctx.respond("Canisters provided must be 1 or more.",ephemeral=True)
+	elif amount > 15:
+		await ctx.respond("Canisters provided must be 15 or less.",ephemeral=True)
+	elif amount == 1:
+		await ctx.respond(f"Colony offers you a Bacteria Canister that's labelled... **{strain()}**. Whatever that means.")
+	else:
+		msg = "Colony offers you several Bacteria Canisters:"
+		for i in range(amount):
+			msg += f"\n- **{strain()}**"
+		await ctx.respond(msg)
+
+@ctsh_group.command(description="Roll to see if Colony will spawn.")
+async def spawn(ctx):
+	log(f"/colony spawn")
+	if d6() % 2 == 1:
+		await ctx.respond("Colony **will** spawn in this region.")
+	else:
+		await ctx.respond("Colony **will not** spawn in this region.")
+
+bot.add_application_command(ctsh_group)
+
+log("Starting bot session")
 bot.run(token)
