@@ -283,7 +283,7 @@ def get_active_char_object(ctx):
 	else:
 		return character_data[ctx.author.id]['chars'][codename]
 
-async def roll_with_skill(ctx, superior_dice, inferior_dice, stat):
+async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
 	log(f"/{stat.lower()} {' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
 	
 	character = get_active_char_object(ctx)
@@ -292,7 +292,7 @@ async def roll_with_skill(ctx, superior_dice, inferior_dice, stat):
 		return
 	codename = get_active_codename(ctx)
 	
-	modifier = character[stat.lower()]
+	modifier = character[stat.lower()] + extra_mod
 	
 	results = [d6(), d6()]
 	if superior_dice ^ inferior_dice:
@@ -313,10 +313,10 @@ async def roll_with_skill(ctx, superior_dice, inferior_dice, stat):
 	
 	message = f"**{codename.upper()}** rolling +{stat.upper()}:\n> "
 	
-	if modifier != 0:
-		message += f"({dice_string}) + {modifier} = **{total}**: "
+	if extra_mod != 0:
+		message += f"({dice_string}) + {modifier} ({stat.upper()}) + {extra_mod} = **{total}**: "
 	else:
-		message += f"{dice_string} = **{total}**: "
+		message += f"({dice_string}) + {modifier} ({stat.upper()}) = **{total}**: "
 	
 	if results == [6,6]:
 		message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
@@ -494,31 +494,35 @@ async def stat(ctx):
 
 @bot.command(description="Roll +FORCEFUL with your active character")
 async def frc(ctx, 
+	modifier: discord.Option(discord.SlashCommandOptionType.integer, "Extra modifiers for the roll", required=False, default=0),
 	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
 	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
 	):
-	await roll_with_skill(ctx, superior_dice, inferior_dice, 'frc')
+	await roll_with_skill(ctx, modifier, superior_dice, inferior_dice, 'frc')
 
 @bot.command(description="Roll +REFLEXIVE with your active character")
 async def rfx(ctx, 
+	modifier: discord.Option(discord.SlashCommandOptionType.integer, "Extra modifiers for the roll", required=False, default=0),
 	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
 	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
 	):
-	await roll_with_skill(ctx, superior_dice, inferior_dice, 'rfx')
+	await roll_with_skill(ctx, modifier, superior_dice, inferior_dice, 'rfx')
 
 @bot.command(description="Roll +TACTICAL with your active character")
 async def tac(ctx, 
+	modifier: discord.Option(discord.SlashCommandOptionType.integer, "Extra modifiers for the roll", required=False, default=0),
 	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
 	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
 	):
-	await roll_with_skill(ctx, superior_dice, inferior_dice, 'tac')
+	await roll_with_skill(ctx, modifier, superior_dice, inferior_dice, 'tac')
 
 @bot.command(description="Roll +CREATIVE with your active character")
 async def cre(ctx, 
+	modifier: discord.Option(discord.SlashCommandOptionType.integer, "Extra modifiers for the roll", required=False, default=0),
 	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
 	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
 	):
-	await roll_with_skill(ctx, superior_dice, inferior_dice, 'cre')
+	await roll_with_skill(ctx, modifier, superior_dice, inferior_dice, 'cre')
 
 @bot.command(description="Take damage")
 async def damage(ctx, 
