@@ -253,7 +253,8 @@ def output_character(codename, data):
 	
 	out += f"\n\nHP: {data['hp']}/{data['maxhp']}"
 	out += f"\nWAR DICE: {data['wd']}"
-	out += f"\nARMOR: {data['armor']}"
+	out += f"\nARMOR: {data['armor_name']} ({data['armor']})"
+	out += f"\nWEAPON: {data['weapon_name']} ({data['damage']})"
 	
 	out += f"\n\nFORCEFUL: {data['frc']}"
 	out += f"\nTACTICAL: {data['tac']}"
@@ -377,6 +378,9 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 		"tac": 0,
 		"rfx": 0,
 		"cre": 0,
+		"weapon_name": "Unarmed",
+		"damage": "2d6k1",
+		"armor_name": "Nothing",
 		"armor": 0,
 		"traits": [],
 		"items": []
@@ -708,6 +712,32 @@ async def heal(ctx,
 			message = message[:limit-5]+"...]`"
 	await ctx.respond(message)
 	await save_character_data()
+
+@bot.command(description="Roll your active character's weapon damage")
+async def attack(ctx,
+	bonus_damage: discord.Option(str, "Amount of extra damage to deal; supports dice syntax.", required=False, default="0"),
+	multiplier: discord.Option(int, "Amount to multiply the final damage by.", required=False, default=1)
+	):
+	log(f"/attack {bonus_damage} {multiplier}")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	base_damage = character['damage']
+	base_damage = rolldice.roll_dice(base_damage)
+	
+	bonus_damage_result = rolldice.roll_dice(bonus_damage)
+	
+	final_damage = (base_damage[0] + bonus_damage_result[0]) * multiplier
+	
+	message = f"**{codename}** has dealt **{final_damage} damage** using **{character['weapon_name']}**!\n\nBase damage: `{character['damage']}` -> `{base_damage[1]}`"
+	if bonus_damage != "0":
+		message += f"\nBonus damage: `{bonus_damage}` -> `{bonus_damage_result[1]}`"
+	if multiplier != 1:
+		message += f"\nFinal damage multiplier: `{multiplier}`"
+	await ctx.respond(message)
 
 @bot.command(description="Set your equipped weapon")
 async def equip_weapon(ctx, 
