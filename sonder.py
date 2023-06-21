@@ -727,7 +727,7 @@ async def remove_item(ctx,
 	await ctx.respond(f"**{codename.upper()}** has removed **{item}** from their inventory.")
 	await save_character_data()
 
-@bot.command(description="Spend a War Die from your active character.")
+@bot.command(description="Spend a War Die from your active character")
 async def war_die(ctx):
 	log(f"/war_die")
 	character = get_active_char_object(ctx)
@@ -740,12 +740,67 @@ async def war_die(ctx):
 		character['wd'] -= 1
 		result = d6()
 		await ctx.respond(f"**{codename.upper()}** spends a War Die: **{num_to_die[result]} ({result})**")
+		await save_character_data()
 	else:
-		await ctx.respond(f"{codename.upper()} has no War Dice to spend!")
+		await ctx.respond(f"{codename.upper()} has no War Dice to spend!",ephemeral=True)
 
-@bot.command(description="Adjust one of the stats of your character")
-async def stat(ctx):
-	await ctx.respond("TODO",ephemeral=True)
+editable_stats = ["CURRENT HP","MAX HP","WAR DICE","FORCEFUL","TACTICAL","REFLEXIVE","CREATIVE","ARMOR"]
+async def stats_autocomplete(ctx):
+	return editable_stats
+
+@bot.command(description="Adjust one your character's stats")
+async def adjust(ctx,
+	stat: discord.Option(str, "The stat to change.", autocomplete=discord.utils.basic_autocomplete(stats_autocomplete), required=True),
+	amount: discord.Option(str, "Amount to increase the stat by. Supports dice syntax. Negative values will decrease.", required=True)):
+	log(f"/adjust {stat} {amount}")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	stat = stat.upper()
+	stats_translator = {
+		"CURRENT HP":"hp",
+		"MAX HP":"maxhp",
+		"WAR DICE":"wd",
+		"FORCEFUL":"frc",
+		"TACTICAL":"tac",
+		"REFLEXIVE":"rfx",
+		"CREATIVE":"cre",
+		"ARMOR":"armor"
+	}
+	
+	if stat not in stats_translator:
+		opts = ", ".join(editable_stats)
+		await ctx.respond(f"There is no adjustable character stat called '{stat}'.\nYour options are: {opts}",ephemeral=True)
+		return
+	
+	translated_stat = stats_translator[stat]
+	output = ()
+	timeout = 2
+	try:
+		output = func_timeout(timeout, rolldice.roll_dice, args=[amount])
+	except rolldice.rolldice.DiceGroupException as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
+		return
+	except FunctionTimedOut as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
+		return
+	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
+		return
+	
+	character[translated_stat] += output[0]
+	
+	message = f"{codename.upper()} has **{'in' if output[0] >= 0 else 'de'}creased** their **{stat}** by {abs(output[0])}!"
+	if 'd' in amount or 'D' in amount:
+		message += f"\n\nDice results: `{output[1]}`"
+	
+	await ctx.respond(message)
 	await save_character_data()
 
 @bot.command(description="Roll +FORCEFUL with your active character")
