@@ -253,7 +253,8 @@ def output_character(codename, data):
 	if data["role"] == {}:
 		out += "\nROLE: *No role yet.*"
 	else:
-		out += "\n" + role_message_format(data["role"])
+		r = data["role"]
+		out += f"\nROLE: **{r['Name']}**\n{r['Text']}"
 	
 	out += f"\n\nHP: {data['hp']}/{data['maxhp']}"
 	out += f"\nWAR DICE: {data['wd']}"
@@ -494,7 +495,32 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 		character_data[userid]['active'][str(ctx.channel_id)] = codename
 		await ctx.respond(f"Your active character in this channel is now **{codename.upper()}**.")
 		await save_character_data()
-	return
+	return	
+
+async def role_autocomp(ctx):
+	return role_names
+
+@bot.command(description="Set your active character's role")
+async def set_role(ctx,
+	name: discord.Option(str,"The name of your role.",autocomplete=discord.utils.basic_autocomplete(role_autocomp),required=True),
+	description: discord.Option(str,"The role's description.",required=True)):
+	log(f"/set_role '{name}' '{description}'")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	name = name.upper()
+	character['role'] = {
+		"Name": name,
+		"Text": description
+	}
+	
+	out = f"**{codename.upper()}** has changed their role:"
+	out += f"\n>>> **{name}**\n{description}"
+	await ctx.respond(out)
+	await save_character_data()
 
 async def trait_autocomp(ctx):
 	return trait_names
@@ -1234,9 +1260,6 @@ async def random(ctx):
 bot.add_application_command(trait_group)
 
 role_group = discord.SlashCommandGroup("role", "Role Commands")
-
-async def role_autocomp(ctx):
-	return role_names
 
 @role_group.command(description="Looks up a role by name or d66 number")
 async def lookup(ctx, role: discord.Option(str,"The role to search for",autocomplete=discord.utils.basic_autocomplete(role_autocomp))):
