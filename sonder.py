@@ -524,10 +524,9 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 			file.write(message)
 		await ctx.respond(f"The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
 		os.remove('message.txt')
-		print(f"Sent trace with length {len(details_string[channel_id])} as file")
+		print(f"Sent character sheet as file")
 	else:
 		await ctx.respond(message)
-	return
 
 @bot.command(description="Switch which character is active in this channel")
 async def switch_character(ctx, codename: discord.Option(str, "The codename of the character to switch to.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
