@@ -301,7 +301,7 @@ async def roll_with_skill(ctx, superior_dice, inferior_dice, stat):
 	
 	total = sum(results) + modifier
 	
-	message = f"**{codename}** rolling +{stat.upper()}:\n> "
+	message = f"**{codename.upper()}** rolling +{stat.upper()}:\n> "
 	
 	if modifier != 0:
 		message += f"({dice_string}) + {modifier} = **{total}**: "
