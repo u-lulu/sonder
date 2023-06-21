@@ -803,6 +803,89 @@ async def adjust(ctx,
 	await ctx.respond(message)
 	await save_character_data()
 
+@bot.command(description="Reset your active character's stats and items to the trait defaults")
+async def refresh(ctx, 
+	reset_hp: discord.Option(bool, "If TRUE, sets your base HP to 6 and recalculates it. FALSE by default.", required=False, default=False), 
+	reset_war_dice: discord.Option(bool, "If TRUE, sets your War Dice to 0 and recalculates it. FALSE by default.", required=False, default=False)):
+	log(f"/refresh {'reset_hp' if reset_hp else ''}")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	weapon_reset = False
+	if character['weapon_name'] != "Unarmed" or character['damage'] != "2d6k1":
+		weapon_reset = True
+	armor_reset = False
+	if character['armor_name'] != "Nothing" or character['armor'] != 0:
+		armor_reset = True
+	
+	character['frc'] = 0
+	character['tac'] = 0
+	character['rfx'] = 0
+	character['cre'] = 0
+	character['weapon_name'] = "Unarmed"
+	character['damage'] = "2d6k1"
+	character['armor_name'] = "Nothing"
+	character['armor'] = 0
+	items = []
+	
+	if reset_hp:
+		character['maxhp'] = 6
+	if reset_war_dice:
+		character['wd'] = 0
+	
+	stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
+	stats_translator = {
+		"MAX":"maxhp",
+		"WAR":"wd",
+		"FORCEFUL":"frc",
+		"TACTICAL":"tac",
+		"CREATIVE":"cre",
+		"REFLEXIVE":"rfx"
+	}
+	
+	for trait in character['traits']:
+		items.append(trait['Item'])
+		
+		bonus = trait["Stat"].split(" ")
+		num = 0
+		# bonus is ELSE (0) and user says no (0) -> 1
+		# bonus is ELSE (0) and user says yes (1) -> 1
+		# bonus is MAX (1) and user says no (0) -> 0
+		# bonus is MAX (1) and user says yes (1) -> 1
+		hp_adjust_is_ok = (not bonus[1] == 'MAX') or reset_hp
+		wd_adjust_is_ok = (not bonus[1] == 'WAR') or reset_war_dice
+		if bonus[1] in stats and hp_adjust_is_ok and wd_adjust_is_ok:
+			translated_stat_bonus = stats_translator[bonus[1]]
+			if bonus[0] == "+1D6":
+				num = d6()
+			else:	
+				numerical = bonus[0]
+				if numerical[0] in ('+', '-'):
+					num = int(numerical[1:])
+					if numerical[0] == '-':
+						num = -num
+				else:
+					num = int(numerical)
+			character[translated_stat_bonus] += num
+			if translated_stat_bonus == 'maxhp':
+				character['hp'] += num
+	
+	character['hp'] = character['maxhp']
+	
+	message = f"**{codename}** has been reset to default values. Use `/sheet` to view updated information."
+	if weapon_reset:
+		message += "\nThis action has reset your equipped weapon to **Unarmed (2d6k1 DAMAGE)**."
+	if armor_reset:
+		message += "\nThis action has reset your equipped weapon to **Nothing (0 ARMOR)**."
+	if reset_hp:
+		message += f"\nYour HP has been recalculated from the base 6, and is now **{character['maxhp']}**."
+	if reset_war_dice:
+		message += f"\nYour War Dice have been recalculated from the base 0, and is now **{character['wd']}**."
+	await ctx.respond(message)
+
 @bot.command(description="Roll +FORCEFUL with your active character")
 async def frc(ctx, 
 	modifier: discord.Option(discord.SlashCommandOptionType.integer, "Extra modifiers for the roll", required=False, default=0),
