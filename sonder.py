@@ -320,6 +320,7 @@ async def roll_with_skill(ctx, superior_dice, inferior_dice, stat):
 
 @bot.command(description="Create a new character to manage")
 async def create(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", required=True)):
+	log(f"/create {codename}")
 	userid = ctx.author.id
 	if userid not in character_data:
 		character_data[userid] = {
@@ -349,11 +350,13 @@ async def create(ctx, codename: discord.Option(str, "The character's codename, u
 
 @bot.command(description="Delete a character from your roster")
 async def delete(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", required=True)):
+	log(f"/delete {codename}")
 	await ctx.respond("TODO",ephemeral=True)
 	return
 
 @bot.command(description="List all characters you've created")
 async def list(ctx):
+	log("/list")
 	if ctx.author.id in character_data:
 		yourchars = character_data[ctx.author.id]['chars'].keys()
 		if len(yourchars) > 0:
@@ -365,6 +368,7 @@ async def list(ctx):
 	
 @bot.command(description="Displays your current active character's sheet")
 async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", required=False, default="")):
+	log(f"/sheet {codename}")
 	if codename == "":
 		codename = get_active_codename(ctx)
 	if codename == None:
@@ -380,6 +384,7 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 
 @bot.command(description="Switch which character is active in this channel")
 async def switch(ctx, codename: discord.Option(str, "The codename of the character to switch to.", required=True)):
+	log(f"/switch {codename}")
 	userid = ctx.author.id
 	if userid not in character_data:
 		await ctx.respond("You have no characters available. Use `/create` to make one.",ephemeral=True)
