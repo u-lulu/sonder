@@ -267,23 +267,23 @@ def get_active_codename(ctx):
 	return None
 
 def get_active_char_object(ctx):
-    codename = get_active_codename(ctx)
-    if codename == None:
-        return None
-    else:
-        return character_data[uid]['chars'][codename]
+	codename = get_active_codename(ctx)
+	if codename == None:
+		return None
+	else:
+		return character_data[uid]['chars'][codename]
 
 async def roll_with_skill(ctx, superior_dice, inferior_dice, stat):
 	log(f"/{stat.lower()} {' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
-    
-    character = get_active_char_object(ctx)
-    if character == None:
-        ctx.respond("You do not have an active character in this channel. Select one with `/switch`.")
-        return
-    codename = get_active_codename(ctx)
-    
-    modifier = character[stat.lower()]
-    
+	
+	character = get_active_char_object(ctx)
+	if character == None:
+		ctx.respond("You do not have an active character in this channel. Select one with `/switch`.")
+		return
+	codename = get_active_codename(ctx)
+	
+	modifier = character[stat.lower()]
+	
 	results = [d6(), d6()]
 	if superior_dice ^ inferior_dice:
 		results.append(d6())
