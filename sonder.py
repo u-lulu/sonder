@@ -228,6 +228,22 @@ character_data = {}
 # - "chars" is a dict that contains all characters, with keys being codenames
 # - "active" is a dict; keys are channel IDs, values are character codenames
 
+reporting_channel = 1101250179899867217
+async def save_character_data():
+	try:
+		with open("player_data/data.json", "w") as outfile:
+			outfile.write(json.dumps(character_data,indent=2))
+		total_users = 0
+		total_characters = 0
+		for userid in character_data:
+			total_users += 1
+			total_characters += len(character_data[userid]['chars'])
+		log(f"Character data saved. Storing data about {total_characters} characters created by {total_users} users")
+	except Exception as e:
+		log(f"PLAYER DATA SAVING THREW AN ERROR: {e}")
+		report_channel = await bot.fetch_channel(reporting_channel)
+		await report_channel.send(f"<@{ownerid}> An error occurred while saving character data!\n```{e}```")
+
 def output_character(codename, data):
 	out = f"# {codename.upper()}"
 	if data["role"] == {}:
@@ -369,11 +385,13 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	await ctx.respond(f"Created character with the codename '{codename}'.")
 	if set_as_active:
 		await switch_character(ctx, codename)
-
+	await save_character_data()
+	
 @bot.command(description="Delete a character from your roster")
 async def delete_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
 	log(f"/delete {codename}")
 	await ctx.respond("TODO",ephemeral=True)
+	await save_character_data()
 	return
 
 @bot.command(description="List all characters you've created")
@@ -419,6 +437,7 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 	else:
 		character_data[userid]['active'][ctx.channel_id] = codename
 		await ctx.respond(f"Your active character in this channel is now **{codename}**.")
+		await save_character_data()
 	return
 
 @bot.command(description="Add a core book trait to your active character")
@@ -482,7 +501,7 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book number of the
 		out += f"\n**This character now has a Max HP of {character['maxhp']}!!**"
 	out += f"\n>>> {trait_message_format(my_new_trait)}"
 	await ctx.respond(out)
-	return
+	await save_character_data()
 
 @bot.command(description="Add a custom trait to your character")
 async def add_custom_trait(ctx,	
@@ -493,29 +512,29 @@ async def add_custom_trait(ctx,
 		item_name: discord.Option(str, "The name of the item that this trait grants you", required=True),
 		item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
 	await ctx.respond("TODO",ephemeral=True)
-	return
+	await save_character_data()
 
 @bot.command(description="Add an item your active character")
 async def add_item(ctx,
 		name: discord.Option(str, "The name of the item", required=True), 
 		effect: discord.Option(str, "The effect of the item", required=False)):
 	await ctx.respond("TODO",ephemeral=True)
-	return
+	await save_character_data()
 
 @bot.command(description="Remove a trait from your active character")
 async def remove_trait(ctx):
 	await ctx.respond("TODO",ephemeral=True)
-	return
+	await save_character_data()
 
 @bot.command(description="Remove an item from your active character")
 async def remove_item(ctx):
 	await ctx.respond("TODO",ephemeral=True)
-	return
+	await save_character_data()
 
 @bot.command(description="Adjust one of the stats of your character")
 async def stat(ctx):
 	await ctx.respond("TODO",ephemeral=True)
-	return
+	await save_character_data()
 
 @bot.command(description="Roll +FORCEFUL with your active character")
 async def frc(ctx, 
@@ -604,7 +623,7 @@ async def damage(ctx,
 		if len(message) > limit:
 			message = message[:limit-5]+"...]`"
 	await ctx.respond(message)
-	return
+	await save_character_data()
 
 @bot.command(description="Heal damage")
 async def heal(ctx, 
@@ -655,21 +674,21 @@ async def heal(ctx,
 		if len(message) > limit:
 			message = message[:limit-5]+"...]`"
 	await ctx.respond(message)
-	return
+	await save_character_data()
 
 @bot.command(description="Set your equipped weapon")
 async def equip_weapon(ctx, 
 	name: discord.Option(str, "The weapon's name.", required=True),
 	damage: discord.Option(str, "Amount of damage to deal; supports dice syntax.", required=True)):
 	await ctx.respond("TODO",ephemeral=True)
-	return
+	await save_character_data()
 
 @bot.command(description="Set your equipped armor")
 async def equip_armor(ctx, 
 	name: discord.Option(str, "The armor's name.", required=True),
 	damage: discord.Option(int, "Amount of damage it reduces.", required=True)):
 	await ctx.respond("TODO",ephemeral=True)
-	return
+	await save_character_data()
 
 @bot.command(description="Dump character data in chat")
 async def dump_character_data(ctx):
