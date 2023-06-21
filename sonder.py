@@ -237,6 +237,7 @@ def output_character(codename, data):
 	
 	out += f"\n\nHP: {data['hp']}/{data['maxhp']}"
 	out += f"\nWAR DICE: {data['wd']}"
+	out += f"\nARMOR: {data['armor']}"
 	
 	out += f"\n\nFORCEFUL: {data['frc']}"
 	out += f"\nTACTICAL: {data['tac']}"
@@ -360,6 +361,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 		"tac": 0,
 		"rfx": 0,
 		"cre": 0,
+		"armor": 0,
 		"traits": [],
 		"items": []
 	}
@@ -592,6 +594,55 @@ async def damage(ctx,
 	elif (armor_piercing and character['armor'] > 0):
 		message += f" (Ignores {character['armor']} armor!)"
 	message += f"\nHP: {character['hp']}/{character['maxhp']}"
+	if ('d' in amount or 'd' in amount):
+		message += f"\n\nDice results: `{dice_results}`"
+		limit = 300
+		if len(message) > limit:
+			message = message[:limit-5]+"...]`"
+	await ctx.respond(message)
+	return
+
+@bot.command(description="Heal damage")
+async def heal(ctx, 
+	amount: discord.Option(str, "Amount of healing to receive. Supports dice syntax.", required=True),
+	):
+	log(f"/heal {amount}")
+	
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	timeout = 2
+	output = ()
+	try:
+		output = func_timeout(timeout, rolldice.roll_dice, args=[amount])
+	except rolldice.rolldice.DiceGroupException as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
+		return
+	except FunctionTimedOut as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
+		return
+	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
+		return
+	
+	healing_taken = output[0]
+	dice_results = output[1]
+	
+	character['hp'] += healing_taken
+	if character['hp'] > character['maxhp']:
+		character['hp'] = character['maxhp']
+	
+	#message = f"**Total: {output[0]}**\n`{output[1]}`"
+	message = f"**{codename.upper()}** has healed **{healing_taken} HP.**"
+	message += f"\nHP: {character['hp']}/{character['maxhp']}"
+	if character['hp'] >= character['maxhp']:
+		message += " (Full restore!)"
 	if ('d' in amount or 'd' in amount):
 		message += f"\n\nDice results: `{dice_results}`"
 		limit = 300
