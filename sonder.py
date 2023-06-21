@@ -787,7 +787,8 @@ async def held_dice_autocomplete(ctx):
 					dice_matches = re.findall(dice_pattern, effect)
 					number_matches = re.findall(number_pattern, effect)
 					if current_item_selected != None and item.startswith(current_item_selected):
-						output = []
+						dice_outs = set()
+						num_outs = set()
 						for match in dice_matches:
 							dice_outs.add(f"{match[0]}D{match[1]}{match[2]}")
 						for match in number_matches:
@@ -824,7 +825,7 @@ async def held_numbers_autocomplete(ctx):
 					effect = cut[1]
 					number_matches = re.findall(number_pattern, effect)
 					if current_item_selected != None and item.startswith(current_item_selected):
-						output = []
+						num_outs = set()
 						for match in number_matches:
 							num_outs.add(int(match))
 						break
