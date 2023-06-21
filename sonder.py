@@ -875,8 +875,8 @@ async def refresh(ctx,
 	}
 	
 	for trait in character['traits']:
-		if trait['Item'] not in character['items']
-		character['items'].append(trait['Item'])
+		if trait['Item'] not in character['items']:
+			character['items'].append(trait['Item'])
 		
 		bonus = trait["Stat"].split(" ")
 		num = 0
