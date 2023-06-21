@@ -221,7 +221,11 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 		log(f"Caught: {e}")
 		await ctx.respond(f"There was an error processing this command:\n```{e}```")
 
-character_data = {}
+log("Loading user character data")
+file = open('player_data/data.json')
+character_data = json.load(file)
+file.close()
+
 # character_data structure:
 # - main object is a dict, keys are user IDs
 # - user IDs point to dicts with 2 keys: "active" and "chars"
@@ -242,7 +246,7 @@ async def save_character_data():
 	except Exception as e:
 		log(f"PLAYER DATA SAVING THREW AN ERROR: {e}")
 		report_channel = await bot.fetch_channel(reporting_channel)
-		await report_channel.send(f"<@{ownerid}> An error occurred while saving character data!\n```{e}```")
+		await report_channel.send(f"**<@{ownerid}> An error occurred while saving character data!**\n```{e}```")
 
 def output_character(codename, data):
 	out = f"# {codename.upper()}"
@@ -277,7 +281,7 @@ def output_character(codename, data):
 	return out
 
 def get_active_codename(ctx):
-	uid = ctx.author.id
+	uid = str(ctx.author.id)
 	if uid in character_data:
 		your_actives = character_data[uid]['active']
 		if ctx.channel_id in your_actives:
@@ -289,7 +293,7 @@ def get_active_char_object(ctx):
 	if codename == None:
 		return None
 	else:
-		return character_data[ctx.author.id]['chars'][codename]
+		return character_data[str(ctx.author.id)]['chars'][codename]
 
 async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
 	log(f"/{stat.lower()} {' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
@@ -362,7 +366,7 @@ async def ext_character_management(id):
 async def create_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True),
 	set_as_active: discord.Option(bool, "If TRUE, the new character will become your active character in this channel. FALSE by default.", required=False, default=True)):
 	log(f"/create {codename}")
-	userid = ctx.author.id
+	userid = str(ctx.author.id)
 	if userid not in character_data:
 		character_data[userid] = {
 			"active": {},
@@ -413,7 +417,7 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 	log(f"/delete {codename}{' affirmative' if i_am_sure else ''}{' affirmative' if i_am_very_sure else ''}{' affirmative' if i_am_completely_absolutely_sure else ''}")
 	
 	if i_am_sure and i_am_very_sure and i_am_completely_absolutely_sure:
-		yourid = ctx.author.id
+		yourid = str(ctx.author.id)
 		codename = codename.lower()
 		if yourid not in character_data:
 			await ctx.respond("You do not have any character data to delete.",ephemeral=True)
@@ -446,10 +450,11 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 @bot.command(description="List all characters you've created")
 async def list_characters(ctx):
 	log("/list")
-	if ctx.author.id in character_data:
-		yourchars = character_data[ctx.author.id]['chars'].keys()
+	yourid = str(ctx.author.id)
+	if yourid in character_data:
+		yourchars = character_data[yourid]['chars'].keys()
 		if len(yourchars) > 0:
-			msg = f"Characters created by <@{ctx.author.id}>:\n- " + "\n- ".join(yourchars)
+			msg = f"Characters created by <@{yourid}>:\n- " + "\n- ".join(yourchars)
 			await ctx.respond(msg)
 			return
 	await ctx.respond("You haven't created any characters yet!",ephemeral=True)
@@ -459,12 +464,13 @@ async def list_characters(ctx):
 async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default="")):
 	log(f"/sheet {codename}")
 	codename = codename.lower()
+	yourid = str(ctx.author.id)
 	if codename == "":
 		codename = get_active_codename(ctx)
 	if codename == None:
 		await ctx.respond("You have not set an active character in this channel. Either set your active character with `/switch`, or specify which character's sheet you want to view using the optional `codename` argument for this command.",ephemeral=True)
 		return
-	if ctx.author.id not in character_data or codename not in character_data[ctx.author.id]['chars']:
+	if yourid not in character_data or codename not in character_data[yourid]['chars']:
 		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create`.",ephemeral=True)
 		return
 	
@@ -475,7 +481,7 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 @bot.command(description="Switch which character is active in this channel")
 async def switch_character(ctx, codename: discord.Option(str, "The codename of the character to switch to.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
 	log(f"/switch {codename}")
-	userid = ctx.author.id
+	userid = str(ctx.author.id)
 	if userid not in character_data or len(character_data[userid]['chars']) <= 0:
 		await ctx.respond("You have no characters available. Use `/create` to make one.",ephemeral=True)
 		return
