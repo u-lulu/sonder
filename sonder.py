@@ -739,9 +739,9 @@ async def war_die(ctx):
 	if character['wd'] > 0:
 		character['wd'] -= 1
 		result = d6()
-		ctx.respond(f"**{codename.upper()}** spends a War Die: **{num_to_die[result]} ({result})**")
+		await ctx.respond(f"**{codename.upper()}** spends a War Die: **{num_to_die[result]} ({result})**")
 	else:
-		ctx.respond(f"{codename.upper()} has no War Dice to spend!")
+		await ctx.respond(f"{codename.upper()} has no War Dice to spend!")
 
 @bot.command(description="Adjust one of the stats of your character")
 async def stat(ctx):
