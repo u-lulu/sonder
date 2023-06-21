@@ -336,7 +336,8 @@ async def character_names_autocomplete(ctx: discord.AutocompleteContext):
 		return []
 
 @bot.command(description="Create a new character to manage")
-async def create_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True)):
+async def create_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True),
+	set_as_active: discord.Option(bool, "If TRUE, the new character will become your active character in this channel. FALSE by default.", required=False, default=True)):
 	log(f"/create {codename}")
 	userid = ctx.author.id
 	if userid not in character_data:
@@ -362,8 +363,10 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 		"traits": [],
 		"items": []
 	}
+	
 	await ctx.respond(f"Created character with the codename '{codename}'.")
-	return
+	if set_as_active:
+		await switch_character(ctx, codename)
 
 @bot.command(description="Delete a character from your roster")
 async def delete_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
@@ -413,7 +416,7 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 		return
 	else:
 		character_data[userid]['active'][ctx.channel_id] = codename
-		await ctx.respond(f"<@{userid}> has set their active character in this channel to **{codename}**.")
+		await ctx.respond(f"Your active character in this channel is now **{codename}**.")
 	return
 
 @bot.command(description="Add a core book trait to your active character")
