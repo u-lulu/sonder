@@ -3,4 +3,4 @@ token.json
 token_real.json
 WHERE_YOU_LEFT_OFF_NOTES.txt
 working_data/*
-player_data/*
+player_data.json

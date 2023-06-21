@@ -222,9 +222,14 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 		await ctx.respond(f"There was an error processing this command:\n```{e}```")
 
 log("Loading user character data")
-file = open('player_data/data.json')
-character_data = json.load(file)
-file.close()
+character_data = {}
+if os.path.exists('player_data.json'):
+	file = open('player_data.json')
+	character_data = json.load(file)
+	file.close()
+else:
+	log("Player data does not exist. Using empty data.")
+
 
 # character_data structure:
 # - main object is a dict, keys are user IDs
@@ -235,7 +240,7 @@ file.close()
 reporting_channel = 1101250179899867217
 async def save_character_data():
 	try:
-		with open("player_data/data.json", "w") as outfile:
+		with open("player_data.json", "w") as outfile:
 			outfile.write(json.dumps(character_data,indent=2))
 		total_users = 0
 		total_characters = 0
