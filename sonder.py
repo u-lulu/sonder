@@ -634,6 +634,8 @@ async def heal(ctx,
 		return
 	
 	healing_taken = output[0]
+	if healing_taken < 0:
+		healing_taken = 0
 	dice_results = output[1]
 	
 	character['hp'] += healing_taken
