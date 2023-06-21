@@ -357,13 +357,15 @@ standard_character_limit = 10
 premium_character_limit = 50
 
 async def ext_character_management(id):
+	if id == ownerid:
+		return True
 	support_server = await bot.fetch_guild(1101249440230154300)
 	if support_server is None:
 		return False
 	user = await support_server.fetch_member(id)
 	if user is None:
 		return False
-	role = user.get_role(1120761921453432872)
+	role = user.get_role(1120763025465557062)
 	if role is None:
 		return False
 	return True
