@@ -563,17 +563,17 @@ async def equip_armor(ctx,
 @bot.command(description="Dump character data in chat")
 async def dump_character_data(ctx):
 	if ctx.author.id == ownerid:
-		await ctx.respond(json.dumps(character_data,indent=2))
+		await ctx.respond("```json\n" + json.dumps(character_data,indent=2) + "```")
 	else:
 		await ctx.respond(f"Only <@{ownerid}> may use this command.",ephemeral=True)
 
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
-async def role_autocomp(ctx):
+async def trait_autocomp(ctx):
 	return trait_names
 
 @trait_group.command(description="Looks up a trait by name or d666 number")
-async def lookup(ctx, trait: discord.Option(str,"The trait to search for",autocomplete=discord.utils.basic_autocomplete(role_autocomp))):
+async def lookup(ctx, trait: discord.Option(str,"The trait to search for",autocomplete=discord.utils.basic_autocomplete(trait_autocomp))):
 	log(f"/trait lookup {trait}")
 	message = search_for_trait(trait)
 	hidden = message in ["No trait exists with the given number. Trait numbers must be possible d666 roll outputs.","Could not find a trait with an approximately similar name."]
