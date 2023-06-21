@@ -1722,6 +1722,26 @@ async def item(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType
 	result = options[str(roll)]
 	await ctx.respond(result)
 
+@hzfc_group.command(description="Enter a new chamber, and outfit it with an encounter, hazard, and item")
+async def full_room(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
+	log(f"/hazfunction full_room" {rooms_cleared})
+    if rooms_cleared < 0:
+        await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
+        return
+	room = roll_intelligence_matrix(intelligence["hazfunction"][0])
+    haz = roll_intelligence_matrix(intelligence["hazfunction"][1])
+	encounter_options = intelligence["hazfunction"][2]["Values"]
+    item_options = intelligence["hazfunction"][3]["Values"]
+	roll = d6() + rooms_cleared
+	if roll > 16:
+		roll = 16
+	encounter = encounter_options[str(roll)]
+    roll = d6() + rooms_cleared
+	if roll > 16:
+		roll = 16
+    item = item_options[str(roll)]
+	await ctx.respond(f"{room}\n\nHazard: **{haz}**\nEncounter: **{encounter}**\nItem: **{item}**")
+
 def hazfunc_codename():
 	military_letter_codes = ["ALPHA", "BRAVO", "CHARLIE", "DELTA", "ECHO", "FOXTROT", "GOLF", "HOTEL", "INDIA", "JULIET", "KILO", "LIMA", "MIKE", "NOVEMBER", "OSCAR", "PAPA", "QUEBEC", "ROMEO", "SIERRA", "TANGO", "UNIFORM", "VICTOR", "WHISKEY", "XRAY", "YANKEE", "ZULU"]
 	return f"{rnd.choice(military_letter_codes)}-{rnd.randint(0,9)}"
