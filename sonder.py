@@ -518,8 +518,15 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 		return
 	
 	ch = character_data[yourid]['chars'][codename]
-	await ctx.respond(output_character(codename, ch))
-	return
+	message = output_character(codename, ch)
+	if len(message) > 2000:
+		with open("message.txt","w") as file:
+			file.write(message)
+		await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
+		os.remove('message.txt')
+		log("Sent character sheet as file")
+	else:
+		await ctx.respond(message)
 
 @bot.command(description="Switch which character is active in this channel")
 async def switch_character(ctx, codename: discord.Option(str, "The codename of the character to switch to.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
@@ -1123,7 +1130,7 @@ async def attack(ctx,
 		
 		final_damage = (base_damage[0] + bonus_damage_result[0]) * multiplier
 		
-		message = f"**{codename}** has dealt **{final_damage} damage** using **{character['weapon_name']}**!\n\nBase damage: `{character['damage']}` -> `{base_damage[1]}`"
+		message = f"**{codename.upper()}** has dealt **{final_damage} damage** using **{character['weapon_name']}**!\n\nBase damage: `{character['damage']}` -> `{base_damage[1]}`"
 		if bonus_damage != "0":
 			message += f"\nBonus damage: `{bonus_damage}` -> `{bonus_damage_result[1]}`"
 		if multiplier != 1:
