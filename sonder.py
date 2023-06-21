@@ -7,6 +7,7 @@ from datetime import datetime
 from datetime import date
 import time
 import os
+import math
 import rolldice # pip install py-rolldice
 from func_timeout import func_timeout, FunctionTimedOut # pip install func-timeout
 
@@ -357,8 +358,8 @@ standard_character_limit = 10
 premium_character_limit = 50
 
 async def ext_character_management(id):
-	if id == ownerid:
-		return True
+	#if id == str(ownerid):
+		#return True
 	support_server = await bot.fetch_guild(1101249440230154300)
 	if support_server is None:
 		return False
@@ -381,13 +382,17 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 			"chars": {}
 		}
 	
+	premium_character = False
 	if len(character_data[userid]["chars"]) >= standard_character_limit:
-		if not await ext_character_management(userid):
-			await ctx.respond(f"You may not create more than {standard_character_limit} characters.",ephemeral=True)
+		premium_user = await ext_character_management(userid)
+		if not premium_user:
+			await ctx.respond(f"You may not create more than {standard_character_limit} characters.\nYou can increase your character limit to {premium_character_limit} by enrolling in a server subscription at Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 			return
 		elif len(character_data[userid]["chars"]) >= premium_character_limit:
 			await ctx.respond(f"You may not create more than {premium_character_limit} characters.",ephemeral=True)
 			return
+		else:
+			premium_character = True
 	
 	codename = codename.lower()
 	if codename in character_data[userid]["chars"]:
@@ -408,10 +413,15 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 		"armor_name": "Nothing",
 		"armor": 0,
 		"traits": [],
-		"items": []
+		"items": [],
+		"premium": premium_character,
+		"creation_time": time.time()
 	}
 	
-	await ctx.respond(f"Created character with the codename '{codename}'.")
+	msg = f"Created character with the codename '{codename}'."
+	if premium_character:
+		msg += "\n*This character uses a premium slot!*"
+	await ctx.respond(msg)
 	if set_as_active:
 		await switch_character(ctx, codename)
 	else:
@@ -436,6 +446,7 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 			return
 		else:
 			message = f"Successfully deleted **{codename.upper()}**."
+			was_premium = yourstuff['chars'][codename]['premium']
 			del yourstuff['chars'][codename]
 			channel_unbinds = 0
 			keys_to_purge = []
@@ -447,9 +458,24 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 				del yourstuff['active'][key]
 			if channel_unbinds > 0:
 				message += f"\nThis action has cleared your active character across {channel_unbinds} channels."
+			
+			earliest_time = math.inf
+			earliest_premium_char = None
+			earliest_prem_codename = None
+			if not was_premium:
+				for codename in yourstuff['chars']:
+					if yourstuff['chars'][codename]['premium'] and yourstuff['chars'][codename]['creation_time'] < earliest_time:
+						earliest_time = yourstuff['chars'][codename]['creation_time']
+						earliest_premium_char = yourstuff['chars'][codename]
+						earliest_prem_codename = codename
+				if earliest_premium_char is not None:
+					earliest_premium_char['premium'] = False
+					message += f"\nYou have freed up a non-premium slot. **{codename.upper()}** is no longer a premium character."
+			
 			if len(yourstuff['chars']) <= 0:
 				del character_data[yourid]
 				message += "\nYou have deleted your last character. All data associated with your User ID has been deleted."
+				
 			await ctx.respond(message)
 			await save_character_data()
 	else:
@@ -460,13 +486,15 @@ async def list_characters(ctx):
 	log("/list")
 	yourid = str(ctx.author.id)
 	if yourid in character_data:
-		yourchars = character_data[yourid]['chars'].keys()
-		if len(yourchars) > 0:
-			msg = f"Characters created by <@{yourid}>:\n- " + "\n- ".join(yourchars)
-			await ctx.respond(msg)
-			return
-	await ctx.respond("You haven't created any characters yet!",ephemeral=True)
-	return
+		yourchars = character_data[yourid]['chars']
+		msg = f"Characters created by <@{yourid}>:"
+		for codename in yourchars:
+			msg += f"\n- {codename}"
+			if yourchars[codename]['premium']:
+				msg += "*"
+		await ctx.respond(msg)
+	else:
+		await ctx.respond("You haven't created any characters yet!",ephemeral=True)
 	
 @bot.command(description="Displays your current active character's sheet")
 async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default="")):
