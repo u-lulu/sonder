@@ -271,14 +271,14 @@ def get_active_char_object(ctx):
 	if codename == None:
 		return None
 	else:
-		return character_data[uid]['chars'][codename]
+		return character_data[ctx.author.id]['chars'][codename]
 
 async def roll_with_skill(ctx, superior_dice, inferior_dice, stat):
 	log(f"/{stat.lower()} {' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
 	
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.")
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 	
@@ -392,7 +392,6 @@ async def switch(ctx, codename: discord.Option(str, "The codename of the charact
 	else:
 		character_data[userid]['active'][ctx.channel_id] = codename
 		await ctx.respond(f"<@{userid}> has set their active character in this channel to **{codename}**.")
-	await ctx.respond("TODO",ephemeral=True)
 	return
 
 @bot.command(description="Add a trait or item to a character")
