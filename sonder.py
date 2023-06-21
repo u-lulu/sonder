@@ -576,13 +576,21 @@ async def damage(ctx,
 		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
 		return
 	
-	damage_taken = output[0]
+	before_armor = output[0]
+	damage_taken = output[0] - character['armor']
 	dice_results = output[1]
 	
-	character['hp'] -= damage_taken
+	if armor_piercing:
+		character['hp'] -= before_armor
+	else:
+		character['hp'] -= damage_taken
 	
 	#message = f"**Total: {output[0]}**\n`{output[1]}`"
-	message = f"**{codename.upper()}** has taken **{damage_taken} damage!**"
+	message = f"**{codename.upper()}** has taken **{before_armor} damage!**"
+	if (not armor_piercing and character['armor'] > 0):
+		message += f" (Reduced to **{damage_taken}** by {character['armor']} armor!)"
+	elif (armor_piercing and character['armor'] > 0):
+		message += f" (Ignores {character['armor']} armor!)"
 	message += f"\nHP: {character['hp']}/{character['maxhp']}"
 	if ('d' in amount or 'd' in amount):
 		message += f"\n\nDice results: `{dice_results}`"
