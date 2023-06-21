@@ -328,8 +328,15 @@ async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
 		message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
 	await ctx.respond(message)
 
+async def character_names_autocomplete(ctx: discord.AutocompleteContext):
+	uid = ctx.interaction.user.id
+	if uid in character_data:
+		return list(character_data[uid]['chars'].keys())
+	else:
+		return []
+
 @bot.command(description="Create a new character to manage")
-async def create(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", required=True)):
+async def create(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True)):
 	log(f"/create {codename}")
 	userid = ctx.author.id
 	if userid not in character_data:
@@ -365,7 +372,7 @@ async def delete(ctx, codename: discord.Option(str, "The character's codename, u
 	return
 
 @bot.command(description="List all characters you've created")
-async def list(ctx):
+async def list_characters(ctx):
 	log("/list")
 	if ctx.author.id in character_data:
 		yourchars = character_data[ctx.author.id]['chars'].keys()
@@ -393,7 +400,7 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 	return
 
 @bot.command(description="Switch which character is active in this channel")
-async def switch(ctx, codename: discord.Option(str, "The codename of the character to switch to.", required=True)):
+async def switch(ctx, codename: discord.Option(str, "The codename of the character to switch to.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
 	log(f"/switch {codename}")
 	userid = ctx.author.id
 	if userid not in character_data or len(character_data[userid]['chars']) <= 0:
