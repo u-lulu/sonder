@@ -492,7 +492,7 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 		return
 	else:
 		character_data[userid]['active'][str(ctx.channel_id)] = codename
-		await ctx.respond(f"Your active character in this channel is now **{codename}**.")
+		await ctx.respond(f"Your active character in this channel is now **{codename.upper()}**.")
 		await save_character_data()
 	return
 
