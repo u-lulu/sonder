@@ -858,7 +858,6 @@ async def refresh(ctx,
 	character['damage'] = "2d6k1"
 	character['armor_name'] = "Nothing"
 	character['armor'] = 0
-	items = []
 	
 	if reset_hp:
 		character['maxhp'] = 6
@@ -876,7 +875,8 @@ async def refresh(ctx,
 	}
 	
 	for trait in character['traits']:
-		items.append(trait['Item'])
+		if trait['Item'] not in character['items']
+		character['items'].append(trait['Item'])
 		
 		bonus = trait["Stat"].split(" ")
 		num = 0
