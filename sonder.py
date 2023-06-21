@@ -455,6 +455,8 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book number of the
 		"REFLEXIVE":"rfx"
 	}
 	
+	old_max_hp = character['maxhp']
+	
 	bonus = my_new_trait["Stat"].split(" ")
 	num = 0
 	if bonus[1] in stats:
@@ -473,7 +475,11 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book number of the
 		if translated_stat_bonus == 'maxhp':
 			character['hp'] += num
 	
-	await ctx.respond(f"**{codename.upper()}** has gained a trait!\n>>> {trait_message_format(my_new_trait)}")
+	out = f"**{codename.upper()}** has gained a trait!"
+	if old_max_hp > character['maxhp'] and character['maxhp'] <= 0:
+		out += f"\n**This character now has a Max HP of {character['maxhp']}!!**"
+	out += f"\n>>> {trait_message_format(my_new_trait)}"
+	await ctx.respond(out)
 	return
 
 @bot.command(description="Add a custom trait to your character")
@@ -545,7 +551,45 @@ async def cre(ctx,
 async def damage(ctx, 
 	amount: discord.Option(str, "Amount of damage to take. Supports dice syntax.", required=True),
 	armor_piercing: discord.Option(bool, "Skip armor when applying this damage.", required=False, default=False)):
-	await ctx.respond("TODO",ephemeral=True)
+	log(f"/damage {amount}{' armor_piercing' if armor_piercing else ''}")
+	
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	timeout = 2
+	output = ()
+	try:
+		output = func_timeout(timeout, rolldice.roll_dice, args=[amount])
+	except rolldice.rolldice.DiceGroupException as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
+		return
+	except FunctionTimedOut as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
+		return
+	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
+		return
+	
+	damage_taken = output[0]
+	dice_results = output[1]
+	
+	character['hp'] -= damage_taken
+	
+	#message = f"**Total: {output[0]}**\n`{output[1]}`"
+	message = f"**{codename.upper()}** has taken **{damage_taken} damage!**"
+	message += f"\nHP: {character['hp']}/{character['maxhp']}"
+	if ('d' in amount or 'd' in amount):
+		message += f"\n\nDice results: `{dice_results}`"
+		limit = 300
+		if len(message) > limit:
+			message = message[:limit-5]+"...]`"
+	await ctx.respond(message)
 	return
 
 @bot.command(description="Set your equipped weapon")
