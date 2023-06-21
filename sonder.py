@@ -1131,7 +1131,7 @@ async def attack(ctx,
 		
 		final_damage = (base_damage[0] + bonus_damage_result[0]) * multiplier
 		
-		message = f"**{codename}** has dealt **{final_damage} damage** using **{character['weapon_name']}**!\n\nBase damage: `{character['damage']}` -> `{base_damage[1]}`"
+		message = f"**{codename.upper()}** has dealt **{final_damage} damage** using **{character['weapon_name']}**!\n\nBase damage: `{character['damage']}` -> `{base_damage[1]}`"
 		if bonus_damage != "0":
 			message += f"\nBonus damage: `{bonus_damage}` -> `{bonus_damage_result[1]}`"
 		if multiplier != 1:
