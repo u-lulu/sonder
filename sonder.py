@@ -304,9 +304,9 @@ async def roll_with_skill(ctx, superior_dice, inferior_dice, stat):
 	message = f"**{codename}** rolling +{stat.upper()}:\n> "
 	
 	if modifier != 0:
-		message = f"({dice_string}) + {modifier} = **{total}**: "
+		message += f"({dice_string}) + {modifier} = **{total}**: "
 	else:
-		message = f"{dice_string} = **{total}**: "
+		message += f"{dice_string} = **{total}**: "
 	
 	if results == [6,6]:
 		message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
