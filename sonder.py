@@ -273,6 +273,51 @@ def get_active_char_object(ctx):
     else:
         return character_data[uid]['chars'][codename]
 
+async def roll_with_skill(ctx, superior_dice, inferior_dice, stat):
+	log(f"/{stat.lower()} {' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
+    
+    character = get_active_char_object(ctx)
+    if character == None:
+        ctx.respond("You do not have an active character in this channel. Select one with `/switch`.")
+        return
+    codename = get_active_codename(ctx)
+    
+    modifier = character[stat.lower()]
+    
+	results = [d6(), d6()]
+	if superior_dice ^ inferior_dice:
+		results.append(d6())
+	
+	dice_string = ""
+	for d in results:
+		dice_string += " " + num_to_die[d]
+	dice_string = dice_string.strip()
+	
+	sorted_results = sorted(results)
+	if superior_dice and not inferior_dice:
+		results = sorted_results[-2:]
+	elif inferior_dice and not superior_dice:
+		results = sorted_results[:2]
+	
+	total = sum(results) + modifier
+	
+	message = f"**{codename}** rolling +{stat.upper()}:\n> "
+	
+	if modifier != 0:
+		message = f"({dice_string}) + {modifier} = **{total}**: "
+	else:
+		message = f"{dice_string} = **{total}**: "
+	
+	if results == [6,6]:
+		message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
+	elif total <= 6:
+		message += "Your roll is a **failure.** You don’t do what you wanted to do, and things go wrong somehow."
+	elif total <= 9:
+		message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
+	else:
+		message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
+	await ctx.respond(message)
+
 @bot.command(description="Create a new character to manage")
 async def create(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", required=True)):
 	userid = ctx.author.id
@@ -370,196 +415,28 @@ async def frc(ctx,
 	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
 	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
 	):
-	log(f"/frc {' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
-    
-    character = get_active_char_object(ctx)
-    if character == None:
-        ctx.respond("You do not have an active character in this channel. Select one with `/switch`.")
-        return
-    codename = get_active_codename(ctx)
-    
-    modifier = character['frc']
-    
-	results = [d6(), d6()]
-	if superior_dice ^ inferior_dice:
-		results.append(d6())
-	
-	dice_string = ""
-	for d in results:
-		dice_string += " " + num_to_die[d]
-	dice_string = dice_string.strip()
-	
-	sorted_results = sorted(results)
-	if superior_dice and not inferior_dice:
-		results = sorted_results[-2:]
-	elif inferior_dice and not superior_dice:
-		results = sorted_results[:2]
-	
-	total = sum(results) + modifier
-	
-	message = f"**{codename}** rolling +FRC:\n> "
-	
-	if modifier != 0:
-		message = f"({dice_string}) + {modifier} = **{total}**: "
-	else:
-		message = f"{dice_string} = **{total}**: "
-	
-	if results == [6,6]:
-		message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
-	elif total <= 6:
-		message += "Your roll is a **failure.** You don’t do what you wanted to do, and things go wrong somehow."
-	elif total <= 9:
-		message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
-	else:
-		message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
-	await ctx.respond(message)
+	await roll_with_skill(ctx, superior_dice, inferior_dice, 'frc')
 
 @bot.command(description="Roll +REFLEXIVE with your active character")
 async def rfx(ctx, 
 	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
 	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
 	):
-	log(f"/frc {' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
-    
-    character = get_active_char_object(ctx)
-    if character == None:
-        ctx.respond("You do not have an active character in this channel. Select one with `/switch`.")
-        return
-    codename = get_active_codename(ctx)
-    
-    modifier = character['rfx']
-    
-	results = [d6(), d6()]
-	if superior_dice ^ inferior_dice:
-		results.append(d6())
-	
-	dice_string = ""
-	for d in results:
-		dice_string += " " + num_to_die[d]
-	dice_string = dice_string.strip()
-	
-	sorted_results = sorted(results)
-	if superior_dice and not inferior_dice:
-		results = sorted_results[-2:]
-	elif inferior_dice and not superior_dice:
-		results = sorted_results[:2]
-	
-	total = sum(results) + modifier
-	
-	message = f"**{codename}** rolling +RFX:\n> "
-	
-	if modifier != 0:
-		message = f"({dice_string}) + {modifier} = **{total}**: "
-	else:
-		message = f"{dice_string} = **{total}**: "
-	
-	if results == [6,6]:
-		message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
-	elif total <= 6:
-		message += "Your roll is a **failure.** You don’t do what you wanted to do, and things go wrong somehow."
-	elif total <= 9:
-		message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
-	else:
-		message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
-	await ctx.respond(message)
+	await roll_with_skill(ctx, superior_dice, inferior_dice, 'rfx')
 
 @bot.command(description="Roll +TACTICAL with your active character")
 async def tac(ctx, 
 	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
 	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
 	):
-	log(f"/frc {' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
-    
-    character = get_active_char_object(ctx)
-    if character == None:
-        ctx.respond("You do not have an active character in this channel. Select one with `/switch`.")
-        return
-    codename = get_active_codename(ctx)
-    
-    modifier = character['tac']
-    
-	results = [d6(), d6()]
-	if superior_dice ^ inferior_dice:
-		results.append(d6())
-	
-	dice_string = ""
-	for d in results:
-		dice_string += " " + num_to_die[d]
-	dice_string = dice_string.strip()
-	
-	sorted_results = sorted(results)
-	if superior_dice and not inferior_dice:
-		results = sorted_results[-2:]
-	elif inferior_dice and not superior_dice:
-		results = sorted_results[:2]
-	
-	total = sum(results) + modifier
-	
-	message = f"**{codename}** rolling +TAC:\n> "
-	
-	if modifier != 0:
-		message = f"({dice_string}) + {modifier} = **{total}**: "
-	else:
-		message = f"{dice_string} = **{total}**: "
-	
-	if results == [6,6]:
-		message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
-	elif total <= 6:
-		message += "Your roll is a **failure.** You don’t do what you wanted to do, and things go wrong somehow."
-	elif total <= 9:
-		message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
-	else:
-		message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
-	await ctx.respond(message)
+	await roll_with_skill(ctx, superior_dice, inferior_dice, 'tac')
 
 @bot.command(description="Roll +CREATIVE with your active character")
 async def cre(ctx, 
 	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
 	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
 	):
-	log(f"/frc {' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
-    
-    character = get_active_char_object(ctx)
-    if character == None:
-        ctx.respond("You do not have an active character in this channel. Select one with `/switch`.")
-        return
-    codename = get_active_codename(ctx)
-    
-    modifier = character['cre']
-    
-	results = [d6(), d6()]
-	if superior_dice ^ inferior_dice:
-		results.append(d6())
-	
-	dice_string = ""
-	for d in results:
-		dice_string += " " + num_to_die[d]
-	dice_string = dice_string.strip()
-	
-	sorted_results = sorted(results)
-	if superior_dice and not inferior_dice:
-		results = sorted_results[-2:]
-	elif inferior_dice and not superior_dice:
-		results = sorted_results[:2]
-	
-	total = sum(results) + modifier
-	
-	message = f"**{codename}** rolling +CRE:\n> "
-	
-	if modifier != 0:
-		message = f"({dice_string}) + {modifier} = **{total}**: "
-	else:
-		message = f"{dice_string} = **{total}**: "
-	
-	if results == [6,6]:
-		message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
-	elif total <= 6:
-		message += "Your roll is a **failure.** You don’t do what you wanted to do, and things go wrong somehow."
-	elif total <= 9:
-		message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
-	else:
-		message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
-	await ctx.respond(message)
+	await roll_with_skill(ctx, superior_dice, inferior_dice, 'cre')
 
 @bot.command(description="Take damage")
 async def damage(ctx, 
