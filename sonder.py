@@ -358,8 +358,8 @@ standard_character_limit = 10
 premium_character_limit = 50
 
 async def ext_character_management(id):
-	#if id == str(ownerid):
-		#return True
+	if id == str(ownerid):
+		return True
 	support_server = await bot.fetch_guild(1101249440230154300)
 	if support_server is None:
 		return False
