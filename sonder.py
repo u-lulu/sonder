@@ -1231,13 +1231,6 @@ async def equip_armor(ctx,
 	
 	await save_character_data()
 
-@bot.command(description="Dump character data in chat")
-async def dump_character_data(ctx):
-	if ctx.author.id == ownerid:
-		await ctx.respond("```json\n" + json.dumps(character_data,indent=2) + "```")
-	else:
-		await ctx.respond(f"Only <@{ownerid}> may use this command.",ephemeral=True)
-
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
 @trait_group.command(description="Looks up a trait by name or d666 number")
