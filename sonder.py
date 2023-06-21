@@ -1725,21 +1725,21 @@ async def item(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType
 @hzfc_group.command(description="Enter a new chamber, and outfit it with an encounter, hazard, and item")
 async def full_room(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
 	log(f"/hazfunction full_room {rooms_cleared}")
-    if rooms_cleared < 0:
-        await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
-        return
+	if rooms_cleared < 0:
+		await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
+		return
 	room = roll_intelligence_matrix(intelligence["hazfunction"][0])
-    haz = roll_intelligence_matrix(intelligence["hazfunction"][1])
+	haz = roll_intelligence_matrix(intelligence["hazfunction"][1])
 	encounter_options = intelligence["hazfunction"][2]["Values"]
-    item_options = intelligence["hazfunction"][3]["Values"]
+	item_options = intelligence["hazfunction"][3]["Values"]
 	roll = d6() + rooms_cleared
 	if roll > 16:
 		roll = 16
 	encounter = encounter_options[str(roll)]
-    roll = d6() + rooms_cleared
+	roll = d6() + rooms_cleared
 	if roll > 16:
 		roll = 16
-    item = item_options[str(roll)]
+	item = item_options[str(roll)]
 	await ctx.respond(f"{room}\n\nHazard: **{haz}**\nEncounter: **{encounter}**\nItem: **{item}**")
 
 def hazfunc_codename():
