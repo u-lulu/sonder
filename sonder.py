@@ -518,7 +518,15 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 		return
 	
 	ch = character_data[yourid]['chars'][codename]
-	await ctx.respond(output_character(codename, ch))
+	message = output_character(codename, ch)
+	if len(message) > 2000:
+		with open("message.txt","w") as file:
+			file.write(message)
+		await ctx.respond(f"The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
+		os.remove('message.txt')
+		print(f"Sent trace with length {len(details_string[channel_id])} as file")
+	else:
+		await ctx.respond(message)
 	return
 
 @bot.command(description="Switch which character is active in this channel")
