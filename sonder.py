@@ -540,22 +540,39 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book number of the
 	await ctx.respond(out)
 	await save_character_data()
 
-@bot.command(description="Add a custom trait to your character")
-async def add_custom_trait(ctx,	
-		title: discord.Option(str, "The name of the trait", required=True), 
-		description: discord.Option(str, "The trait's description", required=True),
-		stat_type: discord.Option(str, "The type of stat this trait changes", required=True),
-		stat_amount: discord.Option(discord.SlashCommandOptionType.integer, "The amount that the stat is changed", required=True),
-		item_name: discord.Option(str, "The name of the item that this trait grants you", required=True),
-		item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
-	await ctx.respond("TODO",ephemeral=True)
-	await save_character_data()
+#@bot.command(description="Add a custom trait to your character")
+#async def add_custom_trait(ctx,	
+		#title: discord.Option(str, "The name of the trait", required=True), 
+		#description: discord.Option(str, "The trait's description", required=True),
+		#stat_type: discord.Option(str, "The type of stat this trait changes", required=True),
+		#stat_amount: discord.Option(discord.SlashCommandOptionType.integer, "The amount that the stat is changed", required=True),
+		#item_name: discord.Option(str, "The name of the item that this trait grants you", required=True),
+		#item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
+	#await ctx.respond("TODO",ephemeral=True)
+	#await save_character_data()
 
 @bot.command(description="Add an item your active character")
 async def add_item(ctx,
 		name: discord.Option(str, "The name of the item", required=True), 
-		effect: discord.Option(str, "The effect of the item", required=False)):
-	await ctx.respond("TODO",ephemeral=True)
+		effect: discord.Option(str, "The effect of the item", required=False, default="")):
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	concat = name+effect
+	if "(" in concat or ")" in concat:
+		await ctx.respond("For organizational reasons, please do not use parenthesis in the `name` or `effect` of your item.\nTo include an item's effect, use the optional `effect` argument for this command instead.",ephemeral=True)
+		return
+	
+	item_to_add = name
+	if len(effect) > 0:
+		item_to_add += f" ({effect})"
+	
+	character['items'].append(item_to_add)
+	
+	await ctx.respond(f"**{codename.upper()}** has added **{item_to_add}** to their inventory.")
 	await save_character_data()
 
 @bot.command(description="Remove a trait from your active character")
@@ -563,9 +580,48 @@ async def remove_trait(ctx):
 	await ctx.respond("TODO",ephemeral=True)
 	await save_character_data()
 
+async def full_item_autocomplete(ctx):
+	uid = ctx.interaction.user.id
+	if uid in character_data:
+		# gotta get active character manually cus this is a different kind of ctx. ugh
+		your_actives = character_data[uid]['active']
+		if ctx.interaction.channel_id in your_actives:
+			current_active = your_actives[ctx.interaction.channel_id]
+			if current_active in character_data[uid]['chars']:
+				current_char = character_data[uid]['chars'][current_active]
+				return current_char['items']
+			else:
+				return []
+		else:
+			return []
+	else:
+		return []
+
 @bot.command(description="Remove an item from your active character")
-async def remove_item(ctx):
-	await ctx.respond("TODO",ephemeral=True)
+async def remove_item(ctx,
+		item: discord.Option(str, "The item to be removed",autocomplete=discord.utils.basic_autocomplete(full_item_autocomplete), required=True)):
+	log(f"/remove_item {item}")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	if len(character['items']) <= 0:
+		await ctx.respond(f"**{codename.upper()}** does not have any items.",ephemeral=True)
+		return
+	
+	try:
+		character['items'].remove(item)
+	except ValueError as e:
+		log(f"Caught ValueError: {e}")
+		out = "The item that you wanted to remove could not be found. Your current items are:"
+		for x in character['items']:
+			out += "\n- x"
+		await ctx.respond(out,ephemeral=True)
+		return
+	
+	await ctx.respond(f"**{codename.upper()}** has removed **{item}** from their inventory.")
 	await save_character_data()
 
 @bot.command(description="Adjust one of the stats of your character")
@@ -650,9 +706,9 @@ async def damage(ctx,
 	#message = f"**Total: {output[0]}**\n`{output[1]}`"
 	message = f"**{codename.upper()}** has taken **{before_armor} damage!**"
 	if (not armor_piercing and character['armor'] > 0 and before_armor != damage_taken):
-		message += f" (Reduced to **{damage_taken}** by {character['armor']} armor!)"
+		message += f" (Reduced to **{damage_taken}** by {character['armor']} armor from {character['armor_name']}!)"
 	elif (armor_piercing and character['armor'] > 0):
-		message += f" (Ignores {character['armor']} armor!)"
+		message += f" (Ignores {character['armor']} armor from {character['armor_name']}!)"
 	message += f"\nHP: {character['hp']}/{character['maxhp']}"
 	if ('d' in amount or 'd' in amount):
 		message += f"\n\nDice results: `{dice_results}`"
@@ -783,7 +839,7 @@ async def held_dice_autocomplete(ctx):
 				number_pattern = r'(\d+)'
 				for item in item_list:
 					cut = item.split(" (")
-					effect = cut[1]
+					effect = cut[1] if len(cut) > 1 else ""
 					dice_matches = re.findall(dice_pattern, effect)
 					number_matches = re.findall(number_pattern, effect)
 					if current_item_selected != None and item.startswith(current_item_selected):
@@ -822,7 +878,7 @@ async def held_numbers_autocomplete(ctx):
 				number_pattern = r'(\d+)'
 				for item in item_list:
 					cut = item.split(" (")
-					effect = cut[1]
+					effect = cut[1] if len(cut) > 1 else ""
 					number_matches = re.findall(number_pattern, effect)
 					if current_item_selected != None and item.startswith(current_item_selected):
 						num_outs = set()
@@ -840,13 +896,13 @@ async def held_numbers_autocomplete(ctx):
 	else:
 		return []
 	
-
 @bot.command(description="Set your equipped weapon")
 async def equip_weapon(ctx, 
 	name: discord.Option(str, "The weapon's name.", autocomplete=discord.utils.basic_autocomplete(held_items_autocomplete), required=True),
 	damage: discord.Option(str, "Amount of damage to deal; supports dice syntax.", autocomplete=discord.utils.basic_autocomplete(held_dice_autocomplete), required=True)):
 	
 	character = get_active_char_object(ctx)
+	log(f"/equip_weapon {name} {damage}")
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
@@ -874,7 +930,7 @@ async def equip_weapon(ctx,
 async def equip_armor(ctx, 
 	name: discord.Option(str, "The armor's name.", autocomplete=discord.utils.basic_autocomplete(held_items_autocomplete), required=True),
 	damage: discord.Option(int, "Amount of damage it reduces.", autocomplete=discord.utils.basic_autocomplete(held_numbers_autocomplete), required=True)):
-	
+	log(f"/equip_armor {name} {damage}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
