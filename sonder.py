@@ -497,7 +497,7 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 	return
 
 @bot.command(description="Add a core book trait to your active character")
-async def add_trait(ctx, trait: discord.Option(str, "The core book name or number of the trait to add.", required=True)):
+async def add_trait(ctx, trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(trait_autocomp), required=True)):
 	log(f"/add_trait {trait}")
 	character = get_active_char_object(ctx)
 	if character == None:
