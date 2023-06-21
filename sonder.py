@@ -336,7 +336,7 @@ async def character_names_autocomplete(ctx: discord.AutocompleteContext):
 		return []
 
 @bot.command(description="Create a new character to manage")
-async def create(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True)):
+async def create_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True)):
 	log(f"/create {codename}")
 	userid = ctx.author.id
 	if userid not in character_data:
@@ -366,7 +366,7 @@ async def create(ctx, codename: discord.Option(str, "The character's codename, u
 	return
 
 @bot.command(description="Delete a character from your roster")
-async def delete(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", required=True)):
+async def delete_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
 	log(f"/delete {codename}")
 	await ctx.respond("TODO",ephemeral=True)
 	return
@@ -384,7 +384,7 @@ async def list_characters(ctx):
 	return
 	
 @bot.command(description="Displays your current active character's sheet")
-async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", required=False, default="")):
+async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default="")):
 	log(f"/sheet {codename}")
 	if codename == "":
 		codename = get_active_codename(ctx)
@@ -400,7 +400,7 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 	return
 
 @bot.command(description="Switch which character is active in this channel")
-async def switch(ctx, codename: discord.Option(str, "The codename of the character to switch to.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
+async def switch_character(ctx, codename: discord.Option(str, "The codename of the character to switch to.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
 	log(f"/switch {codename}")
 	userid = ctx.author.id
 	if userid not in character_data or len(character_data[userid]['chars']) <= 0:
