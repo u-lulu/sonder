@@ -248,7 +248,17 @@ def output_character(codename, data):
 		out += "- *No traits yet.*"
 	else:
 		for trait in data['traits']:
-			out += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
+			if trait['Type'] == 'core':
+				num = trait['Number']
+				trait_to_output = None
+				for t in trait_data:
+					if t['Number'] == num:
+						trait_to_output = t
+						break
+				out += f"- **{trait_to_output['Name']}** ({trait_to_output['Number']}): {trait_to_output['Effect']} ({trait_to_output['Stat']})\n"
+			else:
+				None
+				#out += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
 	
 	out += "\nITEMS:"
 	if len(data['items']) <= 0:
@@ -386,7 +396,7 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 async def switch(ctx, codename: discord.Option(str, "The codename of the character to switch to.", required=True)):
 	log(f"/switch {codename}")
 	userid = ctx.author.id
-	if userid not in character_data:
+	if userid not in character_data or len(character_data[userid]['chars']) <= 0:
 		await ctx.respond("You have no characters available. Use `/create` to make one.",ephemeral=True)
 		return
 		
@@ -399,8 +409,76 @@ async def switch(ctx, codename: discord.Option(str, "The codename of the charact
 		await ctx.respond(f"<@{userid}> has set their active character in this channel to **{codename}**.")
 	return
 
-@bot.command(description="Add a trait or item to a character")
-async def add(ctx):
+@bot.command(description="Add a core book trait to your active character")
+async def add_trait(ctx, trait: discord.Option(str, "The core book number of the trait to add.", required=True)):
+	log(f"/add_trait {trait}")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	my_new_trait = None
+	for t in trait_data:
+		if  str(t["Number"]) == trait or t["Name"] == trait.upper():
+			my_new_trait = t
+			break
+	
+	if my_new_trait == None:
+		await ctx.respond(f'No core book trait with the exact name or D666 number "{trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
+		return
+	
+	character['traits'].append({
+		"Type":"core",
+		"Number":my_new_trait['Number']
+	})
+	character['items'].append(my_new_trait['Item'])
+	
+	stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
+	
+	stats_translator = {
+		"MAX":"maxhp",
+		"WAR":"wd",
+		"FORCEFUL":"frc",
+		"TACTICAL":"tac",
+		"CREATIVE":"cre",
+		"REFLEXIVE":"rfx"
+	}
+	
+	bonus = my_new_trait["Stat"].split(" ")
+	num = 0
+	if bonus[1] in stats:
+		translated_stat_bonus = stats_translator[bonus[1]]
+		if bonus[0] == "+1D6":
+			num = d6()
+		else:	
+			numerical = bonus[0]
+			if numerical[0] in ('+', '-'):
+				num = int(numerical[1:])
+				if numerical[0] == '-':
+					num = -num
+			else:
+				num = int(numerical)
+		character[translated_stat_bonus] += num
+	
+	await ctx.respond(f"**{codename.upper()}** has gained a trait!\n>>> {trait_message_format(my_new_trait)}")
+	return
+
+@bot.command(description="Add a custom trait to your character")
+async def add_custom_trait(ctx,	
+		title: discord.Option(str, "The name of the trait", required=True), 
+		description: discord.Option(str, "The trait's description", required=True),
+		stat_type: discord.Option(str, "The type of stat this trait changes", required=True),
+		stat_amount: discord.Option(discord.SlashCommandOptionType.integer, "The amount that the stat is changed", required=True),
+		item_name: discord.Option(str, "The name of the item that this trait grants you", required=True),
+		item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
+	await ctx.respond("TODO",ephemeral=True)
+	return
+
+@bot.command(description="Add an item your active character")
+async def add_item(ctx,
+		name: discord.Option(str, "The name of the item", required=True), 
+		effect: discord.Option(str, "The effect of the item", required=False)):
 	await ctx.respond("TODO",ephemeral=True)
 	return
 
@@ -565,7 +643,6 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 			if bonus[0] == "+1D6":
 				num = d6()
 			else:	
-				num = 0
 				numerical = bonus[0]
 				if numerical[0] in ('+', '-'):
 					num = int(numerical[1:])
