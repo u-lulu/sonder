@@ -389,11 +389,42 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 		await save_character_data()
 	
 @bot.command(description="Delete a character from your roster")
-async def delete_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
-	log(f"/delete {codename}")
-	await ctx.respond("TODO",ephemeral=True)
-	await save_character_data()
-	return
+async def delete_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True),
+	i_am_sure: discord.Option(bool, "Confirmation that you want the character deleted.", required=True),
+	i_am_very_sure: discord.Option(bool, "Confirmation that you want the character deleted.", required=True),
+	i_am_completely_absolutely_sure: discord.Option(bool, "Confirmation that you want the character deleted.", required=True)):
+	log(f"/delete {codename}{' affirmative' if i_am_sure else ''}{' affirmative' if i_am_very_sure else ''}{' affirmative' if i_am_completely_absolutely_sure else ''}")
+	
+	if i_am_sure and i_am_very_sure and i_am_completely_absolutely_sure:
+		yourid = ctx.author.id
+		codename = codename.lower()
+		if yourid not in character_data:
+			await ctx.respond("You do not have any character data to delete.",ephemeral=True)
+			return
+		yourstuff = character_data[yourid]
+		if codename not in yourstuff['chars']:
+			await ctx.respond(f"You do not have a character named '{codename}' to delete.",ephemeral=True)
+			return
+		else:
+			message = f"Successfully deleted **{codename.upper()}**."
+			del yourstuff['chars'][codename]
+			channel_unbinds = 0
+			keys_to_purge = []
+			for key in yourstuff['active']:
+				if yourstuff['active'][key] == codename:
+					channel_unbinds += 1
+					keys_to_purge.append(key)
+			for key in keys_to_purge:
+				del yourstuff['active'][key]
+			if channel_unbinds > 0:
+				message += f"\nThis action has cleared your active character across {channel_unbinds} channels."
+			if len(yourstuff['chars']) <= 0:
+				del character_data[yourid]
+				message += "\nYou have deleted your last character. All data associated with your User ID has been deleted."
+			await ctx.respond(message)
+			await save_character_data()
+	else:
+		await ctx.respond("You must triple-confirm that you want to delete your character.",ephemeral=True)
 
 @bot.command(description="List all characters you've created")
 async def list_characters(ctx):
@@ -410,6 +441,7 @@ async def list_characters(ctx):
 @bot.command(description="Displays your current active character's sheet")
 async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default="")):
 	log(f"/sheet {codename}")
+	codename = codename.lower()
 	if codename == "":
 		codename = get_active_codename(ctx)
 	if codename == None:
