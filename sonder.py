@@ -875,13 +875,13 @@ async def refresh(ctx,
 	
 	character['hp'] = character['maxhp']
 	
-	message = f"**{codename}** has been reset to default values. Use `/sheet` to view updated information."
+	message = f"**{codename.upper()}** has been reset to their default stats. Use `/sheet` to view updated information."
 	if weapon_reset:
 		message += "\nThis action has reset your equipped weapon to **Unarmed (2d6k1 DAMAGE)**."
 	if armor_reset:
 		message += "\nThis action has reset your equipped weapon to **Nothing (0 ARMOR)**."
 	if reset_hp:
-		message += f"\nYour HP has been recalculated from the base 6, and is now **{character['maxhp']}**."
+		message += f"\nYour Max HP has been recalculated from the base 6, and is now **{character['maxhp']}**."
 	if reset_war_dice:
 		message += f"\nYour War Dice have been recalculated from the base 0, and is now **{character['wd']}**."
 	await ctx.respond(message)
