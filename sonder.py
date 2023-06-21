@@ -284,8 +284,8 @@ def get_active_codename(ctx):
 	uid = str(ctx.author.id)
 	if uid in character_data:
 		your_actives = character_data[uid]['active']
-		if ctx.channel_id in your_actives:
-			return your_actives[ctx.channel_id]
+		if str(ctx.channel_id) in your_actives:
+			return your_actives[str(ctx.channel_id)]
 	return None
 
 def get_active_char_object(ctx):
@@ -491,7 +491,7 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create`.",ephemeral=True)
 		return
 	else:
-		character_data[userid]['active'][ctx.channel_id] = codename
+		character_data[userid]['active'][str(ctx.channel_id)] = codename
 		await ctx.respond(f"Your active character in this channel is now **{codename}**.")
 		await save_character_data()
 	return
@@ -601,8 +601,8 @@ async def active_character_traits_autocomp(ctx):
 	if uid in character_data:
 		# gotta get active character manually cus this is a different kind of ctx. ugh
 		your_actives = character_data[uid]['active']
-		if ctx.interaction.channel_id in your_actives:
-			current_active = your_actives[ctx.interaction.channel_id]
+		if str(ctx.interaction.channel_id) in your_actives:
+			current_active = your_actives[str(ctx.interaction.channel_id)]
 			if current_active in character_data[uid]['chars']:
 				current_char = character_data[uid]['chars'][current_active]
 				trait_list = current_char['traits']
@@ -688,8 +688,8 @@ async def full_item_autocomplete(ctx):
 	if uid in character_data:
 		# gotta get active character manually cus this is a different kind of ctx. ugh
 		your_actives = character_data[uid]['active']
-		if ctx.interaction.channel_id in your_actives:
-			current_active = your_actives[ctx.interaction.channel_id]
+		if str(ctx.interaction.channel_id) in your_actives:
+			current_active = your_actives[str(ctx.interaction.channel_id)]
 			if current_active in character_data[uid]['chars']:
 				current_char = character_data[uid]['chars'][current_active]
 				return current_char['items']
@@ -924,8 +924,8 @@ async def held_items_autocomplete(ctx):
 	if uid in character_data:
 		# gotta get active character manually cus this is a different kind of ctx. ugh
 		your_actives = character_data[uid]['active']
-		if ctx.interaction.channel_id in your_actives:
-			current_active = your_actives[ctx.interaction.channel_id]
+		if str(ctx.interaction.channel_id) in your_actives:
+			current_active = your_actives[str(ctx.interaction.channel_id)]
 			if current_active in character_data[uid]['chars']:
 				current_char = character_data[uid]['chars'][current_active]
 				item_list = current_char['items']
@@ -946,8 +946,8 @@ async def held_dice_autocomplete(ctx):
 	if uid in character_data:
 		# gotta get active character manually cus this is a different kind of ctx. ugh
 		your_actives = character_data[uid]['active']
-		if ctx.interaction.channel_id in your_actives:
-			current_active = your_actives[ctx.interaction.channel_id]
+		if str(ctx.interaction.channel_id) in your_actives:
+			current_active = your_actives[str(ctx.interaction.channel_id)]
 			if current_active in character_data[uid]['chars']:
 				current_char = character_data[uid]['chars'][current_active]
 				item_list = current_char['items']
@@ -987,8 +987,8 @@ async def held_numbers_autocomplete(ctx):
 	if uid in character_data:
 		# gotta get active character manually cus this is a different kind of ctx. ugh
 		your_actives = character_data[uid]['active']
-		if ctx.interaction.channel_id in your_actives:
-			current_active = your_actives[ctx.interaction.channel_id]
+		if str(ctx.interaction.channel_id) in your_actives:
+			current_active = your_actives[str(ctx.interaction.channel_id)]
 			if current_active in character_data[uid]['chars']:
 				current_char = character_data[uid]['chars'][current_active]
 				item_list = current_char['items']
