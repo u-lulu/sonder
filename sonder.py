@@ -276,6 +276,7 @@ def output_character(codename, data):
 				out += f"- **{trait_to_output['Name']}** ({trait_to_output['Number']}): {trait_to_output['Effect']} ({trait_to_output['Stat']})\n"
 			else:
 				None
+				#need to add support for custom traits first
 				#out += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
 	
 	out += "\nITEMS:"
@@ -501,7 +502,7 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 	return
 
 @bot.command(description="Add a core book trait to your active character")
-async def add_trait(ctx, trait: discord.Option(str, "The core book number of the trait to add.", required=True)):
+async def add_trait(ctx, trait: discord.Option(str, "The core book name or number of the trait to add.", required=True)):
 	log(f"/add_trait {trait}")
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -518,6 +519,11 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book number of the
 	if my_new_trait == None:
 		await ctx.respond(f'No core book trait with the exact name or D666 number "{trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
 		return
+	
+	for existing_trait in character['traits']:
+		if existing_trait['Number'] == my_new_trait['Number']:
+			await ctx.respond(f'**{codename.upper()}** already has the trait **{my_new_trait["Name"]} ({my_new_trait["Number"]})**.',ephemeral=True)
+			return
 	
 	character['traits'].append({
 		"Type":"core",
