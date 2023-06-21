@@ -278,7 +278,7 @@ async def roll_with_skill(ctx, superior_dice, inferior_dice, stat):
 	
 	character = get_active_char_object(ctx)
 	if character == None:
-		ctx.respond("You do not have an active character in this channel. Select one with `/switch`.")
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.")
 		return
 	codename = get_active_codename(ctx)
 	
