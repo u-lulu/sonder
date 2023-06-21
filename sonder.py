@@ -519,12 +519,12 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 	
 	ch = character_data[yourid]['chars'][codename]
 	message = output_character(codename, ch)
-	if len(message) > 2000:
+	if len(message) > 1800:
 		with open("message.txt","w") as file:
 			file.write(message)
-		await ctx.respond(f"The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
+		await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
 		os.remove('message.txt')
-		print(f"Sent character sheet as file")
+		log("Sent character sheet as file")
 	else:
 		await ctx.respond(message)
 
