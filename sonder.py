@@ -1724,7 +1724,7 @@ async def item(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType
 
 @hzfc_group.command(description="Enter a new chamber, and outfit it with an encounter, hazard, and item")
 async def full_room(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
-	log(f"/hazfunction full_room" {rooms_cleared})
+	log(f"/hazfunction full_room {rooms_cleared}")
     if rooms_cleared < 0:
         await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
         return
