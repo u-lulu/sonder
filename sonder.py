@@ -266,18 +266,7 @@ def output_character(codename, data):
 		out += "- *No traits yet.*"
 	else:
 		for trait in data['traits']:
-			if trait['Type'] == 'core':
-				num = trait['Number']
-				trait_to_output = None
-				for t in trait_data:
-					if t['Number'] == num:
-						trait_to_output = t
-						break
-				out += f"- **{trait_to_output['Name']}** ({trait_to_output['Number']}): {trait_to_output['Effect']} ({trait_to_output['Stat']})\n"
-			else:
-				None
-				#need to add support for custom traits first
-				#out += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
+			out += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
 	
 	out += "\nITEMS:"
 	if len(data['items']) <= 0:
@@ -525,10 +514,7 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 			await ctx.respond(f'**{codename.upper()}** already has the trait **{my_new_trait["Name"]} ({my_new_trait["Number"]})**.',ephemeral=True)
 			return
 	
-	character['traits'].append({
-		"Type":"core",
-		"Number":my_new_trait['Number']
-	})
+	character['traits'].append(my_new_trait)
 	character['items'].append(my_new_trait['Item'])
 	
 	stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
@@ -604,10 +590,92 @@ async def add_item(ctx,
 	await ctx.respond(f"**{codename.upper()}** has added **{item_to_add}** to their inventory.")
 	await save_character_data()
 
+async def active_character_traits_autocomp(ctx):
+	uid = ctx.interaction.user.id
+	if uid in character_data:
+		# gotta get active character manually cus this is a different kind of ctx. ugh
+		your_actives = character_data[uid]['active']
+		if ctx.interaction.channel_id in your_actives:
+			current_active = your_actives[ctx.interaction.channel_id]
+			if current_active in character_data[uid]['chars']:
+				current_char = character_data[uid]['chars'][current_active]
+				trait_list = current_char['traits']
+				output = []
+				for trait in trait_list:
+					output.append(trait['Name'])
+				return output
+			else:
+				return []
+		else:
+			return []
+	else:
+		return []
+
 @bot.command(description="Remove a trait from your active character")
-async def remove_trait(ctx):
-	await ctx.respond("TODO",ephemeral=True)
-	await save_character_data()
+async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to remove.",autocomplete=discord.utils.basic_autocomplete(active_character_traits_autocomp), required=True),
+	keep_item: discord.Option(bool, "If TRUE, the Trait's associated item will not be removed from your inventory.", required=False, default=False)):
+	
+	log(f"/remove_trait {trait}")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	if len(character['traits']) <= 0:
+		await ctx.respond(f"{codename.upper()} does not have any traits.",ephemeral=True)
+		return
+	
+	target_trait = None
+	for current in character['traits']:
+		if current['Name'].lower() == trait.lower():
+			target_trait = current
+			break
+	
+	if target_trait == None:
+		await ctx.respond(f"{codename.upper()} does not a trait called '{trait}'.",ephemeral=True)
+		return
+	else:
+		stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
+		
+		stats_translator = {
+			"MAX":"maxhp",
+			"WAR":"wd",
+			"FORCEFUL":"frc",
+			"TACTICAL":"tac",
+			"CREATIVE":"cre",
+			"REFLEXIVE":"rfx"
+		}
+		
+		bonus = target_trait["Stat"].split(" ")
+		num = 0
+		if bonus[1] in stats:
+			translated_stat_bonus = stats_translator[bonus[1]]
+			if bonus[0] == "+1D6":
+				num = d6()
+			else:	
+				numerical = bonus[0]
+				if numerical[0] in ('+', '-'):
+					num = int(numerical[1:])
+					if numerical[0] == '-':
+						num = -num
+				else:
+					num = int(numerical)
+			character[translated_stat_bonus] -= num
+			if translated_stat_bonus == 'maxhp':
+				character['hp'] -= num
+	
+		character['traits'].remove(target_trait)
+		await ctx.respond(f"{codename.upper()} has lost the trait **{trait.upper()}**.")
+		
+		if not keep_item:
+			try:
+				character['items'].remove(target_trait['Item'])
+			except ValueError as e:
+				log("Caught ValueError in attempt to remove trait item")
+		
+		await save_character_data()
+		return
 
 async def full_item_autocomplete(ctx):
 	uid = ctx.interaction.user.id
