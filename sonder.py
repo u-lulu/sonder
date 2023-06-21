@@ -696,11 +696,13 @@ async def heal(ctx,
 		healing_taken = 0
 	dice_results = output[1]
 	
+	if character['hp'] < 0 and healing_taken > 0:
+		character['hp'] = 0
+	
 	character['hp'] += healing_taken
 	if character['hp'] > character['maxhp']:
 		character['hp'] = character['maxhp']
 	
-	#message = f"**Total: {output[0]}**\n`{output[1]}`"
 	message = f"**{codename.upper()}** has healed **{healing_taken} HP.**"
 	message += f"\nHP: {character['hp']}/{character['maxhp']}"
 	if character['hp'] >= character['maxhp']:
@@ -719,38 +721,170 @@ async def attack(ctx,
 	multiplier: discord.Option(int, "Amount to multiply the final damage by.", required=False, default=1)
 	):
 	log(f"/attack {bonus_damage} {multiplier}")
+	try:
+		character = get_active_char_object(ctx)
+		if character == None:
+			await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+			return
+		codename = get_active_codename(ctx)
+		
+		base_damage = character['damage']
+		base_damage = rolldice.roll_dice(base_damage)
+		
+		bonus_damage_result = rolldice.roll_dice(bonus_damage)
+		
+		final_damage = (base_damage[0] + bonus_damage_result[0]) * multiplier
+		
+		message = f"**{codename}** has dealt **{final_damage} damage** using **{character['weapon_name']}**!\n\nBase damage: `{character['damage']}` -> `{base_damage[1]}`"
+		if bonus_damage != "0":
+			message += f"\nBonus damage: `{bonus_damage}` -> `{bonus_damage_result[1]}`"
+		if multiplier != 1:
+			message += f"\nFinal damage multiplier: `{multiplier}`"
+		await ctx.respond(message)
+	except Exception as e:
+		await ctx.respond(f"There was an error performing this command.\n```{e}```",ephemeral=True)
+
+async def held_items_autocomplete(ctx):
+	uid = ctx.interaction.user.id
+	if uid in character_data:
+		# gotta get active character manually cus this is a different kind of ctx. ugh
+		your_actives = character_data[uid]['active']
+		if ctx.interaction.channel_id in your_actives:
+			current_active = your_actives[ctx.interaction.channel_id]
+			if current_active in character_data[uid]['chars']:
+				current_char = character_data[uid]['chars'][current_active]
+				item_list = current_char['items']
+				output = []
+				for item in item_list:
+					cut = item.split(" (")
+					output.append(cut[0])
+				return output
+			else:
+				return []
+		else:
+			return []
+	else:
+		return []
+
+async def held_dice_autocomplete(ctx):
+	uid = ctx.interaction.user.id
+	if uid in character_data:
+		# gotta get active character manually cus this is a different kind of ctx. ugh
+		your_actives = character_data[uid]['active']
+		if ctx.interaction.channel_id in your_actives:
+			current_active = your_actives[ctx.interaction.channel_id]
+			if current_active in character_data[uid]['chars']:
+				current_char = character_data[uid]['chars'][current_active]
+				item_list = current_char['items']
+				dice_outs = set()
+				num_outs = set()
+				current_item_selected = ctx.options["name"]
+				dice_pattern = r'(\d*)[dD](\d+)([+-]\d+)?'
+				number_pattern = r'(\d+)'
+				for item in item_list:
+					cut = item.split(" (")
+					effect = cut[1]
+					dice_matches = re.findall(dice_pattern, effect)
+					number_matches = re.findall(number_pattern, effect)
+					if current_item_selected != None and item.startswith(current_item_selected):
+						output = []
+						for match in dice_matches:
+							dice_outs.add(f"{match[0]}D{match[1]}{match[2]}")
+						for match in number_matches:
+							num_outs.add(match)
+						break
+					else:
+						for match in dice_matches:
+							dice_outs.add(f"{match[0]}D{match[1]}{match[2]}")
+						for match in number_matches:
+							num_outs.add(match)
+				return list(dice_outs) + list(num_outs)
+			else:
+				return []
+		else:
+			return []
+	else:
+		return []
+
+async def held_numbers_autocomplete(ctx):
+	uid = ctx.interaction.user.id
+	if uid in character_data:
+		# gotta get active character manually cus this is a different kind of ctx. ugh
+		your_actives = character_data[uid]['active']
+		if ctx.interaction.channel_id in your_actives:
+			current_active = your_actives[ctx.interaction.channel_id]
+			if current_active in character_data[uid]['chars']:
+				current_char = character_data[uid]['chars'][current_active]
+				item_list = current_char['items']
+				num_outs = set()
+				current_item_selected = ctx.options["name"]
+				number_pattern = r'(\d+)'
+				for item in item_list:
+					cut = item.split(" (")
+					effect = cut[1]
+					number_matches = re.findall(number_pattern, effect)
+					if current_item_selected != None and item.startswith(current_item_selected):
+						output = []
+						for match in number_matches:
+							num_outs.add(int(match))
+						break
+					else:
+						for match in number_matches:
+							num_outs.add(int(match))
+				return list(num_outs)
+			else:
+				return []
+		else:
+			return []
+	else:
+		return []
+	
+
+@bot.command(description="Set your equipped weapon")
+async def equip_weapon(ctx, 
+	name: discord.Option(str, "The weapon's name.", autocomplete=discord.utils.basic_autocomplete(held_items_autocomplete), required=True),
+	damage: discord.Option(str, "Amount of damage to deal; supports dice syntax.", autocomplete=discord.utils.basic_autocomplete(held_dice_autocomplete), required=True)):
+	
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 	
-	base_damage = character['damage']
-	base_damage = rolldice.roll_dice(base_damage)
+	timeout = 2
+	try:
+		func_timeout(timeout, rolldice.roll_dice, args=[damage])
+	except FunctionTimedOut as e:
+		log(f"Caught: {e}")
+		await ctx.respond(f"You cannot equip this weapon because attemping to roll its damage takes too long (>{timeout}s). Try using less dice.",ephemeral=True)
+		return
+	except Exception as e:
+		await ctx.respond(f"You cannot equip this weapon because attemping to roll its damage throws the following error:\n```{e}```",ephemeral=True)
+		return
 	
-	bonus_damage_result = rolldice.roll_dice(bonus_damage)
+	character['weapon_name'] = name
+	character['damage'] = damage
 	
-	final_damage = (base_damage[0] + bonus_damage_result[0]) * multiplier
+	await ctx.respond(f"**{codename.upper()}** has equipped **{name} ({damage} DAMAGE)**")
 	
-	message = f"**{codename}** has dealt **{final_damage} damage** using **{character['weapon_name']}**!\n\nBase damage: `{character['damage']}` -> `{base_damage[1]}`"
-	if bonus_damage != "0":
-		message += f"\nBonus damage: `{bonus_damage}` -> `{bonus_damage_result[1]}`"
-	if multiplier != 1:
-		message += f"\nFinal damage multiplier: `{multiplier}`"
-	await ctx.respond(message)
-
-@bot.command(description="Set your equipped weapon")
-async def equip_weapon(ctx, 
-	name: discord.Option(str, "The weapon's name.", required=True),
-	damage: discord.Option(str, "Amount of damage to deal; supports dice syntax.", required=True)):
-	await ctx.respond("TODO",ephemeral=True)
 	await save_character_data()
 
 @bot.command(description="Set your equipped armor")
 async def equip_armor(ctx, 
-	name: discord.Option(str, "The armor's name.", required=True),
-	damage: discord.Option(int, "Amount of damage it reduces.", required=True)):
-	await ctx.respond("TODO",ephemeral=True)
+	name: discord.Option(str, "The armor's name.", autocomplete=discord.utils.basic_autocomplete(held_items_autocomplete), required=True),
+	damage: discord.Option(int, "Amount of damage it reduces.", autocomplete=discord.utils.basic_autocomplete(held_numbers_autocomplete), required=True)):
+	
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	character['armor_name'] = name
+	character['armor'] = damage
+	
+	await ctx.respond(f"**{codename.upper()}** has equipped **{name} ({damage} ARMOR)**")
+	
 	await save_character_data()
 
 @bot.command(description="Dump character data in chat")
