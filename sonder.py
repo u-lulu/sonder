@@ -353,6 +353,21 @@ async def character_names_autocomplete(ctx: discord.AutocompleteContext):
 	else:
 		return []
 
+standard_character_limit = 10
+premium_character_limit = 50
+
+async def ext_character_management(id):
+	support_server = await bot.fetch_guild(1101249440230154300)
+	if support_server is None:
+		return False
+	user = await support_server.fetch_member(id)
+	if user is None:
+		return False
+	role = user.get_role(1120761921453432872)
+	if role is None:
+		return False
+	return True
+
 @bot.command(description="Create a new character to manage")
 async def create_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True),
 	set_as_active: discord.Option(bool, "If TRUE, the new character will become your active character in this channel. FALSE by default.", required=False, default=True)):
@@ -363,6 +378,14 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 			"active": {},
 			"chars": {}
 		}
+	
+	if len(character_data[userid]["chars"]) >= standard_character_limit:
+		if not await ext_character_management(userid):
+			await ctx.respond(f"You may not create more than {standard_character_limit} characters.",ephemeral=True)
+			return
+		elif len(character_data[userid]["chars"]) >= premium_character_limit:
+			await ctx.respond(f"You may not create more than {premium_character_limit} characters.",ephemeral=True)
+			return
 	
 	codename = codename.lower()
 	if codename in character_data[userid]["chars"]:
