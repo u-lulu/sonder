@@ -393,7 +393,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	if len(character_data[userid]["chars"]) >= standard_character_limit:
 		premium_user = await ext_character_management(userid)
 		if not premium_user:
-			await ctx.respond(f"You may not create more than {standard_character_limit} characters.\nYou can increase your character limit to {premium_character_limit} by enrolling in a server subscription at Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+			await ctx.respond(f"You may not create more than {standard_character_limit} characters.\nYou can increase your character limit to {premium_character_limit} by enrolling in a [server subscription](<https://discord.com/servers/sonder-s-garage-1101249440230154300>) at Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 			return
 		elif len(character_data[userid]["chars"]) >= premium_character_limit:
 			await ctx.respond(f"You may not create more than {premium_character_limit} characters.",ephemeral=True)
