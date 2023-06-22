@@ -564,6 +564,7 @@ async def active_character(ctx, show_all: discord.Option(bool, "If TRUE, lists a
 			message = f"Your characters are active in the following {len(your_actives)} channels:"
 			for channel in your_actives:
 				message += f"\n- <#{channel}> -> {your_actives[channel].upper()}"
+			await ctx.respond(message)
 		else:
 			await ctx.respond(f"You do not have active characters in any channels.",ephemeral=True)
 	else:
