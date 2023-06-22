@@ -549,10 +549,24 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 		character_data[userid]['active'][str(ctx.channel_id)] = codename
 		await ctx.respond(f"Your active character in this channel is now **{codename.upper()}**.")
 		await save_character_data()
-	return	
+	return
 
-log("Creating trait commands")
-trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
+@bot.command(description="Check your current active character")
+async def active_character(ctx, show_all: discord.Option(bool, "If TRUE, lists all channels you have active characters in. FALSE by default.", required=False, default=False))
+	if show_all:
+		your_actives = character_data[str(ctx.author.id)]['actives']
+		if len(your_actives) > 0:
+			message = f"Your characters are active in the following {len(your_actives)} channels:"
+			for channel in your_actives:
+				message += f"\n- <#{channel}> -> {your_actives[channel].upper()}"
+		else:
+			await ctx.respond(f"You do not have active characters in any channels.",ephemeral=True)
+	else:
+		codename = get_active_codename(ctx)
+		if codename != None:
+			await ctx.respond(f"Your active character in this channel is **{codename.upper()}**")
+		else:
+			await ctx.respond(f"You do not have an active character in this channel.",ephemeral=True)
 
 async def role_autocomp(ctx):
 	return role_names
@@ -1289,6 +1303,9 @@ async def equip_armor(ctx,
 	await ctx.respond(f"**{codename.upper()}** has equipped **{name} ({damage} ARMOR)**")
 	
 	await save_character_data()
+
+log("Creating trait commands")
+trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
