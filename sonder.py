@@ -384,6 +384,11 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	set_as_active: discord.Option(bool, "If TRUE, the new character will become your active character in this channel. FALSE by default.", required=False, default=True)):
 	log(f"/create {codename}")
 	userid = str(ctx.author.id)
+	
+	name_limit = 50
+	if len(codename) > name_limit:
+		await ctx.respond(f"Codenames must be no longer than {name_limit} characters.",ephemeral=True)
+	
 	if userid not in character_data:
 		character_data[userid] = {
 			"active": {},
