@@ -564,7 +564,23 @@ async def active_character(ctx, show_all: discord.Option(bool, "If TRUE, lists a
 			message = f"Your characters are active in the following {len(your_actives)} channels:"
 			for channel in your_actives:
 				message += f"\n- <#{channel}> -> {your_actives[channel].upper()}"
-			await ctx.respond(message,ephemeral=True)
+			if len(message) < 2000:
+				await ctx.respond(message,ephemeral=True)
+			else:
+				message = f"Your characters are active in the following {len(your_actives)} channels:"
+				for channel in your_actives:
+					try:
+						channel_object = await bot.fetch_channel(int(channel))
+						channel_name = channel_object.name
+						message += f"\n- #{channel_name} ({channel}) -> {your_actives[channel].upper()}"
+					except Exception as e:
+						log(f"Could not resolve name of channel {channel}")
+						message += f"\n- Unknown channel ({channel}) -> {your_actives[channel].upper()}"
+				with open("message.txt","w") as file:
+					file.write(message)
+				await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'),ephemeral=True)
+				os.remove('message.txt')
+				log("Sent actives list as file")
 		else:
 			await ctx.respond(f"You do not have active characters in any channels.",ephemeral=True)
 	else:
