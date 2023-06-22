@@ -463,10 +463,11 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 				if yourstuff['active'][key] == codename:
 					channel_unbinds += 1
 					keys_to_purge.append(key)
-			for key in keys_to_purge:
-				del yourstuff['active'][key]
 			if channel_unbinds > 0:
-				message += f"\nThis action has cleared your active character across {channel_unbinds} channels."
+				message += f"\nThis action has cleared your active character across {channel_unbinds} channels:"
+			for key in keys_to_purge:
+				message += f" <#{key}>"
+				del yourstuff['active'][key]
 			
 			earliest_time = math.inf
 			earliest_premium_char = None
