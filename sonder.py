@@ -558,6 +558,7 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 
 @bot.command(description="Check your current active character")
 async def active_character(ctx, show_all: discord.Option(bool, "If TRUE, lists all channels you have active characters in. FALSE by default.", required=False, default=False)):
+	log(f"/active_character{' show_all' if show_all else ''}")
 	if show_all:
 		your_actives = character_data[str(ctx.author.id)]['active']
 		if len(your_actives) > 0:
