@@ -426,6 +426,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	}
 	
 	msg = f"Created character with the codename '{codename}'."
+	msg += f"\nYou now have {len(character_data[userid]['chars'])} characters."
 	if premium_character:
 		msg += "\n*This character uses a premium slot!*"
 	await ctx.respond(msg)
@@ -482,6 +483,8 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 			if len(yourstuff['chars']) <= 0:
 				del character_data[yourid]
 				message += "\nYou have deleted your last character. All data associated with your User ID has been deleted."
+			else:
+				message += f"\nYou now have {len(yourstuff['chars'])} characters."
 				
 			await ctx.respond(message)
 			await save_character_data()
@@ -657,6 +660,7 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 async def add_item(ctx,
 		name: discord.Option(str, "The name of the item", required=True), 
 		effect: discord.Option(str, "The effect of the item", required=False, default="")):
+	log(f"/add_item {name} {effect}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
