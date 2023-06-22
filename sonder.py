@@ -181,6 +181,7 @@ async def ping(ctx):
 async def shutdown(ctx):
 	log(f"/shutdown ({ctx.author.id})")
 	if ctx.author.id == ownerid:
+		await save_character_data()
 		await ctx.respond(f"Restarting.")
 		await bot.close()
 	else:
@@ -1007,7 +1008,8 @@ async def cre(ctx,
 @bot.command(description="Take damage")
 async def damage(ctx, 
 	amount: discord.Option(str, "Amount of damage to take. Supports dice syntax.", required=True),
-	armor_piercing: discord.Option(bool, "Skip armor when applying this damage.", required=False, default=False)):
+	armor_piercing: discord.Option(bool, "Skip armor when applying this damage.", required=False, default=False),
+	bonus_armor: discord.Option(discord.SlashCommandOptionType.integer, "Extra armor that applies to this instance of damage.", required=False, default=0)):
 	log(f"/damage {amount}{' armor_piercing' if armor_piercing else ''}")
 	
 	character = get_active_char_object(ctx)
@@ -1036,7 +1038,7 @@ async def damage(ctx,
 	before_armor = output[0]
 	if before_armor < 0:
 		before_armor = 0
-	damage_taken = output[0] - character['armor']
+	damage_taken = output[0] - character['armor'] - bonus_armor
 	if damage_taken < 0:
 		damage_taken = 0
 	dice_results = output[1]
@@ -1049,9 +1051,9 @@ async def damage(ctx,
 	#message = f"**Total: {output[0]}**\n`{output[1]}`"
 	message = f"**{codename.upper()}** has taken **{before_armor} damage!**"
 	if (not armor_piercing and character['armor'] > 0 and before_armor != damage_taken):
-		message += f" (Reduced to **{damage_taken}** by {character['armor']} armor from {character['armor_name']}!)"
+		message += f" (Reduced to **{damage_taken}** by {character['armor']}{f' (+{bonus_armor} bonus)' if bonus_armor > 0 else ''} armor from {character['armor_name']}!)"
 	elif (armor_piercing and character['armor'] > 0):
-		message += f" (Ignores {character['armor']} armor from {character['armor_name']}!)"
+		message += f" (Ignores {character['armor']}{f' (+{bonus_armor} bonus)' if bonus_armor > 0 else ''} armor from {character['armor_name']}!)"
 	message += f"\nHP: {character['hp']}/{character['maxhp']}"
 	if ('d' in amount or 'd' in amount):
 		message += f"\n\nDice results: `{dice_results}`"
