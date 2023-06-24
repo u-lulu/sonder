@@ -240,6 +240,16 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 		log(f"Caught: {e}")
 		await ctx.respond(f"There was an error processing this command:\n```{e}```")
 
+@bot.command(description="Roll 1d66")
+async def d66(ctx):
+	log("/d66")
+	await ctx.respond(str(d6()) + str(d6()))
+
+@bot.command(description="Roll 1d666")
+async def d666(ctx):
+	log("/d666")
+	await ctx.respond(str(d6()) + str(d6()) + str(d6()))
+
 log("Loading user character data")
 character_data = {}
 if os.path.exists('player_data.json'):
