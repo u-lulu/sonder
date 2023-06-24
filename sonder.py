@@ -706,16 +706,37 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 	await ctx.respond(out)
 	await save_character_data()
 
-#@bot.command(description="Add a custom trait to your character")
-#async def add_custom_trait(ctx,	
-		#title: discord.Option(str, "The name of the trait", required=True), 
-		#description: discord.Option(str, "The trait's description", required=True),
-		#stat_type: discord.Option(str, "The type of stat this trait changes", required=True),
-		#stat_amount: discord.Option(discord.SlashCommandOptionType.integer, "The amount that the stat is changed", required=True),
-		#item_name: discord.Option(str, "The name of the item that this trait grants you", required=True),
-		#item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
-	#await ctx.respond("TODO",ephemeral=True)
-	#await save_character_data()
+@bot.command(description="Add a custom trait to your character")
+async def create_custom_trait(ctx,	
+		title: discord.Option(str, "The name of the trait", required=True), 
+		description: discord.Option(str, "The trait's description", required=True),
+		stat_type: discord.Option(str, "The type of stat this trait changes", required=True),
+		stat_amount: discord.Option(discord.SlashCommandOptionType.integer, "The amount that the stat is changed", required=True),
+		item_name: discord.Option(str, "The name of the item that this trait grants you", required=True),
+		item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
+	
+	if stat_amount[0] not in ['+','-']:
+		stat_amount = '+' + stat_amount
+	
+	new_trait = {
+		"Number": 0,
+		"Name": title.upper(),
+		"Effect": description,
+		"Item": f"{item_name} ({item_effect})",
+		"Stat": f"{stat_amount} {stat_type}"
+	}
+	
+	roll_dice_failure = False
+	try:
+		rolldice.roll_dice(stat_amount)
+	except Exception as e:
+		log(f"Caught dice-rolling exception: {e}")
+		roll_dice_failure = True
+	
+	# TODO
+	
+	await ctx.respond("TODO",ephemeral=True)
+	await save_character_data()
 
 @bot.command(description="Add an item your active character")
 async def add_item(ctx,
