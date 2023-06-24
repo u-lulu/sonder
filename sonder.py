@@ -63,7 +63,10 @@ def d6():
 	return rnd.randint(1,6)
 
 def trait_message_format(trait):
-	return f"**{trait['Name']}** ({trait['Number']})\n{trait['Effect']}\n- {trait['Item']}, {trait['Stat']}"
+	if trait['Number'] >= 111:
+		return f"**{trait['Name']}** ({trait['Number']})\n{trait['Effect']}\n- {trait['Item']}, {trait['Stat']}"
+	else:
+		return f"**{trait['Name']}** (Custom)\n{trait['Effect']}\n- {trait['Item']}, {trait['Stat']}"
 
 def role_message_format(role):
 	return f"**{role['Name']}** ({role['Number']})\n{role['Text']}"
@@ -305,7 +308,10 @@ def output_character(codename, data):
 		out += "- *No traits yet.*"
 	else:
 		for trait in data['traits']:
-			out += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
+			if trait['Number'] >= 111:
+				out += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
+			else:
+				out += f"- **{trait['Name']}** (Custom): {trait['Effect']} ({trait['Stat']})\n"
 	
 	out += "\nITEMS:"
 	if len(data['items']) <= 0:
@@ -666,7 +672,7 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 		return
 	
 	for existing_trait in character['traits']:
-		if existing_trait['Number'] == my_new_trait['Number']:
+		if existing_trait['Name'] == my_new_trait['Name']:
 			await ctx.respond(f'**{codename.upper()}** already has the trait **{my_new_trait["Name"]} ({my_new_trait["Number"]})**.',ephemeral=True)
 			return
 	
