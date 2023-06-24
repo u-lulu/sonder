@@ -614,6 +614,10 @@ async def set_role(ctx,
 		return
 	codename = get_active_codename(ctx)
 	
+	if character['premium'] and not ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+		return
+	
 	name = name.upper()
 	character['role'] = {
 		"Name": name,
@@ -636,6 +640,10 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
+
+	if character['premium'] and not ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+		return
 	
 	my_new_trait = None
 	for t in trait_data:
@@ -714,6 +722,10 @@ async def add_item(ctx,
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
+
+	if character['premium'] and not ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+		return
 	
 	concat = name+effect
 	if "(" in concat or ")" in concat:
@@ -760,6 +772,10 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
+
+	if character['premium'] and not ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+		return
 	
 	if len(character['traits']) <= 0:
 		await ctx.respond(f"{codename.upper()} does not have any traits.",ephemeral=True)
@@ -842,6 +858,10 @@ async def remove_item(ctx,
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
+
+	if character['premium'] and not ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+		return
 	
 	if len(character['items']) <= 0:
 		await ctx.respond(f"**{codename.upper()}** does not have any items.",ephemeral=True)
@@ -891,6 +911,10 @@ async def adjust(ctx,
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
+
+	if character['premium'] and not ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+		return
 	
 	stat = stat.upper()
 	stats_translator = {
@@ -946,6 +970,10 @@ async def refresh(ctx,
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
+
+	if character['premium'] and not ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+		return
 	
 	weapon_reset = False
 	if character['weapon_name'] != "Unarmed" or character['damage'] != "2d6k1":
@@ -1064,6 +1092,10 @@ async def damage(ctx,
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
+
+	if character['premium'] and not ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+		return
 	
 	timeout = 2
 	output = ()
@@ -1121,6 +1153,10 @@ async def heal(ctx,
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
+
+	if character['premium'] and not ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+		return
 	
 	timeout = 2
 	output = ()
@@ -1175,6 +1211,10 @@ async def attack(ctx,
 			await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 			return
 		codename = get_active_codename(ctx)
+	
+		if character['premium'] and not ext_character_management(ctx.author.id):
+			await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+			return
 		
 		base_damage = character['damage']
 		base_damage = rolldice.roll_dice(base_damage)
@@ -1299,6 +1339,10 @@ async def equip_weapon(ctx,
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
+
+	if character['premium'] and not ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+		return
 	
 	timeout = 2
 	try:
@@ -1328,6 +1372,10 @@ async def equip_armor(ctx,
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
+
+	if character['premium'] and not ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+		return
 	
 	character['armor_name'] = name
 	character['armor'] = damage
