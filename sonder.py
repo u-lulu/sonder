@@ -690,16 +690,11 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 	num = 0
 	if bonus[1] in stats:
 		translated_stat_bonus = stats_translator[bonus[1]]
-		if bonus[0] == "+1D6":
-			num = d6()
-		else:	
-			numerical = bonus[0]
-			if numerical[0] in ('+', '-'):
-				num = int(numerical[1:])
-				if numerical[0] == '-':
-					num = -num
-			else:
-				num = int(numerical)
+		try: 
+			num = rolldice.roll_dice(bonus[0])[0]
+		except Exception as e:
+			num = 0
+			log(f"Caught dice-rolling exception: {e}")
 		character[translated_stat_bonus] += num
 		if translated_stat_bonus == 'maxhp':
 			character['hp'] += num
@@ -816,19 +811,14 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 		num = 0
 		if bonus[1] in stats:
 			translated_stat_bonus = stats_translator[bonus[1]]
-			if bonus[0] == "+1D6":
-				num = d6()
-			else:	
-				numerical = bonus[0]
-				if numerical[0] in ('+', '-'):
-					num = int(numerical[1:])
-					if numerical[0] == '-':
-						num = -num
-				else:
-					num = int(numerical)
-			character[translated_stat_bonus] -= num
+			try: 
+				num = rolldice.roll_dice(bonus[0])[0]
+			except Exception as e:
+				num = 0
+				log(f"Caught dice-rolling exception: {e}")
+			character[translated_stat_bonus] += num
 			if translated_stat_bonus == 'maxhp':
-				character['hp'] -= num
+				character['hp'] += num
 	
 		character['traits'].remove(target_trait)
 		await ctx.respond(f"{codename.upper()} has lost the trait **{trait.upper()}**.")
@@ -1030,16 +1020,11 @@ async def refresh(ctx,
 		wd_adjust_is_ok = (not bonus[1] == 'WAR') or reset_war_dice
 		if bonus[1] in stats and hp_adjust_is_ok and wd_adjust_is_ok:
 			translated_stat_bonus = stats_translator[bonus[1]]
-			if bonus[0] == "+1D6":
-				num = d6()
-			else:	
-				numerical = bonus[0]
-				if numerical[0] in ('+', '-'):
-					num = int(numerical[1:])
-					if numerical[0] == '-':
-						num = -num
-				else:
-					num = int(numerical)
+			try: 
+				num = rolldice.roll_dice(bonus[0])[0]
+			except Exception as e:
+				num = 0
+				log(f"Caught dice-rolling exception: {e}")
 			character[translated_stat_bonus] += num
 			if translated_stat_bonus == 'maxhp':
 				character['hp'] += num
@@ -1493,17 +1478,11 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 		bonus = trait["Stat"].split(" ")
 		num = 0
 		if bonus[1] in stats:
-			if bonus[0] == "+1D6":
-				num = d6()
-			else:	
-				numerical = bonus[0]
-				if numerical[0] in ('+', '-'):
-					num = int(numerical[1:])
-					if numerical[0] == '-':
-						num = -num
-				else:
-					num = int(numerical)
-			
+			try: 
+				num = rolldice.roll_dice(bonus[0])[0]
+			except Exception as e:
+				num = 0
+				log(f"Caught dice-rolling exception: {e}")
 			stats[bonus[1]] += num
 	
 	message += f"MAX HP: {stats['MAX']}\n"
@@ -2912,18 +2891,11 @@ async def character(ctx):
 		bonus = trait["Stat"].split(" ")
 		num = 0
 		if bonus[1] in stats:
-			if bonus[0] == "+1D6":
-				num = d6()
-			else:	
+			try: 
+				num = rolldice.roll_dice(bonus[0])[0]
+			except Exception as e:
 				num = 0
-				numerical = bonus[0]
-				if numerical[0] in ('+', '-'):
-					num = int(numerical[1:])
-					if numerical[0] == '-':
-						num = -num
-				else:
-					num = int(numerical)
-			
+				log(f"Caught dice-rolling exception: {e}")
 			stats[bonus[1]] += num
 	
 	message += f"MAX HP: {stats['MAX']}\n"
