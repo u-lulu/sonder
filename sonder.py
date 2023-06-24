@@ -614,8 +614,8 @@ async def set_role(ctx,
 		return
 	codename = get_active_codename(ctx)
 	
-	if character['premium'] and not ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 		return
 	
 	name = name.upper()
@@ -641,8 +641,8 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 		return
 	codename = get_active_codename(ctx)
 
-	if character['premium'] and not ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 		return
 	
 	my_new_trait = None
@@ -723,8 +723,8 @@ async def add_item(ctx,
 		return
 	codename = get_active_codename(ctx)
 
-	if character['premium'] and not ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 		return
 	
 	concat = name+effect
@@ -773,8 +773,8 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 		return
 	codename = get_active_codename(ctx)
 
-	if character['premium'] and not ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 		return
 	
 	if len(character['traits']) <= 0:
@@ -859,8 +859,8 @@ async def remove_item(ctx,
 		return
 	codename = get_active_codename(ctx)
 
-	if character['premium'] and not ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 		return
 	
 	if len(character['items']) <= 0:
@@ -912,8 +912,8 @@ async def adjust(ctx,
 		return
 	codename = get_active_codename(ctx)
 
-	if character['premium'] and not ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 		return
 	
 	stat = stat.upper()
@@ -971,8 +971,8 @@ async def refresh(ctx,
 		return
 	codename = get_active_codename(ctx)
 
-	if character['premium'] and not ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 		return
 	
 	weapon_reset = False
@@ -1093,8 +1093,8 @@ async def damage(ctx,
 		return
 	codename = get_active_codename(ctx)
 
-	if character['premium'] and not ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 		return
 	
 	timeout = 2
@@ -1154,8 +1154,8 @@ async def heal(ctx,
 		return
 	codename = get_active_codename(ctx)
 
-	if character['premium'] and not ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 		return
 	
 	timeout = 2
@@ -1212,8 +1212,8 @@ async def attack(ctx,
 			return
 		codename = get_active_codename(ctx)
 	
-		if character['premium'] and not ext_character_management(ctx.author.id):
-			await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+		if character['premium'] and not await ext_character_management(ctx.author.id):
+			await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 			return
 		
 		base_damage = character['damage']
@@ -1340,8 +1340,8 @@ async def equip_weapon(ctx,
 		return
 	codename = get_active_codename(ctx)
 
-	if character['premium'] and not ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 		return
 	
 	timeout = 2
@@ -1373,8 +1373,8 @@ async def equip_armor(ctx,
 		return
 	codename = get_active_codename(ctx)
 
-	if character['premium'] and not ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first.",ephemeral=True)
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 		return
 	
 	character['armor_name'] = name
