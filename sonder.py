@@ -161,9 +161,19 @@ def roll_extra_possibility(input_string):
 	else:
 		return input_string
 
+support_server_id = 1101249440230154300
+support_server_obj = None
+
 log("Creating generic commands")
 @bot.event
 async def on_ready():
+	try:
+		log("Checking for support server...")
+		support_server_obj = await bot.fetch_guild(support_server_id)
+		log("Support server found")
+	except Exception as e:
+		log(f"Support server could not be found: {e}")
+		support_server_obj = None
 	log(f"{bot.user} is ready and online!")
 	boot_time = int(time.time())
 
@@ -362,14 +372,10 @@ async def character_names_autocomplete(ctx: discord.AutocompleteContext):
 	else:
 		return []
 
-standard_character_limit = 10
-premium_character_limit = 50
-
 async def ext_character_management(id):
 	if id == str(ownerid):
 		return True
-	support_server = await bot.fetch_guild(1101249440230154300)
-	if support_server is None:
+	if support_server_obj is None:
 		return False
 	user = await support_server.fetch_member(id)
 	if user is None:
@@ -378,6 +384,9 @@ async def ext_character_management(id):
 	if role is None:
 		return False
 	return True
+
+standard_character_limit = 10
+premium_character_limit = 50
 
 @bot.command(description="Create a new character to manage")
 async def create_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True),
