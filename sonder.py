@@ -1122,7 +1122,6 @@ async def damage(ctx,
 	else:
 		character['hp'] -= damage_taken
 	
-	#message = f"**Total: {output[0]}**\n`{output[1]}`"
 	message = f"**{codename.upper()}** has taken **{before_armor} damage!**"
 	if (not armor_piercing and character['armor'] > 0 and before_armor != damage_taken):
 		message += f" (Reduced to **{damage_taken}** by {character['armor']}{f' (+{bonus_armor} bonus)' if bonus_armor > 0 else ''} armor from {character['armor_name']}!)"
