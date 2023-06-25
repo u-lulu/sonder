@@ -63,10 +63,7 @@ def d6():
 	return rnd.randint(1,6)
 
 def trait_message_format(trait):
-	if trait['Number'] >= 111:
-		return f"**{trait['Name']}** ({trait['Number']})\n{trait['Effect']}\n- {trait['Item']}, {trait['Stat']}"
-	else:
-		return f"**{trait['Name']}** (Custom)\n{trait['Effect']}\n- {trait['Item']}, {trait['Stat']}"
+	return f"**{trait['Name']}** ({trait['Number']})\n{trait['Effect']}\n- {trait['Item']}, {trait['Stat']}"
 
 def role_message_format(role):
 	return f"**{role['Name']}** ({role['Number']})\n{role['Text']}"
@@ -308,10 +305,7 @@ def output_character(codename, data):
 		out += "- *No traits yet.*"
 	else:
 		for trait in data['traits']:
-			if trait['Number'] >= 111:
-				out += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
-			else:
-				out += f"- **{trait['Name']}** (Custom): {trait['Effect']} ({trait['Stat']})\n"
+			out += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
 	
 	out += "\nITEMS:"
 	if len(data['items']) <= 0:
@@ -725,7 +719,7 @@ async def create_custom_trait(ctx,
 		stat_amount = '+' + stat_amount
 	
 	new_trait = {
-		"Number": 0,
+		"Number": "Custom",
 		"Name": title.upper(),
 		"Effect": description,
 		"Item": f"{item_name} ({item_effect})",
