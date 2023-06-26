@@ -648,6 +648,8 @@ async def set_role(ctx,
 async def trait_autocomp(ctx):
 	return trait_names
 
+trait_limit = 15
+
 @bot.command(description="Add a core book trait to your active character")
 async def add_trait(ctx, trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(trait_autocomp), required=True)):
 	log(f"/add_trait {trait}")
@@ -659,6 +661,10 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		return
+	
+	if len(character['traits']) >= trait_limit:
+		await ctx.respond(f"Characters cannot have more than {trait_limit} traits.",ephemeral=True)
 		return
 	
 	trait = trait.upper()
@@ -745,6 +751,8 @@ async def create_custom_trait(ctx,
 	await ctx.respond("TODO",ephemeral=True)
 	await save_character_data()
 
+item_limit = 50
+
 @bot.command(description="Add an item your active character")
 async def add_item(ctx,
 		name: discord.Option(str, "The name of the item", required=True), 
@@ -758,6 +766,10 @@ async def add_item(ctx,
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		return
+	
+	if len(character['items']) >= item_limit:
+		await ctx.respond(f"Characters cannot carry more than {item_limit} items.",ephemeral=True)
 		return
 	
 	concat = name+effect
