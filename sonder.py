@@ -799,7 +799,7 @@ async def create_custom_trait(ctx,
 	
 	character_data[userid]['customtraits'][title] = new_trait
 	
-	out = "Created a custom trait:\n>>>"
+	out = "Created a custom trait:\n>>> "
 	out += trait_message_format(new_trait)
 	await ctx.respond(out,ephemeral=True)
 	await save_character_data()
