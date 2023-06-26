@@ -515,7 +515,7 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 					earliest_premium_char['premium'] = False
 					message += f"\nYou have freed up a non-premium slot. **{codename.upper()}** is no longer a premium character."
 			
-			if len(yourstuff['chars']) <= 0 and len(yourstuff['traits']) <= 0:
+			if len(yourstuff['chars']) <= 0 and len(yourstuff['customtraits']) <= 0:
 				del character_data[yourid]
 				message += "\nYou no longer have any characters or traits. All data associated with your User ID has been deleted."
 			else:
@@ -656,7 +656,7 @@ trait_limit = 15
 async def traits_and_customs_autocomp(ctx):
 	uid = str(ctx.interaction.user.id)
 	if uid in character_data:
-		user_traits = sorted(list(character_data['traits'].keys()))
+		user_traits = sorted(list(character_data[uid]['customtraits'].keys()))
 		return user_traits + trait_names
 	else:
 		return trait_names
@@ -749,12 +749,12 @@ async def create_custom_trait(ctx,
 		item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
 	userid = str(ctx.author.id)
 	
-	if len(character_data[userid]['traits']) >= standard_custrait_limit:
+	if len(character_data[userid]['customtraits']) >= standard_custrait_limit:
 		premium_user = await ext_character_management(userid)
 		if not premium_user:
 			await ctx.respond(f"You may not create more than {standard_custrait_limit} custom traits.\nYou can increase your custom trait limit to {premium_custrait_limit} by enrolling in a [server subscription](<https://discord.com/servers/sonder-s-garage-1101249440230154300>) at Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 			return
-		elif len(character_data[userid]['traits']) >= premium_custrait_limit:
+		elif len(character_data[userid]['customtraits']) >= premium_custrait_limit:
 			await ctx.respond(f"You may not create more than {premium_custrait_limit} custom traits.",ephemeral=True)
 			return
 	
@@ -771,7 +771,7 @@ async def create_custom_trait(ctx,
 	if title in traits_by_name:
 		await ctx.respond(f"**{title}** already exists in the core book.",ephemeral=True)
 		return
-	elif title in character_data[userid]['traits']:
+	elif title in character_data[userid]['customtraits']:
 		await ctx.respond(f"You have already made a trait called **{title}**.",ephemeral=True)
 		return
 	
@@ -797,7 +797,7 @@ async def create_custom_trait(ctx,
 			"traits": {}
 		}
 	
-	character_data[userid]['traits'][title] = new_trait
+	character_data[userid]['customtraits'][title] = new_trait
 	
 	out = "Created a custom trait:\n>>>"
 	out += trait_message_format(new_trait)
