@@ -40,14 +40,22 @@ role_file = open('roles.json')
 role_data = json.load(role_file)
 role_file.close()
 
-log("Creating role and trait name list")
+log("Creating role and trait metadata")
 trait_names = []
+traits_by_name = {}
+traits_by_number = {}
 for trait in trait_data:
 	trait_names.append(trait["Name"])
+	traits_by_name[trait["Name"]] = trait
+	traits_by_number[trait["Number"]] = trait
 
 role_names = []
+roles_by_name = {}
+roles_by_number = {}
 for role in role_data:
 	role_names.append(role["Name"])
+	roles_by_name[role["Name"]] = role
+	roles_by_number[role["Number"]] = role
 
 num_to_die = {
 	1: "<:revolver_dice_1:1029946656277405726>",
@@ -70,23 +78,18 @@ def role_message_format(role):
 
 def search_for_trait(trait):
 	message = ""
+	trait = trait.upper()
 	if re.match("^\d+$", trait):
 		number = int(trait)
-		message = "No trait exists with the given number. Trait numbers must be possible d666 roll outputs."
-		for trait in trait_data:
-			if trait["Number"] == number:
-				message = trait_message_format(trait)
-				break
+		if number in traits_by_number:
+			return trait_message_format(traits_by_number[number])
+		else:
+			return "No trait exists with the given number. Trait numbers must be possible d666 roll outputs."
 	else:
 		best_match = difflib.get_close_matches(trait.upper(), trait_names, n=1, cutoff=0.0)
 
-		if len(best_match) > 0:
-			goodtrait = {}
-			for trait in trait_data:
-				if trait["Name"] == best_match[0]:
-					goodtrait = trait
-					break
-			message = trait_message_format(trait)
+		if len(best_match) > 0 and best_match[0] in traits_by_name:
+			return trait_message_format(traits_by_name[best_match[0]])
 		else:
 			message = "Could not find a trait with an approximately similar name."
 	return message
