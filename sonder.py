@@ -728,6 +728,9 @@ async def stat_type_autocomp():
 async def stat_amount_autocomp():
 	return ["+1","-1","+2","-2","+1D6","-1D6"]
 
+standard_custrait_limit = 2 * standard_character_limit
+premium_custrait_limit = 2 * premium_character_limit
+
 @bot.command(description="Create a custom trait")
 async def create_custom_trait(ctx,	
 		title: discord.Option(str, "The name of the trait", required=True), 
@@ -738,9 +741,14 @@ async def create_custom_trait(ctx,
 		item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
 	userid = str(ctx.author.id)
 	
-	if len(character_data[userid]['traits']) >= trait_limit:
-		await ctx.respond(f"You cannot have more than {trait_limit} custom traits.",ephemeral=True)
-		return
+	if len(character_data[userid]['traits']) >= standard_custrait_limit:
+		premium_user = await ext_character_management(userid)
+		if not premium_user:
+			await ctx.respond(f"You may not create more than {standard_custrait_limit} custom traits.\nYou can increase your custom trait limit to {premium_custrait_limit} by enrolling in a [server subscription](<https://discord.com/servers/sonder-s-garage-1101249440230154300>) at Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+			return
+		elif len(character_data[userid]['traits']) >= premium_custrait_limit:
+			await ctx.respond(f"You may not create more than {premium_custrait_limit} custom traits.",ephemeral=True)
+			return
 	
 	if stat_amount[0] not in ['+','-']:
 		stat_amount = '+' + stat_amount
