@@ -734,9 +734,11 @@ async def create_custom_trait(ctx,
 	if stat_amount[0] not in ['+','-']:
 		stat_amount = '+' + stat_amount
 	
+	title = title.upper()
+	
 	new_trait = {
 		"Number": "Custom",
-		"Name": title.upper(),
+		"Name": title,
 		"Effect": description,
 		"Item": f"{item_name} ({item_effect})",
 		"Stat": f"{stat_amount} {stat_type}"
