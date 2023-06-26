@@ -515,9 +515,9 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 					earliest_premium_char['premium'] = False
 					message += f"\nYou have freed up a non-premium slot. **{codename.upper()}** is no longer a premium character."
 			
-			if len(yourstuff['chars']) <= 0:
+			if len(yourstuff['chars']) <= 0 and len(yourstuff['traits']) <= 0:
 				del character_data[yourid]
-				message += "\nYou have deleted your last character. All data associated with your User ID has been deleted."
+				message += "\nYou no longer have any characters or traits. All data associated with your User ID has been deleted."
 			else:
 				message += f"\nYou now have {len(yourstuff['chars'])} characters."
 				
