@@ -181,7 +181,7 @@ async def save_character_data():
 		for userid in character_data:
 			total_users += 1
 			total_characters += len(character_data[userid]['chars'])
-			total_traits += len(character_data[userid]['customtraits'])
+			total_traits += len(character_data[userid]['traits'])
 		log(f"Character data saved. Storing data about {total_characters} characters & {total_traits} custom traits created by {total_users} users")
 	except Exception as e:
 		log(f"PLAYER DATA SAVING THREW AN ERROR: {e}")
@@ -195,8 +195,8 @@ async def on_ready():
 	log("Checking to see if character data needs to be updated...")
 	changed = False
 	for player in character_data:
-		if 'customtraits' not in character_data[player]:
-			character_data[player]['customtraits'] = {}
+		if 'traits' not in character_data[player]:
+			character_data[player]['traits'] = {}
 			log(f"{player} updated to include custom traits field")
 			changed = True
 	
@@ -517,7 +517,7 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 					earliest_premium_char['premium'] = False
 					message += f"\nYou have freed up a non-premium slot. **{codename.upper()}** is no longer a premium character."
 			
-			if len(yourstuff['chars']) <= 0 and len(yourstuff['customtraits']) <= 0:
+			if len(yourstuff['chars']) <= 0 and len(yourstuff['traits']) <= 0:
 				del character_data[yourid]
 				message += "\nYou no longer have any characters or traits. All data associated with your User ID has been deleted."
 			else:
@@ -658,7 +658,7 @@ trait_limit = 15
 async def traits_and_customs_autocomp(ctx):
 	uid = str(ctx.interaction.user.id)
 	if uid in character_data:
-		user_traits = sorted(list(character_data[uid]['customtraits'].keys()))
+		user_traits = sorted(list(character_data[uid]['traits'].keys()))
 		return user_traits + trait_names
 	else:
 		return trait_names
@@ -681,7 +681,7 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 		return
 	
 	trait = trait.upper()
-	current_traits_by_name = traits_by_name | character_data[str(ctx.author.id)]['customtraits']
+	current_traits_by_name = traits_by_name | character_data[str(ctx.author.id)]['traits']
 	
 	my_new_trait = None
 	if trait in current_traits_by_name:
@@ -752,13 +752,14 @@ async def create_custom_trait(ctx,
 		item_name: discord.Option(str, "The name of the item that this trait grants you", required=True),
 		item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
 	userid = str(ctx.author.id)
+	log(f"/create_custom_trait {title} {description} {stat_type} {stat_amount} {item_name} {item_effect}")
 	
-	if len(character_data[userid]['customtraits']) >= standard_custrait_limit:
+	if len(character_data[userid]['traits']) >= standard_custrait_limit:
 		premium_user = await ext_character_management(userid)
 		if not premium_user:
 			await ctx.respond(f"You may not create more than {standard_custrait_limit} custom traits.\nYou can increase your custom trait limit to {premium_custrait_limit} by enrolling in a [server subscription](<https://discord.com/servers/sonder-s-garage-1101249440230154300>) at Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 			return
-		elif len(character_data[userid]['customtraits']) >= premium_custrait_limit:
+		elif len(character_data[userid]['traits']) >= premium_custrait_limit:
 			await ctx.respond(f"You may not create more than {premium_custrait_limit} custom traits.",ephemeral=True)
 			return
 	
@@ -775,7 +776,7 @@ async def create_custom_trait(ctx,
 	if title in traits_by_name:
 		await ctx.respond(f"**{title}** already exists in the core book.",ephemeral=True)
 		return
-	elif title in character_data[userid]['customtraits']:
+	elif title in character_data[userid]['traits']:
 		await ctx.respond(f"You have already made a trait called **{title}**.",ephemeral=True)
 		return
 	
@@ -801,9 +802,10 @@ async def create_custom_trait(ctx,
 			"traits": {}
 		}
 	
-	character_data[userid]['customtraits'][title] = new_trait
+	character_data[userid]['traits'][title] = new_trait
 	
-	out = "Created a custom trait:\n>>> "
+	out = f"Created the custom trait {title}.\n"
+	out += f"\nYou now have {len(character_data[userid]['traits'])} custom traits.\n>>> "
 	out += trait_message_format(new_trait)
 	await ctx.respond(out)
 	await save_character_data()
@@ -811,34 +813,45 @@ async def create_custom_trait(ctx,
 async def custom_traits_list_autocomp(ctx):
 	uid = str(ctx.interaction.user.id)
 	if uid in character_data:
-		return list(character_data[uid]['customtraits'].keys())
+		return list(character_data[uid]['traits'].keys())
 	else:
 		return []
 
 @bot.command(description="Delete one of your custom traits")
 async def delete_custom_trait(ctx,	
 		name: discord.Option(str, "The name of the trait to delete",autocomplete=discord.utils.basic_autocomplete(custom_traits_list_autocomp), required=True)):
+	log(f"/delete_custom_trait {name}")
 	uid = str(ctx.author.id)
-	if uid not in character_data or len(character_data[uid]['customtraits']) <= 0:
+	if uid not in character_data or len(character_data[uid]['traits']) <= 0:
 		await ctx.respond("You do not have any custom traits on file.",ephemeral=True)
+		return
 	
-	yourtraits = character_data[uid]['customtraits']
+	yourtraits = character_data[uid]['traits']
 	name = name.upper()
 	if name not in yourtraits:
 		await ctx.respond(f"You do not have a custom trait called {name}.",ephemeral=True)
 	
 	del yourtraits[name]
+
+	message = f"Successfully deleted custom trait {name}."
+	if len(character_data[uid]['chars']) <= 0 and len(character_data[uid]['traits']) <= 0:
+		del character_data[uid]
+		message += "\nYou no longer have any characters or traits. All data associated with your User ID has been deleted."
+	else:
+		message += f"\nYou now have {len(character_data[uid]['traits'])} custom traits."
 	
-	await ctx.respond(f"Successfully deleted custom trait {name}.")
+	await ctx.respond(message)
 	await save_character_data()
 
 @bot.command(description="View your custom traits")
 async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait to view",autocomplete=discord.utils.basic_autocomplete(custom_traits_list_autocomp), required=False, default=None)):
+	log(f"/my_traits {name if name is not None else ''}")
 	uid = str(ctx.author.id)
-	if uid not in character_data or len(character_data[uid]['customtraits']) <= 0:
+	if uid not in character_data or len(character_data[uid]['traits']) <= 0:
 		await ctx.respond("You do not have any custom traits on file.",ephemeral=True)
+		return
 	
-	yourtraits = character_data[uid]['customtraits']
+	yourtraits = character_data[uid]['traits']
 	if name is None:
 		out = f"Custom traits created by <@{uid}>:"
 		for t in yourtraits:
