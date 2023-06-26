@@ -40,14 +40,26 @@ role_file = open('roles.json')
 role_data = json.load(role_file)
 role_file.close()
 
-log("Creating role and trait name list")
+log("Creating role and trait metadata")
 trait_names = []
+traits_by_name = {}
+traits_by_number = {}
+traits_by_numstr = {}
 for trait in trait_data:
 	trait_names.append(trait["Name"])
+	traits_by_name[trait["Name"]] = trait
+	traits_by_number[trait["Number"]] = trait
+	traits_by_numstr[str(trait["Number"])] = trait
 
 role_names = []
+roles_by_name = {}
+roles_by_number = {}
+roles_by_numstr = {}
 for role in role_data:
 	role_names.append(role["Name"])
+	roles_by_name[role["Name"]] = role
+	roles_by_number[role["Number"]] = role
+	roles_by_numstr[str(role["Number"])] = role
 
 num_to_die = {
 	1: "<:revolver_dice_1:1029946656277405726>",
@@ -70,46 +82,40 @@ def role_message_format(role):
 
 def search_for_trait(trait):
 	message = ""
+	trait = trait.upper()
 	if re.match("^\d+$", trait):
 		number = int(trait)
-		message = "No trait exists with the given number. Trait numbers must be possible d666 roll outputs."
-		for trait in trait_data:
-			if trait["Number"] == number:
-				message = trait_message_format(trait)
-				break
+		if number in traits_by_number:
+			return trait_message_format(traits_by_number[number])
+		else:
+			return "No trait exists with the given number. Trait numbers must be possible d666 roll outputs."
+	elif trait in traits_by_name:
+		return trait_message_format(traits_by_name[trait])
 	else:
 		best_match = difflib.get_close_matches(trait.upper(), trait_names, n=1, cutoff=0.0)
 
-		if len(best_match) > 0:
-			goodtrait = {}
-			for trait in trait_data:
-				if trait["Name"] == best_match[0]:
-					goodtrait = trait
-					break
-			message = trait_message_format(trait)
+		if len(best_match) > 0 and best_match[0] in traits_by_name:
+			return trait_message_format(traits_by_name[best_match[0]])
 		else:
 			message = "Could not find a trait with an approximately similar name."
 	return message
 
 def search_for_role(role):
 	message = ""
+	role = role.upper()
 	if re.match("^\d+$", role):
 		number = int(role)
-		message = "No role exists with the given number. Role numbers must be possible d66 roll outputs."
-		for role in role_data:
-			if role["Number"] == number:
-				message = role_message_format(role)
-				break
+		if number in roles_by_number:
+			return role_message_format(roles_by_number[number])
+		else:
+			return "No role exists with the given number. Role numbers must be possible d66 roll outputs."
+	elif role in roles_by_name:
+		return role_message_format(roles_by_name[role])
 	else:
 		best_match = difflib.get_close_matches(role.upper(), role_names, n=1, cutoff=0.0)
 
-		if len(best_match) > 0:
-			goodtrait = {}
-			for role in role_data:
-				if role["Name"] == best_match[0]:
-					goodtrait = role
-					break
-			message = role_message_format(role)
+		if len(best_match) > 0 and best_match[0] in roles_by_name:
+			return role_message_format(roles_by_name[best_match[0]])
 		else:
 			message = "Could not find a role with an approximately similar name."
 	return message
@@ -135,16 +141,7 @@ def decap_first(string):
 	return string
 
 def remove_duplicates(lst):
-	unique_lst = []
-
-	# Iterate through the elements in the original list
-	for elem in lst:
-		# If the element is not already in the unique list, add it
-		if elem not in unique_lst:
-			unique_lst.append(elem)
-
-	# Return the resulting list
-	return unique_lst
+	return list(set(list))
 
 def roll_extra_possibility(input_string):
 	regex_pattern = r"(.+)\s\((\d+)-in-1D6:\s(.+)\)"
@@ -164,9 +161,48 @@ def roll_extra_possibility(input_string):
 support_server_id = 1101249440230154300
 support_server_obj = None
 
+log("Loading user character data")
+character_data = {}
+if os.path.exists('player_data.json'):
+	file = open('player_data.json')
+	character_data = json.load(file)
+	file.close()
+else:
+	log("Player data does not exist. Using empty data.")
+
+reporting_channel = 1101250179899867217
+async def save_character_data():
+	try:
+		with open("player_data.json", "w") as outfile:
+			outfile.write(json.dumps(character_data,indent=2))
+		total_users = 0
+		total_characters = 0
+		total_traits = 0
+		for userid in character_data:
+			total_users += 1
+			total_characters += len(character_data[userid]['chars'])
+			total_traits += len(character_data[userid]['traits'])
+		log(f"Character data saved. Storing data about {total_characters} characters & {total_traits} custom traits created by {total_users} users")
+	except Exception as e:
+		log(f"PLAYER DATA SAVING THREW AN ERROR: {e}")
+		report_channel = await bot.fetch_channel(reporting_channel)
+		await report_channel.send(f"**<@{ownerid}> An error occurred while saving character data!**\n```{e}```")
+
 log("Creating generic commands")
 @bot.event
 async def on_ready():
+
+	log("Checking to see if character data needs to be updated...")
+	changed = False
+	for player in character_data:
+		if 'traits' not in character_data[player]:
+			character_data[player]['traits'] = {}
+			log(f"{player} updated to include custom traits field")
+			changed = True
+	
+	if changed:
+		await save_character_data()
+
 	try:
 		log("Checking for support server...")
 		support_server_obj = await bot.fetch_guild(support_server_id)
@@ -250,37 +286,11 @@ async def d666(ctx):
 	log("/d666")
 	await ctx.respond(str(d6()) + str(d6()) + str(d6()))
 
-log("Loading user character data")
-character_data = {}
-if os.path.exists('player_data.json'):
-	file = open('player_data.json')
-	character_data = json.load(file)
-	file.close()
-else:
-	log("Player data does not exist. Using empty data.")
-
-
 # character_data structure:
 # - main object is a dict, keys are user IDs
 # - user IDs point to dicts with 2 keys: "active" and "chars"
 # - "chars" is a dict that contains all characters, with keys being codenames
 # - "active" is a dict; keys are channel IDs, values are character codenames
-
-reporting_channel = 1101250179899867217
-async def save_character_data():
-	try:
-		with open("player_data.json", "w") as outfile:
-			outfile.write(json.dumps(character_data,indent=2))
-		total_users = 0
-		total_characters = 0
-		for userid in character_data:
-			total_users += 1
-			total_characters += len(character_data[userid]['chars'])
-		log(f"Character data saved. Storing data about {total_characters} characters created by {total_users} users")
-	except Exception as e:
-		log(f"PLAYER DATA SAVING THREW AN ERROR: {e}")
-		report_channel = await bot.fetch_channel(reporting_channel)
-		await report_channel.send(f"**<@{ownerid}> An error occurred while saving character data!**\n```{e}```")
 
 def output_character(codename, data):
 	out = f"# {codename.upper()}"
@@ -411,7 +421,8 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	if userid not in character_data:
 		character_data[userid] = {
 			"active": {},
-			"chars": {}
+			"chars": {},
+			"traits": {}
 		}
 	
 	premium_character = False
@@ -506,9 +517,9 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 					earliest_premium_char['premium'] = False
 					message += f"\nYou have freed up a non-premium slot. **{codename.upper()}** is no longer a premium character."
 			
-			if len(yourstuff['chars']) <= 0:
+			if len(yourstuff['chars']) <= 0 and len(yourstuff['traits']) <= 0:
 				del character_data[yourid]
-				message += "\nYou have deleted your last character. All data associated with your User ID has been deleted."
+				message += "\nYou no longer have any characters or traits. All data associated with your User ID has been deleted."
 			else:
 				message += f"\nYou now have {len(yourstuff['chars'])} characters."
 				
@@ -518,10 +529,10 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 		await ctx.respond("You must triple-confirm that you want to delete your character.",ephemeral=True)
 
 @bot.command(description="List all characters you've created")
-async def list_characters(ctx):
-	log("/list")
+async def my_characters(ctx):
+	log("/my_characters")
 	yourid = str(ctx.author.id)
-	if yourid in character_data:
+	if yourid in character_data and len(character_data[yourid]['chars']) > 0:
 		yourchars = character_data[yourid]['chars']
 		msg = f"Characters created by <@{yourid}>:"
 		for codename in yourchars:
@@ -642,8 +653,18 @@ async def set_role(ctx,
 async def trait_autocomp(ctx):
 	return trait_names
 
+trait_limit = 15
+
+async def traits_and_customs_autocomp(ctx):
+	uid = str(ctx.interaction.user.id)
+	if uid in character_data:
+		user_traits = sorted(list(character_data[uid]['traits'].keys()))
+		return user_traits + trait_names
+	else:
+		return trait_names
+
 @bot.command(description="Add a core book trait to your active character")
-async def add_trait(ctx, trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(trait_autocomp), required=True)):
+async def add_trait(ctx, trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=True)):
 	log(f"/add_trait {trait}")
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -655,18 +676,25 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 		return
 	
+	if len(character['traits']) >= trait_limit:
+		await ctx.respond(f"Characters cannot have more than {trait_limit} traits.",ephemeral=True)
+		return
+	
+	trait = trait.upper()
+	current_traits_by_name = traits_by_name | character_data[str(ctx.author.id)]['traits']
+	
 	my_new_trait = None
-	for t in trait_data:
-		if  str(t["Number"]) == trait or t["Name"] == trait.upper():
-			my_new_trait = t
-			break
+	if trait in current_traits_by_name:
+		my_new_trait = current_traits_by_name[trait]
+	elif trait in traits_by_numstr:
+		my_new_trait = traits_by_numstr[trait]
 	
 	if my_new_trait == None:
 		await ctx.respond(f'No core book trait with the exact name or D666 number "{trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
 		return
 	
 	for existing_trait in character['traits']:
-		if existing_trait['Number'] == my_new_trait['Number']:
+		if existing_trait['Name'] == my_new_trait['Name']:
 			await ctx.respond(f'**{codename.upper()}** already has the trait **{my_new_trait["Name"]} ({my_new_trait["Number"]})**.',ephemeral=True)
 			return
 	
@@ -690,16 +718,11 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 	num = 0
 	if bonus[1] in stats:
 		translated_stat_bonus = stats_translator[bonus[1]]
-		if bonus[0] == "+1D6":
-			num = d6()
-		else:	
-			numerical = bonus[0]
-			if numerical[0] in ('+', '-'):
-				num = int(numerical[1:])
-				if numerical[0] == '-':
-					num = -num
-			else:
-				num = int(numerical)
+		try: 
+			num = rolldice.roll_dice(bonus[0])[0]
+		except Exception as e:
+			num = 0
+			log(f"Caught dice-rolling exception: {e}")
 		character[translated_stat_bonus] += num
 		if translated_stat_bonus == 'maxhp':
 			character['hp'] += num
@@ -711,16 +734,137 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 	await ctx.respond(out)
 	await save_character_data()
 
-#@bot.command(description="Add a custom trait to your character")
-#async def add_custom_trait(ctx,	
-		#title: discord.Option(str, "The name of the trait", required=True), 
-		#description: discord.Option(str, "The trait's description", required=True),
-		#stat_type: discord.Option(str, "The type of stat this trait changes", required=True),
-		#stat_amount: discord.Option(discord.SlashCommandOptionType.integer, "The amount that the stat is changed", required=True),
-		#item_name: discord.Option(str, "The name of the item that this trait grants you", required=True),
-		#item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
-	#await ctx.respond("TODO",ephemeral=True)
-	#await save_character_data()
+async def stat_type_autocomp(ctx):
+	return ["CREATIVE","FORCEFUL","TACTICAL","REFLEXIVE","MAX HP","to chosen attribute","WAR DIE per mission","ARMOR at all times","when you roll WAR DICE","DAMAGE with melee weapons","DAMAGE with ranged weapons"]
+
+async def stat_amount_autocomp(ctx):
+	return ["+1","-1","+2","-2","+1D6","-1D6"]
+
+standard_custrait_limit = 2 * standard_character_limit
+premium_custrait_limit = 2 * premium_character_limit
+
+@bot.command(description="Create a custom trait")
+async def create_custom_trait(ctx,	
+		title: discord.Option(str, "The name of the trait", required=True), 
+		description: discord.Option(str, "The trait's description", required=True),
+		stat_type: discord.Option(str, "The stat this trait changes", autocomplete=discord.utils.basic_autocomplete(stat_type_autocomp), required=True),
+		stat_amount: discord.Option(str, "The amount that the stat is changed (accepts dice syntax)", autocomplete=discord.utils.basic_autocomplete(stat_amount_autocomp), required=True),
+		item_name: discord.Option(str, "The name of the item that this trait grants you", required=True),
+		item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
+	userid = str(ctx.author.id)
+	log(f"/create_custom_trait {title} {description} {stat_type} {stat_amount} {item_name} {item_effect}")
+	
+	if userid in character_data and len(character_data[userid]['traits']) >= standard_custrait_limit:
+		premium_user = await ext_character_management(userid)
+		if not premium_user:
+			await ctx.respond(f"You may not create more than {standard_custrait_limit} custom traits.\nYou can increase your custom trait limit to {premium_custrait_limit} by enrolling in a [server subscription](<https://discord.com/servers/sonder-s-garage-1101249440230154300>) at Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+			return
+		elif len(character_data[userid]['traits']) >= premium_custrait_limit:
+			await ctx.respond(f"You may not create more than {premium_custrait_limit} custom traits.",ephemeral=True)
+			return
+	
+	if stat_amount[0] not in ['+','-']:
+		stat_amount = '+' + stat_amount
+	
+	title = title.upper()
+	
+	concat = item_name+item_effect
+	if "(" in concat or ")" in concat:
+		await ctx.respond("For organizational reasons, please do not use parenthesis in the `item_name` or `item_effect`.\nTo include an item's effect, use the optional `item_effect` argument for this command instead.",ephemeral=True)
+		return
+	
+	if title in traits_by_name:
+		await ctx.respond(f"**{title}** already exists in the core book.",ephemeral=True)
+		return
+	elif userid in character_data and title in character_data[userid]['traits']:
+		await ctx.respond(f"You have already made a trait called **{title}**.",ephemeral=True)
+		return
+	
+	new_trait = {
+		"Number": "Custom",
+		"Name": title,
+		"Effect": description,
+		"Item": f"{item_name} ({item_effect})",
+		"Stat": f"{stat_amount} {stat_type}"
+	}
+	
+	roll_dice_failure = False
+	try:
+		rolldice.roll_dice(stat_amount)
+	except Exception as e:
+		log(f"Caught dice-rolling exception: {e}")
+		roll_dice_failure = True
+	
+	if userid not in character_data:
+		character_data[userid] = {
+			"active": {},
+			"chars": {},
+			"traits": {}
+		}
+	
+	character_data[userid]['traits'][title] = new_trait
+	
+	out = f"Created the custom trait {title}.\n"
+	out += f"\nYou now have {len(character_data[userid]['traits'])} custom traits.\n>>> "
+	out += trait_message_format(new_trait)
+	await ctx.respond(out)
+	await save_character_data()
+
+async def custom_traits_list_autocomp(ctx):
+	uid = str(ctx.interaction.user.id)
+	if uid in character_data:
+		return list(character_data[uid]['traits'].keys())
+	else:
+		return []
+
+@bot.command(description="Delete one of your custom traits")
+async def delete_custom_trait(ctx,	
+		name: discord.Option(str, "The name of the trait to delete",autocomplete=discord.utils.basic_autocomplete(custom_traits_list_autocomp), required=True)):
+	log(f"/delete_custom_trait {name}")
+	uid = str(ctx.author.id)
+	if uid not in character_data or len(character_data[uid]['traits']) <= 0:
+		await ctx.respond("You do not have any custom traits on file.",ephemeral=True)
+		return
+	
+	yourtraits = character_data[uid]['traits']
+	name = name.upper()
+	if name not in yourtraits:
+		await ctx.respond(f"You do not have a custom trait called {name}.",ephemeral=True)
+	
+	del yourtraits[name]
+
+	message = f"Successfully deleted custom trait {name}."
+	if len(character_data[uid]['chars']) <= 0 and len(character_data[uid]['traits']) <= 0:
+		del character_data[uid]
+		message += "\nYou no longer have any characters or traits. All data associated with your User ID has been deleted."
+	else:
+		message += f"\nYou now have {len(character_data[uid]['traits'])} custom traits."
+	
+	await ctx.respond(message)
+	await save_character_data()
+
+@bot.command(description="View your custom traits")
+async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait to view",autocomplete=discord.utils.basic_autocomplete(custom_traits_list_autocomp), required=False, default=None)):
+	log(f"/my_traits {name if name is not None else ''}")
+	uid = str(ctx.author.id)
+	if uid not in character_data or len(character_data[uid]['traits']) <= 0:
+		await ctx.respond("You do not have any custom traits on file.",ephemeral=True)
+		return
+	
+	yourtraits = character_data[uid]['traits']
+	if name is None:
+		out = f"Custom traits created by <@{uid}>:"
+		for t in yourtraits:
+			out += f"\n- {t.lower()}"
+		await ctx.respond(out)
+	else:
+		name = name.upper()
+		if name not in yourtraits:
+			await ctx.respond(f"You do not have a custom trait called {name}.",ephemeral=True)
+		else:
+			await ctx.respond(trait_message_format(yourtraits[name]))
+
+item_limit = 50
 
 @bot.command(description="Add an item your active character")
 async def add_item(ctx,
@@ -735,6 +879,10 @@ async def add_item(ctx,
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		return
+	
+	if len(character['items']) >= item_limit:
+		await ctx.respond(f"Characters cannot carry more than {item_limit} items.",ephemeral=True)
 		return
 	
 	concat = name+effect
@@ -816,19 +964,14 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 		num = 0
 		if bonus[1] in stats:
 			translated_stat_bonus = stats_translator[bonus[1]]
-			if bonus[0] == "+1D6":
-				num = d6()
-			else:	
-				numerical = bonus[0]
-				if numerical[0] in ('+', '-'):
-					num = int(numerical[1:])
-					if numerical[0] == '-':
-						num = -num
-				else:
-					num = int(numerical)
-			character[translated_stat_bonus] -= num
+			try: 
+				num = rolldice.roll_dice(bonus[0])[0]
+			except Exception as e:
+				num = 0
+				log(f"Caught dice-rolling exception: {e}")
+			character[translated_stat_bonus] += num
 			if translated_stat_bonus == 'maxhp':
-				character['hp'] -= num
+				character['hp'] += num
 	
 		character['traits'].remove(target_trait)
 		await ctx.respond(f"{codename.upper()} has lost the trait **{trait.upper()}**.")
@@ -1030,16 +1173,11 @@ async def refresh(ctx,
 		wd_adjust_is_ok = (not bonus[1] == 'WAR') or reset_war_dice
 		if bonus[1] in stats and hp_adjust_is_ok and wd_adjust_is_ok:
 			translated_stat_bonus = stats_translator[bonus[1]]
-			if bonus[0] == "+1D6":
-				num = d6()
-			else:	
-				numerical = bonus[0]
-				if numerical[0] in ('+', '-'):
-					num = int(numerical[1:])
-					if numerical[0] == '-':
-						num = -num
-				else:
-					num = int(numerical)
+			try: 
+				num = rolldice.roll_dice(bonus[0])[0]
+			except Exception as e:
+				num = 0
+				log(f"Caught dice-rolling exception: {e}")
 			character[translated_stat_bonus] += num
 			if translated_stat_bonus == 'maxhp':
 				character['hp'] += num
@@ -1137,7 +1275,6 @@ async def damage(ctx,
 	else:
 		character['hp'] -= damage_taken
 	
-	#message = f"**Total: {output[0]}**\n`{output[1]}`"
 	message = f"**{codename.upper()}** has taken **{before_armor} damage!**"
 	if (not armor_piercing and character['armor'] > 0 and before_armor != damage_taken):
 		message += f" (Reduced to **{damage_taken}** by {character['armor']}{f' (+{bonus_armor} bonus)' if bonus_armor > 0 else ''} armor from {character['armor_name']}!)"
@@ -1493,17 +1630,11 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 		bonus = trait["Stat"].split(" ")
 		num = 0
 		if bonus[1] in stats:
-			if bonus[0] == "+1D6":
-				num = d6()
-			else:	
-				numerical = bonus[0]
-				if numerical[0] in ('+', '-'):
-					num = int(numerical[1:])
-					if numerical[0] == '-':
-						num = -num
-				else:
-					num = int(numerical)
-			
+			try: 
+				num = rolldice.roll_dice(bonus[0])[0]
+			except Exception as e:
+				num = 0
+				log(f"Caught dice-rolling exception: {e}")
 			stats[bonus[1]] += num
 	
 	message += f"MAX HP: {stats['MAX']}\n"
@@ -2912,18 +3043,11 @@ async def character(ctx):
 		bonus = trait["Stat"].split(" ")
 		num = 0
 		if bonus[1] in stats:
-			if bonus[0] == "+1D6":
-				num = d6()
-			else:	
+			try: 
+				num = rolldice.roll_dice(bonus[0])[0]
+			except Exception as e:
 				num = 0
-				numerical = bonus[0]
-				if numerical[0] in ('+', '-'):
-					num = int(numerical[1:])
-					if numerical[0] == '-':
-						num = -num
-				else:
-					num = int(numerical)
-			
+				log(f"Caught dice-rolling exception: {e}")
 			stats[bonus[1]] += num
 	
 	message += f"MAX HP: {stats['MAX']}\n"
