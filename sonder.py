@@ -85,6 +85,8 @@ def search_for_trait(trait):
 			return trait_message_format(traits_by_number[number])
 		else:
 			return "No trait exists with the given number. Trait numbers must be possible d666 roll outputs."
+	elif trait in traits_by_name:
+		return trait_message_format(traits_by_name[trait])
 	else:
 		best_match = difflib.get_close_matches(trait.upper(), trait_names, n=1, cutoff=0.0)
 
@@ -96,23 +98,20 @@ def search_for_trait(trait):
 
 def search_for_role(role):
 	message = ""
+	role = role.upper()
 	if re.match("^\d+$", role):
 		number = int(role)
-		message = "No role exists with the given number. Role numbers must be possible d66 roll outputs."
-		for role in role_data:
-			if role["Number"] == number:
-				message = role_message_format(role)
-				break
+		if number in roles_by_number:
+			return role_message_format(roles_by_number[number])
+		else:
+			return "No role exists with the given number. Role numbers must be possible d66 roll outputs."
+	elif role in roles_by_name:
+		return role_message_format(roles_by_name[role])
 	else:
 		best_match = difflib.get_close_matches(role.upper(), role_names, n=1, cutoff=0.0)
 
-		if len(best_match) > 0:
-			goodtrait = {}
-			for role in role_data:
-				if role["Name"] == best_match[0]:
-					goodtrait = role
-					break
-			message = role_message_format(role)
+		if len(best_match) > 0 and best_match[0] in roles_by_name:
+			return role_message_format(roles_by_name[best_match[0]])
 		else:
 			message = "Could not find a role with an approximately similar name."
 	return message
