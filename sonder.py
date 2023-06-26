@@ -532,7 +532,7 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 async def my_characters(ctx):
 	log("/my_characters")
 	yourid = str(ctx.author.id)
-	if yourid in character_data:
+	if yourid in character_data and len(character_data[yourid]['chars']) > 0:
 		yourchars = character_data[yourid]['chars']
 		msg = f"Characters created by <@{yourid}>:"
 		for codename in yourchars:
@@ -754,7 +754,7 @@ async def create_custom_trait(ctx,
 	userid = str(ctx.author.id)
 	log(f"/create_custom_trait {title} {description} {stat_type} {stat_amount} {item_name} {item_effect}")
 	
-	if len(character_data[userid]['traits']) >= standard_custrait_limit:
+	if userid in character_data and len(character_data[userid]['traits']) >= standard_custrait_limit:
 		premium_user = await ext_character_management(userid)
 		if not premium_user:
 			await ctx.respond(f"You may not create more than {standard_custrait_limit} custom traits.\nYou can increase your custom trait limit to {premium_custrait_limit} by enrolling in a [server subscription](<https://discord.com/servers/sonder-s-garage-1101249440230154300>) at Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
@@ -776,7 +776,7 @@ async def create_custom_trait(ctx,
 	if title in traits_by_name:
 		await ctx.respond(f"**{title}** already exists in the core book.",ephemeral=True)
 		return
-	elif title in character_data[userid]['traits']:
+	elif userid in character_data and title in character_data[userid]['traits']:
 		await ctx.respond(f"You have already made a trait called **{title}**.",ephemeral=True)
 		return
 	
