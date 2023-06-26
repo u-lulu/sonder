@@ -141,16 +141,7 @@ def decap_first(string):
 	return string
 
 def remove_duplicates(lst):
-	unique_lst = []
-
-	# Iterate through the elements in the original list
-	for elem in lst:
-		# If the element is not already in the unique list, add it
-		if elem not in unique_lst:
-			unique_lst.append(elem)
-
-	# Return the resulting list
-	return unique_lst
+	return list(set(list))
 
 def roll_extra_possibility(input_string):
 	regex_pattern = r"(.+)\s\((\d+)-in-1D6:\s(.+)\)"
@@ -170,9 +161,46 @@ def roll_extra_possibility(input_string):
 support_server_id = 1101249440230154300
 support_server_obj = None
 
+log("Loading user character data")
+character_data = {}
+if os.path.exists('player_data.json'):
+	file = open('player_data.json')
+	character_data = json.load(file)
+	file.close()
+else:
+	log("Player data does not exist. Using empty data.")
+
+reporting_channel = 1101250179899867217
+async def save_character_data():
+	try:
+		with open("player_data.json", "w") as outfile:
+			outfile.write(json.dumps(character_data,indent=2))
+		total_users = 0
+		total_characters = 0
+		for userid in character_data:
+			total_users += 1
+			total_characters += len(character_data[userid]['chars'])
+		log(f"Character data saved. Storing data about {total_characters} characters created by {total_users} users")
+	except Exception as e:
+		log(f"PLAYER DATA SAVING THREW AN ERROR: {e}")
+		report_channel = await bot.fetch_channel(reporting_channel)
+		await report_channel.send(f"**<@{ownerid}> An error occurred while saving character data!**\n```{e}```")
+
 log("Creating generic commands")
 @bot.event
 async def on_ready():
+
+	log("Checking to see if character data needs to be updated...")
+	changed = False
+	for player in character_data:
+		if 'customtraits' not in character_data[player]:
+			character_data[player]['customtraits'] = {}
+			log(f"{player} updated to include custom traits field")
+			changed = True
+	
+	if changed:
+		await save_character_data()
+
 	try:
 		log("Checking for support server...")
 		support_server_obj = await bot.fetch_guild(support_server_id)
@@ -256,37 +284,11 @@ async def d666(ctx):
 	log("/d666")
 	await ctx.respond(str(d6()) + str(d6()) + str(d6()))
 
-log("Loading user character data")
-character_data = {}
-if os.path.exists('player_data.json'):
-	file = open('player_data.json')
-	character_data = json.load(file)
-	file.close()
-else:
-	log("Player data does not exist. Using empty data.")
-
-
 # character_data structure:
 # - main object is a dict, keys are user IDs
 # - user IDs point to dicts with 2 keys: "active" and "chars"
 # - "chars" is a dict that contains all characters, with keys being codenames
 # - "active" is a dict; keys are channel IDs, values are character codenames
-
-reporting_channel = 1101250179899867217
-async def save_character_data():
-	try:
-		with open("player_data.json", "w") as outfile:
-			outfile.write(json.dumps(character_data,indent=2))
-		total_users = 0
-		total_characters = 0
-		for userid in character_data:
-			total_users += 1
-			total_characters += len(character_data[userid]['chars'])
-		log(f"Character data saved. Storing data about {total_characters} characters created by {total_users} users")
-	except Exception as e:
-		log(f"PLAYER DATA SAVING THREW AN ERROR: {e}")
-		report_channel = await bot.fetch_channel(reporting_channel)
-		await report_channel.send(f"**<@{ownerid}> An error occurred while saving character data!**\n```{e}```")
 
 def output_character(codename, data):
 	out = f"# {codename.upper()}"
@@ -417,7 +419,8 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	if userid not in character_data:
 		character_data[userid] = {
 			"active": {},
-			"chars": {}
+			"chars": {},
+			"traits": {}
 		}
 	
 	premium_character = False
@@ -746,7 +749,12 @@ async def create_custom_trait(ctx,
 		log(f"Caught dice-rolling exception: {e}")
 		roll_dice_failure = True
 	
-	# TODO
+	if userid not in character_data:
+		character_data[userid] = {
+			"active": {},
+			"chars": {},
+			"traits": {}
+		}
 	
 	await ctx.respond("TODO",ephemeral=True)
 	await save_character_data()
