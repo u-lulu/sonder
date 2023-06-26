@@ -713,7 +713,7 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 	await ctx.respond(out)
 	await save_character_data()
 
-@bot.command(description="Add a custom trait to your character")
+@bot.command(description="Create a custom trait")
 async def create_custom_trait(ctx,	
 		title: discord.Option(str, "The name of the trait", required=True), 
 		description: discord.Option(str, "The trait's description", required=True),
