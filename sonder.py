@@ -736,6 +736,11 @@ async def create_custom_trait(ctx,
 		stat_amount: discord.Option(str, "The amount that the stat is changed (accepts dice syntax)", autocomplete=discord.utils.basic_autocomplete(stat_amount_autocomp), required=True),
 		item_name: discord.Option(str, "The name of the item that this trait grants you", required=True),
 		item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
+	userid = str(ctx.author.id)
+	
+	if len(character_data[userid]['traits']) >= trait_limit:
+		await ctx.respond(f"You cannot have more than {trait_limit} custom traits.",ephemeral=True)
+		return
 	
 	if stat_amount[0] not in ['+','-']:
 		stat_amount = '+' + stat_amount
