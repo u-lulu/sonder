@@ -529,8 +529,8 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 		await ctx.respond("You must triple-confirm that you want to delete your character.",ephemeral=True)
 
 @bot.command(description="List all characters you've created")
-async def list_characters(ctx):
-	log("/list")
+async def my_characters(ctx):
+	log("/my_characters")
 	yourid = str(ctx.author.id)
 	if yourid in character_data:
 		yourchars = character_data[yourid]['chars']
@@ -807,6 +807,49 @@ async def create_custom_trait(ctx,
 	out += trait_message_format(new_trait)
 	await ctx.respond(out)
 	await save_character_data()
+
+async def custom_traits_list_autocomp(ctx):
+	uid = str(ctx.interaction.user.id)
+	if uid in character_data:
+		return list(character_data[uid]['customtraits'].keys())
+	else:
+		return []
+
+@bot.command(description="Delete one of your custom traits")
+async def delete_custom_trait(ctx,	
+		name: discord.Option(str, "The name of the trait to delete",autocomplete=discord.utils.basic_autocomplete(custom_traits_list_autocomp), required=True)):
+	uid = str(ctx.author.id)
+	if uid not in character_data or len(character_data[uid]['customtraits']) <= 0:
+		await ctx.respond("You do not have any custom traits on file.",ephemeral=True)
+	
+	yourtraits = character_data[uid]['customtraits']
+	name = name.upper()
+	if name not in yourtraits:
+		await ctx.respond(f"You do not have a custom trait called {name}.",ephemeral=True)
+	
+	del yourtraits[name]
+	
+	await ctx.respond(f"Successfully deleted custom trait {name}.")
+	await save_character_data()
+
+@bot.command(description="View your custom traits")
+async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait to view",autocomplete=discord.utils.basic_autocomplete(custom_traits_list_autocomp), required=False, default=None)):
+	uid = str(ctx.author.id)
+	if uid not in character_data or len(character_data[uid]['customtraits']) <= 0:
+		await ctx.respond("You do not have any custom traits on file.",ephemeral=True)
+	
+	yourtraits = character_data[uid]['customtraits']
+	if name is None:
+		out = f"Custom traits created by <@{uid}>:"
+		for t in yourtraits:
+			out += f"\n- {t.lower()}"
+		await ctx.respond(out)
+	else:
+		name = name.upper()
+		if name not in yourtraits:
+			await ctx.respond(f"You do not have a custom trait called {name}.",ephemeral=True)
+		else:
+			await ctx.respond(trait_message_format(yourtraits[name]))
 
 item_limit = 50
 
