@@ -653,8 +653,16 @@ async def trait_autocomp(ctx):
 
 trait_limit = 15
 
+async def traits_and_customs_autocomp(ctx):
+	uid = str(ctx.interaction.user.id)
+	if uid in character_data:
+		user_traits = sorted(list(character_data['traits'].keys()))
+		return user_traits + trait_names
+	else:
+		return trait_names
+
 @bot.command(description="Add a core book trait to your active character")
-async def add_trait(ctx, trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(trait_autocomp), required=True)):
+async def add_trait(ctx, trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=True)):
 	log(f"/add_trait {trait}")
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -722,10 +730,10 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 	await ctx.respond(out)
 	await save_character_data()
 
-async def stat_type_autocomp():
-	return ["MAX HP","CREATIVE","FORCEFUL","TACTICAL","REFLEXIVE","to chosen attribute","WAR DIE per mission","ARMOR at all times","when you roll WAR DICE","DAMAGE with melee weapons","DAMAGE with ranged weapons"]
+async def stat_type_autocomp(ctx):
+	return ["CREATIVE","FORCEFUL","TACTICAL","REFLEXIVE","MAX HP","to chosen attribute","WAR DIE per mission","ARMOR at all times","when you roll WAR DICE","DAMAGE with melee weapons","DAMAGE with ranged weapons"]
 
-async def stat_amount_autocomp():
+async def stat_amount_autocomp(ctx):
 	return ["+1","-1","+2","-2","+1D6","-1D6"]
 
 standard_custrait_limit = 2 * standard_character_limit
@@ -791,7 +799,9 @@ async def create_custom_trait(ctx,
 	
 	character_data[userid]['traits'][title] = new_trait
 	
-	await ctx.respond("TODO",ephemeral=True)
+	out = "Created a custom trait:\n>>>"
+	out += trait_message_format(new_trait)
+	await ctx.respond(out,ephemeral=True)
 	await save_character_data()
 
 item_limit = 50
