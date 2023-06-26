@@ -679,9 +679,11 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 		return
 	
 	trait = trait.upper()
+	current_traits_by_name = traits_by_name | character_data[str(ctx.author.id)]['customtraits']
+	
 	my_new_trait = None
-	if trait in traits_by_name:
-		my_new_trait = traits_by_name[trait]
+	if trait in current_traits_by_name:
+		my_new_trait = current_traits_by_name[trait]
 	elif trait in traits_by_numstr:
 		my_new_trait = traits_by_numstr[trait]
 	
@@ -801,7 +803,7 @@ async def create_custom_trait(ctx,
 	
 	out = "Created a custom trait:\n>>> "
 	out += trait_message_format(new_trait)
-	await ctx.respond(out,ephemeral=True)
+	await ctx.respond(out)
 	await save_character_data()
 
 item_limit = 50
