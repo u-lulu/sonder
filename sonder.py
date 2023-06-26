@@ -722,12 +722,18 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 	await ctx.respond(out)
 	await save_character_data()
 
+async def stat_type_autocomp():
+	return ["MAX HP","CREATIVE","FORCEFUL","TACTICAL","REFLEXIVE","to chosen attribute","WAR DIE per mission","ARMOR at all times","when you roll WAR DICE","DAMAGE with melee weapons","DAMAGE with ranged weapons"]
+
+async def stat_amount_autocomp():
+	return ["+1","-1","+2","-2","+1D6","-1D6"]
+
 @bot.command(description="Create a custom trait")
 async def create_custom_trait(ctx,	
 		title: discord.Option(str, "The name of the trait", required=True), 
 		description: discord.Option(str, "The trait's description", required=True),
-		stat_type: discord.Option(str, "The type of stat this trait changes", required=True),
-		stat_amount: discord.Option(discord.SlashCommandOptionType.integer, "The amount that the stat is changed", required=True),
+		stat_type: discord.Option(str, "The stat this trait changes", autocomplete=discord.utils.basic_autocomplete(stat_type_autocomp), required=True),
+		stat_amount: discord.Option(str, "The amount that the stat is changed (accepts dice syntax)", autocomplete=discord.utils.basic_autocomplete(stat_amount_autocomp), required=True),
 		item_name: discord.Option(str, "The name of the item that this trait grants you", required=True),
 		item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
 	
@@ -735,6 +741,18 @@ async def create_custom_trait(ctx,
 		stat_amount = '+' + stat_amount
 	
 	title = title.upper()
+	
+	concat = item_name+item_effect
+	if "(" in concat or ")" in concat:
+		await ctx.respond("For organizational reasons, please do not use parenthesis in the `item_name` or `item_effect`.\nTo include an item's effect, use the optional `item_effect` argument for this command instead.",ephemeral=True)
+		return
+	
+	if title in traits_by_name:
+		await ctx.respond(f"**{title}** already exists in the core book.",ephemeral=True)
+		return
+	elif title in character_data[userid]['traits']:
+		await ctx.respond(f"You have already made a trait called **{title}**.",ephemeral=True)
+		return
 	
 	new_trait = {
 		"Number": "Custom",
@@ -757,6 +775,8 @@ async def create_custom_trait(ctx,
 			"chars": {},
 			"traits": {}
 		}
+	
+	character_data[userid]['traits'][title] = new_trait
 	
 	await ctx.respond("TODO",ephemeral=True)
 	await save_character_data()
