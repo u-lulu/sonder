@@ -44,18 +44,22 @@ log("Creating role and trait metadata")
 trait_names = []
 traits_by_name = {}
 traits_by_number = {}
+traits_by_numstr = {}
 for trait in trait_data:
 	trait_names.append(trait["Name"])
 	traits_by_name[trait["Name"]] = trait
 	traits_by_number[trait["Number"]] = trait
+	traits_by_numstr[str(trait["Number"])] = trait
 
 role_names = []
 roles_by_name = {}
 roles_by_number = {}
+roles_by_numstr = {}
 for role in role_data:
 	role_names.append(role["Name"])
 	roles_by_name[role["Name"]] = role
 	roles_by_number[role["Number"]] = role
+	roles_by_numstr[str(role["Number"])] = role
 
 num_to_die = {
 	1: "<:revolver_dice_1:1029946656277405726>",
@@ -657,11 +661,12 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 		return
 	
+	trait = trait.upper()
 	my_new_trait = None
-	for t in trait_data:
-		if  str(t["Number"]) == trait or t["Name"] == trait.upper():
-			my_new_trait = t
-			break
+	if trait in traits_by_name:
+		my_new_trait = traits_by_name[trait]
+	elif trait in traits_by_numstr:
+		my_new_trait = traits_by_numstr[trait]
 	
 	if my_new_trait == None:
 		await ctx.respond(f'No core book trait with the exact name or D666 number "{trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
