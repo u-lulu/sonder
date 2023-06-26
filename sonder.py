@@ -177,10 +177,12 @@ async def save_character_data():
 			outfile.write(json.dumps(character_data,indent=2))
 		total_users = 0
 		total_characters = 0
+		total_traits = 0
 		for userid in character_data:
 			total_users += 1
 			total_characters += len(character_data[userid]['chars'])
-		log(f"Character data saved. Storing data about {total_characters} characters created by {total_users} users")
+			total_traits += len(character_data[userid]['customtraits'])
+		log(f"Character data saved. Storing data about {total_characters} characters & {total_traits} custom traits created by {total_users} users")
 	except Exception as e:
 		log(f"PLAYER DATA SAVING THREW AN ERROR: {e}")
 		report_channel = await bot.fetch_channel(reporting_channel)
