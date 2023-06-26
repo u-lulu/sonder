@@ -770,7 +770,7 @@ async def create_custom_trait(ctx,
 	
 	concat = item_name+item_effect
 	if "(" in concat or ")" in concat:
-		await ctx.respond("For organizational reasons, please do not use parenthesis in the `item_name` or `item_effect`.\nTo include an item's effect, use the optional `item_effect` argument for this command instead.",ephemeral=True)
+		await ctx.respond("For organizational reasons, please do not use parenthesis in the `item_name` or `item_effect`.\nTo include an item's effect, use the `item_effect` argument for this command instead.",ephemeral=True)
 		return
 	
 	if title in traits_by_name:
