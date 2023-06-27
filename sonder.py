@@ -10,6 +10,7 @@ import os
 import math
 import rolldice # pip install py-rolldice
 from func_timeout import func_timeout, FunctionTimedOut # pip install func-timeout
+import qrcode # pip install qrcode
 
 def log(msg):
 	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
@@ -544,7 +545,7 @@ async def my_characters(ctx):
 		await ctx.respond("You haven't created any characters yet!",ephemeral=True)
 	
 @bot.command(description="Displays your current active character's sheet")
-async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default="")):
+async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default=""), qr: discord.Option(bool, "Sends a QR code of the final output instead.", required=False, default=False)):
 	log(f"/sheet {codename}")
 	codename = codename.lower()
 	yourid = str(ctx.author.id)
@@ -559,15 +560,25 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 	
 	ch = character_data[yourid]['chars'][codename]
 	message = output_character(codename, ch)
-	if len(message) > 2000:
+	if qr:
 		message = message.replace("*","").replace("# ","")
-		with open("message.txt","w") as file:
-			file.write(message)
-		await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
-		os.remove('message.txt')
-		log("Sent character sheet as file")
+		if len(message) > 2331:
+			await ctx.respond(f"Cannot produce a QR code that encodes more than 2331 characters. Requested sheet is {len(message)} characters.",ephemeral=True)
+		else:
+			img = qrcode.make(message)
+			img.save('qr.png')
+			await ctx.respond(f"QR code of character sheet for **{codename.upper()}**:",file=discord.File('qr.png'))
+			os.remove('qr.png')
 	else:
-		await ctx.respond(message)
+		if len(message) > 2000:
+			message = message.replace("*","").replace("# ","")
+			with open("message.txt","w") as file:
+				file.write(message)
+			await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
+			os.remove('message.txt')
+			log("Sent character sheet as file")
+		else:
+			await ctx.respond(message)
 
 @bot.command(description="Switch which character is active in this channel")
 async def switch_character(ctx, codename: discord.Option(str, "The codename of the character to switch to.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
