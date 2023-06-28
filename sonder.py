@@ -406,13 +406,94 @@ async def ext_character_management(id):
 		return False
 	return True
 
+async def traits_and_customs_autocomp(ctx):
+	uid = str(ctx.interaction.user.id)
+	if uid in character_data:
+		user_traits = sorted(list(character_data[uid]['traits'].keys()))
+		return user_traits + trait_names
+	else:
+		return trait_names
+
+@bot.command(description="Add a core book trait to your active character")
+async def add_trait(ctx, trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=True)):
+	log(f"/add_trait {trait}")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		return
+	
+	if len(character['traits']) >= trait_limit:
+		await ctx.respond(f"Characters cannot have more than {trait_limit} traits.",ephemeral=True)
+		return
+	
+	trait = trait.upper()
+	current_traits_by_name = traits_by_name | character_data[str(ctx.author.id)]['traits']
+	
+	my_new_trait = None
+	if trait in current_traits_by_name:
+		my_new_trait = current_traits_by_name[trait]
+	elif trait in traits_by_numstr:
+		my_new_trait = traits_by_numstr[trait]
+	
+	if my_new_trait == None:
+		await ctx.respond(f'No core book trait with the exact name or D666 number "{trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
+		return
+	
+	for existing_trait in character['traits']:
+		if existing_trait['Name'] == my_new_trait['Name']:
+			await ctx.respond(f'**{codename.upper()}** already has the trait **{my_new_trait["Name"]} ({my_new_trait["Number"]})**.',ephemeral=True)
+			return
+	
+	character['traits'].append(my_new_trait)
+	character['items'].append(my_new_trait['Item'])
+	
+	stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
+	
+	stats_translator = {
+		"MAX":"maxhp",
+		"WAR":"wd",
+		"FORCEFUL":"frc",
+		"TACTICAL":"tac",
+		"CREATIVE":"cre",
+		"REFLEXIVE":"rfx"
+	}
+	
+	old_max_hp = character['maxhp']
+	
+	bonus = my_new_trait["Stat"].split(" ")
+	num = 0
+	if bonus[1] in stats:
+		translated_stat_bonus = stats_translator[bonus[1]]
+		try: 
+			num = rolldice.roll_dice(bonus[0])[0]
+		except Exception as e:
+			num = 0
+			log(f"Caught dice-rolling exception: {e}")
+		character[translated_stat_bonus] += num
+		if translated_stat_bonus == 'maxhp':
+			character['hp'] += num
+	
+	out = f"**{codename.upper()}** has gained a trait!"
+	if old_max_hp > character['maxhp'] and character['maxhp'] <= 0:
+		out += f"\n**This character now has a Max HP of {character['maxhp']}!!**"
+	out += f"\n>>> {trait_message_format(my_new_trait)}"
+	await ctx.respond(out)
+	await save_character_data()
+
 standard_character_limit = 10
 premium_character_limit = 50
 
 @bot.command(description="Create a new character to manage")
 async def create_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True),
+	starter_trait_1: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
+	starter_trait_2: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
 	set_as_active: discord.Option(bool, "If TRUE, the new character will become your active character in this channel. FALSE by default.", required=False, default=True)):
-	log(f"/create {codename}")
+	log(f"/create {codename} {starter_trait_1 if starter_trait_1 is not None else '[no first trait]'} {starter_trait_2 if starter_trait_2 is not None else '[no second trait]'} {'set_as_active' if set_as_active else ''}")
 	userid = str(ctx.author.id)
 	
 	name_limit = 50
@@ -469,7 +550,11 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	await ctx.respond(msg)
 	if set_as_active:
 		await switch_character(ctx, codename)
-	else:
+	if starter_trait_1 is not None:
+		await add_trait(ctx, starter_trait_1)
+	if starter_trait_2 is not None:
+		await add_trait(ctx, starter_trait_2)
+	if not set_as_active and not starter_trait_1 and not starter_trait_2:
 		await save_character_data()
 	
 @bot.command(description="Delete a character from your roster")
@@ -666,85 +751,6 @@ async def trait_autocomp(ctx):
 	return trait_names
 
 trait_limit = 15
-
-async def traits_and_customs_autocomp(ctx):
-	uid = str(ctx.interaction.user.id)
-	if uid in character_data:
-		user_traits = sorted(list(character_data[uid]['traits'].keys()))
-		return user_traits + trait_names
-	else:
-		return trait_names
-
-@bot.command(description="Add a core book trait to your active character")
-async def add_trait(ctx, trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=True)):
-	log(f"/add_trait {trait}")
-	character = get_active_char_object(ctx)
-	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
-		return
-	codename = get_active_codename(ctx)
-
-	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
-		return
-	
-	if len(character['traits']) >= trait_limit:
-		await ctx.respond(f"Characters cannot have more than {trait_limit} traits.",ephemeral=True)
-		return
-	
-	trait = trait.upper()
-	current_traits_by_name = traits_by_name | character_data[str(ctx.author.id)]['traits']
-	
-	my_new_trait = None
-	if trait in current_traits_by_name:
-		my_new_trait = current_traits_by_name[trait]
-	elif trait in traits_by_numstr:
-		my_new_trait = traits_by_numstr[trait]
-	
-	if my_new_trait == None:
-		await ctx.respond(f'No core book trait with the exact name or D666 number "{trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
-		return
-	
-	for existing_trait in character['traits']:
-		if existing_trait['Name'] == my_new_trait['Name']:
-			await ctx.respond(f'**{codename.upper()}** already has the trait **{my_new_trait["Name"]} ({my_new_trait["Number"]})**.',ephemeral=True)
-			return
-	
-	character['traits'].append(my_new_trait)
-	character['items'].append(my_new_trait['Item'])
-	
-	stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
-	
-	stats_translator = {
-		"MAX":"maxhp",
-		"WAR":"wd",
-		"FORCEFUL":"frc",
-		"TACTICAL":"tac",
-		"CREATIVE":"cre",
-		"REFLEXIVE":"rfx"
-	}
-	
-	old_max_hp = character['maxhp']
-	
-	bonus = my_new_trait["Stat"].split(" ")
-	num = 0
-	if bonus[1] in stats:
-		translated_stat_bonus = stats_translator[bonus[1]]
-		try: 
-			num = rolldice.roll_dice(bonus[0])[0]
-		except Exception as e:
-			num = 0
-			log(f"Caught dice-rolling exception: {e}")
-		character[translated_stat_bonus] += num
-		if translated_stat_bonus == 'maxhp':
-			character['hp'] += num
-	
-	out = f"**{codename.upper()}** has gained a trait!"
-	if old_max_hp > character['maxhp'] and character['maxhp'] <= 0:
-		out += f"\n**This character now has a Max HP of {character['maxhp']}!!**"
-	out += f"\n>>> {trait_message_format(my_new_trait)}"
-	await ctx.respond(out)
-	await save_character_data()
 
 async def stat_type_autocomp(ctx):
 	return ["CREATIVE","FORCEFUL","TACTICAL","REFLEXIVE","MAX HP","to chosen attribute","WAR DIE per mission","ARMOR at all times","when you roll WAR DICE","DAMAGE with melee weapons","DAMAGE with ranged weapons"]
