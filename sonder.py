@@ -435,13 +435,15 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 	current_traits_by_name = traits_by_name | character_data[str(ctx.author.id)]['traits']
 	
 	my_new_trait = None
-	if trait in current_traits_by_name:
+	if trait == "ABRACADABRA":
+		my_new_trait = secret_trait
+	elif trait in current_traits_by_name:
 		my_new_trait = current_traits_by_name[trait]
 	elif trait in traits_by_numstr:
 		my_new_trait = traits_by_numstr[trait]
 	
 	if my_new_trait == None:
-		await ctx.respond(f'No core book trait with the exact name or D666 number "{trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
+		await ctx.respond(f'No trait with the exact name or D666 number "{trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
 		return
 	
 	for existing_trait in character['traits']:
@@ -793,6 +795,9 @@ async def create_custom_trait(ctx,
 	
 	if title in traits_by_name:
 		await ctx.respond(f"**{title}** already exists in the core book.",ephemeral=True)
+		return
+	elif title in ["MAGICIAN","ABRACADABRA"]:
+		await ctx.respond(f"**{title}** is a reserved name.",ephemeral=True)
 		return
 	elif userid in character_data and title in character_data[userid]['traits']:
 		await ctx.respond(f"You have already made a trait called **{title}**.",ephemeral=True)
