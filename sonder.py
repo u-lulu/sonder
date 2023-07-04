@@ -1762,13 +1762,30 @@ async def roll(ctx,
 		message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
 	await ctx.respond(message)
 
+def roll_multiple_dice(syntax, amount):
+	out = []
+	for i in range(amount):
+		out.append(rolldice.roll_dice(syntax))
+	return out
+
 @player_group.command(description="Rolls dice using common dice syntax")
-async def dice(ctx, syntax: discord.Option(str,"The dice syntax")):
+async def dice(ctx, syntax: discord.Option(str,"The dice syntax"),
+	instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1),
+	hidden: discord.Option(bool, "If TRUE, the output of this command is hidden to others", required=False, default=False)):
+	
+	if instances < 1:
+		instances = 1
+	
 	log(f"/player dice {syntax}")
 	timeout = 2
 	output = ()
+	if instances > 1:
+		output = []
 	try:
-		output = func_timeout(timeout, rolldice.roll_dice, args=[syntax])
+		if instances > 1:
+			output = func_timeout(timeout, roll_multiple_dice, args=[syntax,instances])
+		else:
+			output = func_timeout(timeout, rolldice.roll_dice, args=[syntax])
 	except rolldice.rolldice.DiceGroupException as e:
 		log(f"Caught: {e}")
 		await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
@@ -1781,13 +1798,29 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax")):
 		log(f"Caught: {e}")
 		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
 		return
-	message = f"**Total: {output[0]}**\n`{output[1]}`"
-	limit = 300
-	if len(message) > limit:
-		message = message[:limit-5]+"...]`"
+	
+	message = ""
+	if instances > 1:
+		strings_to_join = []
+		counter = 1
+		for item in output:
+			strings_to_join.append(f"{counter}. **{item[0]}** (`{item[1]}`)")
+			counter += 1
+		message = "\n".join(string_to_join)
+	else:
+		message = f"**Total: {output[0]}**\n`{output[1]}`"
 	if not ('d' in syntax or 'D' in syntax):
 		message += f"\n\nIt seems your input didn't actually roll any dice. Did you mean `1d{syntax}` or `{syntax}d6`?\nSee [py-rolldice](<https://github.com/mundungus443/py-rolldice#dice-syntax>) for an explanation of dice syntax."
-	await ctx.respond(message)
+	
+	if len(message) > 2000:
+		message = message.replace("*","").replace("`","")
+		with open("message.txt","w") as file:
+			file.write(message)
+		await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'),ephemeral=hidden)
+		os.remove('message.txt')
+		log("Sent dice results as file")
+	else:
+		await ctx.respond(message,ephemeral=hidden)
 
 bot.add_application_command(player_group)
 
