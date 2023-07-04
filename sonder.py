@@ -502,6 +502,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	name_limit = 50
 	if len(codename) > name_limit:
 		await ctx.respond(f"Codenames must be no longer than {name_limit} characters.",ephemeral=True)
+		return
 	
 	if userid not in character_data:
 		character_data[userid] = {
@@ -569,6 +570,7 @@ async def clone(ctx,
 	name_limit = 50
 	if len(new_codename) > name_limit:
 		await ctx.respond(f"Codenames must be no longer than {name_limit} characters.",ephemeral=True)
+		return
 	
 	codename = codename.lower()
 	if userid not in character_data or codename not in character_data[userid]['chars']:
