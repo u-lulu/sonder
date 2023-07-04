@@ -592,8 +592,8 @@ async def clone(ctx,
 		await ctx.respond(f"You have already created a character with the codename '{codename}'.",ephemeral=True)
 		return
 	
-	character_data[yourid]['chars'][new_codename] = copy.deepcopy(character_data[yourid]['chars'][codename])
-	character_data[yourid]['chars'][new_codename]['premium'] = premium_character
+	character_data[userid]['chars'][new_codename] = copy.deepcopy(character_data[userid]['chars'][codename])
+	character_data[userid]['chars'][new_codename]['premium'] = premium_character
 	
 	msg = f"Cloned character with the codename '{codename}' with new codename '{new_codename}'."
 	msg += f"\nYou now have {len(character_data[userid]['chars'])} characters."
