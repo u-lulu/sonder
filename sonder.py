@@ -992,9 +992,9 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 			except Exception as e:
 				num = 0
 				log(f"Caught dice-rolling exception: {e}")
-			character[translated_stat_bonus] += num
+			character[translated_stat_bonus] -= num
 			if translated_stat_bonus == 'maxhp':
-				character['hp'] += num
+				character['hp'] -= num
 	
 		character['traits'].remove(target_trait)
 		await ctx.respond(f"{codename.upper()} has lost the trait **{trait.upper()}**.")
