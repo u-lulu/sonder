@@ -452,7 +452,7 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 			await ctx.respond(f'**{codename.upper()}** already has the trait **{my_new_trait["Name"]} ({my_new_trait["Number"]})**.',ephemeral=True)
 			return
 	
-	character['traits'].append(my_new_trait)
+	character['traits'].append(copy.deepcopy(my_new_trait))
 	character['items'].append(my_new_trait['Item'])
 	
 	stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
