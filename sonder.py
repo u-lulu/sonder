@@ -565,6 +565,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 async def clone(ctx,
 	codename: discord.Option(str, "The codename of the character to duplicate.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete),required=True),
 	new_codename: discord.Option(str, "The new codename of the duplicated character.",required=True)):
+	log(f"/clone {codename} {new_codename}")
 	userid = str(ctx.author.id)
 	
 	name_limit = 50
