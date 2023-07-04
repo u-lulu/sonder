@@ -11,6 +11,7 @@ import math
 import rolldice # pip install py-rolldice
 from func_timeout import func_timeout, FunctionTimedOut # pip install func-timeout
 import qrcode # pip install qrcode
+import copy
 
 def log(msg):
 	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
@@ -559,6 +560,48 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	if not set_as_active and not starter_trait_1 and not starter_trait_2:
 		await save_character_data()
 	
+@bot.command(description="Make a copy of an existing character")
+async def clone(ctx,
+	codename: discord.Option(str, "The codename of the character to duplicate.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete),required=True),
+	new_codename: discord.Option(str, "The new codename of the duplicated character.",required=True)):
+	userid = str(ctx.author.id)
+	
+	name_limit = 50
+	if len(new_codename) > name_limit:
+		await ctx.respond(f"Codenames must be no longer than {name_limit} characters.",ephemeral=True)
+	
+	codename = codename.lower()
+	if userid not in character_data or codename not in character_data[userid]['chars']:
+		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create`.",ephemeral=True)
+		return
+	
+	premium_character = False
+	if len(character_data[userid]["chars"]) >= standard_character_limit:
+		premium_user = await ext_character_management(userid)
+		if not premium_user:
+			await ctx.respond(f"You may not create more than {standard_character_limit} characters.\nYou can increase your character limit to {premium_character_limit} by enrolling in a [server subscription](<https://discord.com/servers/sonder-s-garage-1101249440230154300>) at Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+			return
+		elif len(character_data[userid]["chars"]) >= premium_character_limit:
+			await ctx.respond(f"You may not create more than {premium_character_limit} characters.",ephemeral=True)
+			return
+		else:
+			premium_character = True
+	
+	new_codename = new_codename.lower()
+	if new_codename in character_data[userid]["chars"]:
+		await ctx.respond(f"You have already created a character with the codename '{codename}'.",ephemeral=True)
+		return
+	
+	character_data[yourid]['chars'][new_codename] = copy.deepcopy(character_data[yourid]['chars'][codename])
+	character_data[yourid]['chars'][new_codename]['premium'] = premium_character
+	
+	msg = f"Cloned character with the codename '{codename}' with new codename '{new_codename}'."
+	msg += f"\nYou now have {len(character_data[userid]['chars'])} characters."
+	if premium_character:
+		msg += "\n*This character uses a premium slot!*"
+	ctx.respond(msg)
+	
+
 @bot.command(description="Delete a character from your roster")
 async def delete_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True),
 	i_am_sure: discord.Option(bool, "Confirmation that you want the character deleted.", required=True),
