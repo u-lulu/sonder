@@ -1806,7 +1806,7 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax"),
 		for item in output:
 			strings_to_join.append(f"{counter}. **{item[0]}** (`{item[1]}`)")
 			counter += 1
-		message = "\n".join(string_to_join)
+		message = "\n".join(strings_to_join)
 	else:
 		message = f"**Total: {output[0]}**\n`{output[1]}`"
 	if not ('d' in syntax or 'D' in syntax):
