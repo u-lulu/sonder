@@ -1776,7 +1776,7 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax"),
 	if instances < 1:
 		instances = 1
 	
-	log(f"/player dice {syntax}")
+	log(f"/player dice {syntax} {instances} {hidden}")
 	timeout = 2
 	output = ()
 	if instances > 1:
