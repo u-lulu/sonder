@@ -599,7 +599,8 @@ async def clone(ctx,
 	msg += f"\nYou now have {len(character_data[userid]['chars'])} characters."
 	if premium_character:
 		msg += "\n*This character uses a premium slot!*"
-	ctx.respond(msg)
+	await ctx.respond(msg)
+	await switch_character(ctx, new_codename)
 	
 
 @bot.command(description="Delete a character from your roster")
