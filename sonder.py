@@ -284,7 +284,7 @@ async def d66(ctx, instances: discord.Option(discord.SlashCommandOptionType.inte
 	outs = []
 	
 	if instances > 1000:
-		await ctx.respond("Please roll 1000 or less instances.")
+		await ctx.respond("Please roll 1000 or less instances.",ephemeral=True)
 		return
 	elif instances < 1:
 		instances = 1
@@ -308,7 +308,7 @@ async def d666(ctx, instances: discord.Option(discord.SlashCommandOptionType.int
 	outs = []
 
 	if instances > 1000:
-		await ctx.respond("Please roll 1000 or less instances.")
+		await ctx.respond("Please roll 1000 or less instances.",ephemeral=True)
 		return
 	elif instances < 1:
 		instances = 1
