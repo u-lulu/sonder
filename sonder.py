@@ -2121,8 +2121,7 @@ async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer
 	log(f"/matrix gear item {count}")
 	max = 50
 	if count < 1:
-		await ctx.respond("You must generate a minimum of 1 item.",ephemeral=True)
-		return
+		count = 1
 	elif count > max:
 		await ctx.respond(f"You may only generate a maximum of {max} items.",ephemeral=True)
 		return
@@ -2147,8 +2146,7 @@ async def armor(ctx, count: discord.Option(discord.SlashCommandOptionType.intege
 	log("/matrix gear armor")
 	max = 50
 	if count < 1:
-		await ctx.respond("You must generate a minimum of 1 armor piece.",ephemeral=True)
-		return
+		count = 1
 	elif count > max:
 		await ctx.respond(f"You may only generate a maximum of {max} armor pieces.",ephemeral=True)
 		return
@@ -2173,8 +2171,7 @@ async def weapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integ
 	log(f"/matrix gear weapon {count}")
 	max = 50
 	if count < 1:
-		await ctx.respond("You must generate a minimum of 1 weapon.",ephemeral=True)
-		return
+		count = 1
 	elif count > max:
 		await ctx.respond(f"You may only generate a maximum of {max} weapons.",ephemeral=True)
 		return
@@ -2237,8 +2234,7 @@ async def vehicle(ctx, count: discord.Option(discord.SlashCommandOptionType.inte
 	log(f"/matrix gear vehicle {count}")
 	max = 50
 	if count < 1:
-		await ctx.respond("You must generate a minimum of 1 vehicle.",ephemeral=True)
-		return
+		count = 1
 	elif count > max:
 		await ctx.respond(f"You may only generate a maximum of {max} vehicles.",ephemeral=True)
 		return
@@ -2263,8 +2259,7 @@ async def vehicleweapon(ctx, count: discord.Option(discord.SlashCommandOptionTyp
 	log(f"/matrix gear vehicleweapon {count}")
 	max = 50
 	if count < 1:
-		await ctx.respond("You must generate a minimum of 1 vehicle weapon.",ephemeral=True)
-		return
+		count = 1
 	elif count > max:
 		await ctx.respond(f"You may only generate a maximum of {max} vehicle weapons.",ephemeral=True)
 		return
@@ -2289,8 +2284,7 @@ async def skin(ctx, count: discord.Option(discord.SlashCommandOptionType.integer
 	log(f"/matrix gear skin {count}")
 	max = 50
 	if count < 1:
-		await ctx.respond("You must generate a minimum of 1 weapon skin.",ephemeral=True)
-		return
+		count = 1
 	elif count > max:
 		await ctx.respond(f"You may only generate a maximum of {max} weapon skins.",ephemeral=True)
 		return
