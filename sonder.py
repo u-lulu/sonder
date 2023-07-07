@@ -1153,7 +1153,8 @@ async def war_die(ctx):
 	if character['wd'] > 0:
 		character['wd'] -= 1
 		result = d6()
-		await ctx.respond(f"**{codename.upper()}** spends a War Die: **{num_to_die[result]} ({result})**")
+		remaining = character['wd']
+		await ctx.respond(f"**{codename.upper()}** spends a War Die: **{num_to_die[result]} ({result})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.")
 		await save_character_data()
 	else:
 		await ctx.respond(f"{codename.upper()} has no War Dice to spend!",ephemeral=True)
