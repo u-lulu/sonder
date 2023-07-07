@@ -279,14 +279,48 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 		await ctx.respond(f"There was an error processing this command:\n```{e}```")
 
 @bot.command(description="Roll 1d66")
-async def d66(ctx):
+async def d66(ctx, instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1)):
 	log("/d66")
-	await ctx.respond(str(d6()) + str(d6()))
+	outs = []
+	
+	if instances > 1000:
+		await ctx.respond("Please roll 1000 or less instances.")
+		return
+	
+	for i in range(instances):
+		outs.append(str(d6()) + str(d6()))
+	message = ", ".join(outs)
+	if len(message) > 2000:
+		message = message.replace("*","").replace("# ","")
+		with open("message.txt","w") as file:
+			file.write(message)
+		await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
+		os.remove('message.txt')
+		log("Sent character sheet as file")
+	else:
+		await ctx.respond(message)
 
 @bot.command(description="Roll 1d666")
-async def d666(ctx):
+async def d666(ctx, instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1)):
 	log("/d666")
-	await ctx.respond(str(d6()) + str(d6()) + str(d6()))
+	outs = []
+
+	if instances > 1000:
+		await ctx.respond("Please roll 1000 or less instances.")
+		return
+
+	for i in range(instances):
+		outs.append(str(d6()) + str(d6()) + str(d6()))
+	message = ", ".join(outs)
+	if len(message) > 2000:
+		message = message.replace("*","").replace("# ","")
+		with open("message.txt","w") as file:
+			file.write(message)
+		await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
+		os.remove('message.txt')
+		log("Sent character sheet as file")
+	else:
+		await ctx.respond(message)
 
 # character_data structure:
 # - main object is a dict, keys are user IDs
