@@ -453,8 +453,27 @@ async def traits_and_customs_autocomp(ctx):
 	else:
 		return trait_names
 
+async def current_trait_item_autocomp(ctx):
+	cur_traits_by_name = traits_by_name | character_data[str(ctx.interaction.user.id)]['traits']
+	lookup_trait = ctx.options['trait']
+	found_trait = None
+	if lookup_trait == "ABRACADABRA":
+		found_trait = secret_trait
+	elif lookup_trait in cur_traits_by_name:
+		found_trait = cur_traits_by_name[lookup_trait]
+	elif lookup_trait in traits_by_numstr:
+		found_trait = traits_by_numstr[lookup_trait]
+	
+	if found_trait is None:
+		return []
+	else:
+		item_split = found_trait['Item'].split(' (')
+		return [item_split[0]]
+
 @bot.command(description="Add a core book trait to your active character")
-async def add_trait(ctx, trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=True)):
+async def add_trait(ctx, 
+	trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=True),
+	rename_item: discord.Option(str, "Renames the item this trait provides. Autocomplete displays the item's default name.",autocomplete=discord.utils.basic_autocomplete(current_trait_item_autocomp), required=False, default=None)):
 	log(f"/add_trait {trait}")
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -490,7 +509,18 @@ async def add_trait(ctx, trait: discord.Option(str, "The core book name or numbe
 			await ctx.respond(f'**{codename.upper()}** already has the trait **{my_new_trait["Name"]} ({my_new_trait["Number"]})**.',ephemeral=True)
 			return
 	
-	character['traits'].append(copy.deepcopy(my_new_trait))
+	my_new_trait = copy.deepcopy(my_new_trait)
+	if rename_item is not None:
+		if '(' in rename_item or ')' in rename_item:
+			await ctx.respond("For organizational reasons, please do not use parenthesis in item names.",ephemeral=True)
+			return
+		else:
+			old_item = my_new_trait['Item'].split(' (')
+			old_item[0] = rename_item
+			new_item = ' ('.join(old_item)
+			my_new_trait['Item'] = new_item
+	
+	character['traits'].append(my_new_trait)
 	character['items'].append(my_new_trait['Item'])
 	
 	stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
