@@ -630,9 +630,9 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	if set_as_active:
 		await switch_character(ctx, codename)
 	if starter_trait_1 is not None:
-		await add_trait(ctx, starter_trait_1)
+		await add_trait(ctx, starter_trait_1, None)
 	if starter_trait_2 is not None:
-		await add_trait(ctx, starter_trait_2)
+		await add_trait(ctx, starter_trait_2, None)
 	if not set_as_active and not starter_trait_1 and not starter_trait_2:
 		await save_character_data()
 	
