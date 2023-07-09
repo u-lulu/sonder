@@ -345,10 +345,17 @@ def output_character(codename, data):
 	out += f"\nARMOR: {data['armor_name']} ({data['armor']})"
 	out += f"\nWEAPON: {data['weapon_name']} ({data['damage']})"
 	
-	out += f"\n\nFORCEFUL: {data['frc']}"
-	out += f"\nTACTICAL: {data['tac']}"
-	out += f"\nCREATIVE: {data['cre']}"
-	out += f"\nREFLEXIVE: {data['rfx']}"
+	if data['frc'] != 0 or data['tac'] != 0 or data['cre'] != 0 or data['rfx'] != 0:
+		out += "\n"
+	
+	if data['frc'] != 0:
+		out += f"\nFRC: {'+' if data['frc'] > 0 else ''}{data['frc']}"
+	if data['tac'] != 0:
+		out += f"\nTAC: {'+' if data['tac'] > 0 else ''}{data['tac']}"
+	if data['cre'] != 0:
+		out += f"\nCRE: {'+' if data['cre'] > 0 else ''}{data['cre']}"
+	if data['rfx'] != 0:
+		out += f"\nRFX: {'+' if data['rfx'] > 0 else ''}{data['rfx']}"
 	
 	out += "\n\nTRAITS:\n"
 	if len(data['traits']) <= 0:
