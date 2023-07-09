@@ -1786,10 +1786,18 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 	
 	message += f"MAX HP: {stats['MAX']}\n"
 	message += f"WAR DICE: {stats['WAR']}\n\n"
-	message += f"FORCEFUL: {stats['FORCEFUL']}\n"
-	message += f"TACTICAL: {stats['TACTICAL']}\n"
-	message += f"CREATIVE: {stats['CREATIVE']}\n"
-	message += f"REFLEXIVE: {stats['REFLEXIVE']}\n\n"
+	
+	if stats['FORCEFUL'] != 0:
+		message += f"FORCEFUL: {'+' if stats['FORCEFUL'] > 0 else ''}{stats['FORCEFUL']}\n"
+	if stats['TACTICAL'] != 0:
+		message += f"TACTICAL: {'+' if stats['TACTICAL'] > 0 else ''}{stats['TACTICAL']}\n"
+	if stats['CREATIVE'] != 0:
+		message += f"CREATIVE: {'+' if stats['CREATIVE'] > 0 else ''}{stats['CREATIVE']}\n"
+	if stats['REFLEXIVE'] != 0:
+		message += f"REFLEXIVE: {'+' if stats['REFLEXIVE'] > 0 else ''}{stats['REFLEXIVE']}\n"
+	
+	if stats['FORCEFUL'] != 0 or stats['TACTICAL'] != 0 or stats['CREATIVE'] != 0 or stats['REFLEXIVE'] != 0:
+		message += '\n'
 	
 	message += "TRAITS:\n"
 	altmessage = message
