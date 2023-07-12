@@ -1225,7 +1225,7 @@ editable_stats = ["CURRENT HP","MAX HP","WAR DICE","FORCEFUL","TACTICAL","REFLEX
 async def stats_autocomplete(ctx):
 	return editable_stats
 
-@bot.command(description="Adjust one your character's stats")
+@bot.command(description="Adjust one of your character's stats")
 async def adjust(ctx,
 	stat: discord.Option(str, "The stat to change.", autocomplete=discord.utils.basic_autocomplete(stats_autocomplete), required=True),
 	amount: discord.Option(str, "Amount to increase the stat by. Supports dice syntax. Negative values will decrease.", required=True)):
@@ -1399,7 +1399,7 @@ async def cre(ctx,
 	):
 	await roll_with_skill(ctx, modifier, superior_dice, inferior_dice, 'cre')
 
-@bot.command(description="Take damage")
+@bot.command(description="Take damage on your active character")
 async def damage(ctx, 
 	amount: discord.Option(str, "Amount of damage to take. Supports dice syntax.", required=True),
 	armor_piercing: discord.Option(bool, "Skip armor when applying this damage.", required=False, default=False),
@@ -1460,7 +1460,7 @@ async def damage(ctx,
 	await ctx.respond(message)
 	await save_character_data()
 
-@bot.command(description="Heal damage")
+@bot.command(description="Heal your active character")
 async def heal(ctx, 
 	amount: discord.Option(str, "Amount of healing to receive. Supports dice syntax.", required=True),
 	):
