@@ -744,14 +744,30 @@ async def my_characters(ctx):
 	yourid = str(ctx.author.id)
 	if yourid in character_data and len(character_data[yourid]['chars']) > 0:
 		yourchars = character_data[yourid]['chars']
-		msg = f"Characters created by <@{yourid}>:"
+		msg = f"Characters created by <@{yourid}> ({len(yourchars)}):"
 		for codename in yourchars:
-			msg += f"\n- {codename.upper()}"
+			char_traits = character_data[yourid]['chars'][codename]['traits']
+			msg += f"\n- **{codename.upper()}**"
+			if len(char_traits) > 0:
+				char_trait_names = []
+				for t in char_traits:
+					char_trait_names.append(t['Name'])
+				msg += f" ({'/'.join(char_trait_names)})"
+			else:
+				msg += f" (No traits)"
 			if yourchars[codename]['premium']:
 				msg += " *(premium)*"
-		await ctx.respond(msg)
+		if len(msg) > 2000:
+			msg = msg.replace("*","")
+			with open("message.txt","w") as file:
+				file.write(msg)
+			await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
+			os.remove('message.txt')
+			log("Sent character sheet as file")
+		else:
+			await ctx.respond(msg)
 	else:
-		await ctx.respond("You haven't created any characters yet!",ephemeral=True)
+		await ctx.respond("You haven't created any characters yet.",ephemeral=True)
 	
 @bot.command(description="Displays your current active character's sheet")
 async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default=""), qr: discord.Option(bool, "Sends a QR code of the final output instead.", required=False, default=False)):
@@ -998,10 +1014,18 @@ async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait
 	
 	yourtraits = character_data[uid]['traits']
 	if name is None:
-		out = f"Custom traits created by <@{uid}>:"
+		msg = f"Custom traits created by <@{uid}> ({len(yourtraits)}):"
 		for t in yourtraits:
-			out += f"\n- {t.upper()}"
-		await ctx.respond(out)
+			msg += f"\n- {t.upper()}"
+		if len(msg) > 2000:
+			msg = msg.replace("*","")
+			with open("message.txt","w") as file:
+				file.write(msg)
+			await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
+			os.remove('message.txt')
+			log("Sent character sheet as file")
+		else:
+			await ctx.respond(msg)
 	else:
 		name = name.upper()
 		if name not in yourtraits:
