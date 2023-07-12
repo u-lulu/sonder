@@ -746,9 +746,9 @@ async def my_characters(ctx):
 		yourchars = character_data[yourid]['chars']
 		msg = f"Characters created by <@{yourid}>:"
 		for codename in yourchars:
-			msg += f"\n- {codename}"
+			msg += f"\n- {codename.upper()}"
 			if yourchars[codename]['premium']:
-				msg += "*"
+				msg += " *(premium)*"
 		await ctx.respond(msg)
 	else:
 		await ctx.respond("You haven't created any characters yet!",ephemeral=True)
@@ -1000,7 +1000,7 @@ async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait
 	if name is None:
 		out = f"Custom traits created by <@{uid}>:"
 		for t in yourtraits:
-			out += f"\n- {t.lower()}"
+			out += f"\n- {t.upper()}"
 		await ctx.respond(out)
 	else:
 		name = name.upper()
