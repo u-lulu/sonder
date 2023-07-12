@@ -143,7 +143,7 @@ def decap_first(string):
 	return string
 
 def remove_duplicates(lst):
-	return list(set(list))
+	return list(set(lst))
 
 def roll_extra_possibility(input_string):
 	regex_pattern = r"(.+)\s\((\d+)-in-1D6:\s(.+)\)"
