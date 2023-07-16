@@ -1072,6 +1072,12 @@ async def add_item(ctx,
 		await ctx.respond("For organizational reasons, please do not use parenthesis in the `name` or `effect` of your item.\nTo include an item's effect, use the optional `effect` argument for this command instead.",ephemeral=True)
 		return
 	
+	for held_item in character['items']:
+		held_name = held_item.split(" (")[0]
+		if held_name.lower() == name.lower():
+			await ctx.respond(f"You already have an item named '{held_name}'.\nFor organizational reasons, please do not add two items to your inventory with the same name. Instead, label them differently, or keep track of copies with an item counter (via `/add_item_counter`).",ephemeral=True)
+			return
+	
 	item_to_add = name
 	if len(effect) > 0:
 		item_to_add += f" ({effect})"
