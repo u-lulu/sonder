@@ -1138,7 +1138,7 @@ async def add_item_counter(ctx,
 	
 	character['counters'][item][counter_name] = starting_value
 	
-	await ctx.respond(f"**{codename.upper()}** has attached a counter to their **{item}**, called **'{counter_name}'** It has a starting value of **{starting_value}**.")
+	await ctx.respond(f"**{codename.upper()}** has attached a counter to their **{item}**, called **'{counter_name}'**. It has a starting value of **{starting_value}**.")
 	await save_character_data()
 
 async def items_with_counters_autocomp(ctx):
