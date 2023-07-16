@@ -1119,9 +1119,13 @@ async def add_item_counter(ctx,
 		return
 	codename = get_active_codename(ctx)
 
-	
 	if character['premium'] and not await ext_character_management(ctx.author.id):
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		return
+	
+	limit = 20
+	if len(counter_name) > limit:
+		await ctx.respond(f"Counter names should be {limit} characters or shorter.",ephemeral=True)
 		return
 	
 	if item not in character['items']:
