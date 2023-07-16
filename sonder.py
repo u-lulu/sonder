@@ -1142,7 +1142,7 @@ async def add_item_counter(ctx,
 	
 	character['counters'][item][counter_name] = starting_value
 	
-	await ctx.respond(f"**{codename.upper()}** has attached a counter to their **{item}**, called **'{counter_name}'**. It has a starting value of **{starting_value}**.")
+	await ctx.respond(f"{codename.upper()} has attached a counter to their **{item}**, called **'{counter_name}'**. It has a starting value of **{starting_value}**.")
 	await save_character_data()
 
 async def items_with_counters_autocomp(ctx):
@@ -1228,7 +1228,7 @@ async def adjust_item_counter(ctx,
 		return
 	
 	character['counters'][item][counter_name] += output[0]
-	message = f"You have **{'in' if output[0] >= 0 else 'de'}creased** the {counter_name.upper()} counter on **{codename.upper()}**'s **{item}** by {abs(output[0])}. The new value is **{character['counters'][item][counter_name]}**."
+	message = f"You have **{'in' if output[0] >= 0 else 'de'}creased** the {counter_name.upper()} counter on {codename.upper()}'s **{item}** by {abs(output[0])}. The new value is **{character['counters'][item][counter_name]}**."
 	if 'd' in amount or 'D' in amount:
 		message += f"\n\nDice results: `{output[1]}`"
 	await ctx.respond(message)
@@ -1280,7 +1280,7 @@ async def set_item_counter(ctx,
 		return
 	
 	character['counters'][item][counter_name] = output[0]
-	message = f"You have set the {counter_name.upper()} counter on **{codename.upper()}**'s **{item}** to {abs(output[0])}."
+	message = f"You have set the {counter_name.upper()} counter on {codename.upper()}'s **{item}** to {abs(output[0])}."
 	if 'd' in amount or 'D' in amount:
 		message += f"\n\nDice results: `{output[1]}`"
 	await ctx.respond(message)
@@ -1313,7 +1313,7 @@ async def remove_item_counter(ctx,
 		return
 	
 	del character['counters'][item][counter_name]
-	message = f"The {counter_name.upper()} counter on **{codename.upper()}**'s **{item}** has been removed."
+	message = f"The {counter_name.upper()} counter on {codename.upper()}'s **{item}** has been removed."
 	if len(character['counters'][item]) <= 0:
 		del character['counters'][item]
 		message += " It no longer has any associated counters."
