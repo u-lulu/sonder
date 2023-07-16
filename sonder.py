@@ -193,7 +193,6 @@ async def save_character_data():
 log("Creating generic commands")
 @bot.event
 async def on_ready():
-
 	log("Checking to see if character data needs to be updated...")
 	changed = False
 	for player in character_data:
@@ -201,9 +200,16 @@ async def on_ready():
 			character_data[player]['traits'] = {}
 			log(f"{player} updated to include custom traits field")
 			changed = True
+		for char in character_data[player]['chars']:
+			if 'counters' not in character_data[player]['chars'][char]:
+				character_data[player]['chars'][char]['counters'] = {}
+				log(f"{char} (owned by {player}) updated to include counters field")
+				changed = True
 	
 	if changed:
 		await save_character_data()
+	else:
+		log("No required changes to player data found.")
 
 	try:
 		log("Checking for support server...")
@@ -370,6 +376,12 @@ def output_character(codename, data):
 	else:
 		for item in data['items']:
 			out += f"\n- {item}"
+			if item in data['counters']:
+				counters = data['counters'][item]
+				counter_strings = []
+				for counter in counters:
+					counter_strings.append(f"{counter.upper()}: {counters[counter]}")
+				out += f" ({', '.join(counter_strings)})"
 	return out
 
 def get_active_codename(ctx):
@@ -619,7 +631,8 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 		"traits": [],
 		"items": [],
 		"premium": premium_character,
-		"creation_time": time.time()
+		"creation_time": time.time(),
+		"counters": {},
 	}
 	
 	msg = f"Created character with the codename '{codename}'."
@@ -1068,6 +1081,67 @@ async def add_item(ctx,
 	await ctx.respond(f"**{codename.upper()}** has added **{item_to_add}** to their inventory.")
 	await save_character_data()
 
+async def item_counters_autocomp(ctx):
+	uid = str(ctx.interaction.user.id)
+	if uid in character_data:
+		# gotta get active character manually cus this is a different kind of ctx. ugh
+		your_actives = character_data[uid]['active']
+		if str(ctx.interaction.channel_id) in your_actives:
+			current_active = your_actives[str(ctx.interaction.channel_id)]
+			if current_active in character_data[uid]['chars']:
+				current_char = character_data[uid]['chars'][current_active]
+				item_list = current_char['items']
+				output = []
+				for item in item_list:
+					output.append(item)
+				return output
+			else:
+				return []
+		else:
+			return []
+	else:
+		return []
+
+async def example_counter_names(ctx):
+	return ["Amount","Ammo","Uses remaining","Counter"]
+
+@bot.command(description="Add a counter to an item on your character")
+async def create_counter(ctx,
+	item: discord.Option(str, "The item to attach a counter to",autocomplete=discord.utils.basic_autocomplete(item_counters_autocomp), required=True),
+	counter_name: discord.Option(str, "The name of the counter",autocomplete=discord.utils.basic_autocomplete(example_counter_names), required=True),
+	starting_value: discord.Option(int, "The value the counter should start at", required=True)
+	):
+	
+	log(f"/add_counter {item} {starting_value} {counter_name}")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+
+	
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		return
+	
+	if item not in character['items']:
+		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'. The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
+		return
+	
+	if item not in character['counters']:
+		character['counters'][item] = {}
+	
+	counter_name = counter_name.lower()
+	if counter_name in character['counters'][item]:
+		await ctx.respond(f"The item **{item}** already has an associated counter called **'{counter_name}'**.",ephemeral=True)
+		return
+	
+	character['counters'][item][counter_name] = starting_value
+	
+	await ctx.respond(f"**{codename.upper()}** has attached a counter to their **{item}**, called **'{counter_name}'** It has a starting value of **{starting_value}**.")
+	await save_character_data()
+	
+	
 async def active_character_traits_autocomp(ctx):
 	uid = str(ctx.interaction.user.id)
 	if uid in character_data:
@@ -1199,6 +1273,9 @@ async def remove_item(ctx,
 			out += "\n- x"
 		await ctx.respond(out,ephemeral=True)
 		return
+	
+	if item in character['counters']:
+		del character['counters'][item]
 	
 	await ctx.respond(f"**{codename.upper()}** has removed **{item}** from their inventory.")
 	await save_character_data()
