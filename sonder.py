@@ -493,7 +493,10 @@ async def current_trait_item_autocomp(ctx):
 async def add_trait(ctx, 
 	trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=True),
 	rename_item: discord.Option(str, "Renames the item this trait provides. Autocomplete displays the item's default name.",autocomplete=discord.utils.basic_autocomplete(current_trait_item_autocomp), required=False, default=None)):
-	log(f"/add_trait {trait}")
+	log(f"/add_trait {trait} {rename_item if rename_item is not None else ''}")
+	trait = trait.strip()
+	if rename_item is not None:
+		rename_item = rename_item.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -584,6 +587,12 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	starter_trait_2: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
 	set_as_active: discord.Option(bool, "If TRUE, the new character will become your active character in this channel. FALSE by default.", required=False, default=True)):
 	log(f"/create {codename} {starter_trait_1 if starter_trait_1 is not None else '[no first trait]'} {starter_trait_2 if starter_trait_2 is not None else '[no second trait]'} {'set_as_active' if set_as_active else ''}")
+	
+	codename = codename.strip()
+	if starter_trait_1 is not None:
+		starter_trait_1 = starter_trait_1.strip()
+	if starter_trait_2 is not None:
+		starter_trait_2 = starter_trait_2.strip()
 	userid = str(ctx.author.id)
 	
 	name_limit = 50
@@ -654,6 +663,8 @@ async def clone(ctx,
 	codename: discord.Option(str, "The codename of the character to duplicate.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete),required=True),
 	new_codename: discord.Option(str, "The new codename of the duplicated character.",required=True)):
 	log(f"/clone {codename} {new_codename}")
+	codename = codename.strip()
+	new_codename = new_codename.strip()
 	userid = str(ctx.author.id)
 	
 	name_limit = 50
@@ -692,10 +703,10 @@ async def clone(ctx,
 		msg += "\n*This character uses a premium slot!*"
 	await ctx.respond(msg)
 	await switch_character(ctx, new_codename)
-	
 
 @bot.command(description="Delete a character from your roster")
-async def delete_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True),
+async def delete_character(ctx,
+	codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True),
 	i_am_sure: discord.Option(bool, "Confirmation that you want the character deleted.", required=True),
 	i_am_very_sure: discord.Option(bool, "Confirmation that you want the character deleted.", required=True),
 	i_am_completely_absolutely_sure: discord.Option(bool, "Confirmation that you want the character deleted.", required=True)):
@@ -785,7 +796,7 @@ async def my_characters(ctx):
 @bot.command(description="Displays your current active character's sheet")
 async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default=""), qr: discord.Option(bool, "Sends a QR code of the final output instead.", required=False, default=False)):
 	log(f"/sheet {codename}")
-	codename = codename.lower()
+	codename = codename.lower().strip()
 	yourid = str(ctx.author.id)
 	if codename == "":
 		codename = get_active_codename(ctx)
@@ -821,6 +832,7 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 @bot.command(description="Switch which character is active in this channel")
 async def switch_character(ctx, codename: discord.Option(str, "The codename of the character to switch to.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
 	log(f"/switch {codename}")
+	codename = codename.strip()
 	userid = str(ctx.author.id)
 	if userid not in character_data or len(character_data[userid]['chars']) <= 0:
 		await ctx.respond("You have no characters available. Use `/create` to make one.",ephemeral=True)
@@ -879,6 +891,8 @@ async def set_role(ctx,
 	name: discord.Option(str,"The name of your role.",autocomplete=discord.utils.basic_autocomplete(role_autocomp),required=True),
 	description: discord.Option(str,"The role's description.",required=True)):
 	log(f"/set_role '{name}' '{description}'")
+	name = name.strip()
+	description = description.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -923,6 +937,12 @@ async def create_custom_trait(ctx,
 		item_name: discord.Option(str, "The name of the item that this trait grants you", required=True),
 		item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
 	userid = str(ctx.author.id)
+	title = title.strip()
+	description = description.strip()
+	stat_type = stat_type.strip()
+	stat_amount = stat_amount.strip()
+	item_name = item_name.strip()
+	item_effect = item_effect.strip()
 	log(f"/create_custom_trait {title} {description} {stat_type} {stat_amount} {item_name} {item_effect}")
 	
 	if userid in character_data and len(character_data[userid]['traits']) >= standard_custrait_limit:
@@ -1020,6 +1040,8 @@ async def delete_custom_trait(ctx,
 @bot.command(description="View your custom traits")
 async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait to view",autocomplete=discord.utils.basic_autocomplete(custom_traits_list_autocomp), required=False, default=None)):
 	log(f"/my_traits {name if name is not None else ''}")
+	if name is not None:
+		name = name.strip()
 	uid = str(ctx.author.id)
 	if uid not in character_data or len(character_data[uid]['traits']) <= 0:
 		await ctx.respond("You do not have any custom traits on file.",ephemeral=True)
@@ -1053,6 +1075,8 @@ async def add_item(ctx,
 		name: discord.Option(str, "The name of the item", required=True), 
 		effect: discord.Option(str, "The effect of the item", required=False, default="")):
 	log(f"/add_item {name} {effect}")
+	name = name.strip()
+	effect = effect.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -1119,6 +1143,8 @@ async def add_item_counter(ctx,
 	):
 	
 	log(f"/add_item_counter {item} {starting_value} {counter_name}")
+	item = item.strip()
+	counter_name = counter_name.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -1196,6 +1222,9 @@ async def adjust_item_counter(ctx,
 	):
 	
 	log(f"/adjust_item_counter {item} {amount} {counter_name}")
+	item = item.strip()
+	counter_name = counter_name.strip()
+	amount = amount.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -1248,6 +1277,9 @@ async def set_item_counter(ctx,
 	):
 	
 	log(f"/set_counter {item} {amount} {counter_name}")
+	item = item.strip()
+	counter_name = counter_name.strip()
+	amount = amount.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -1351,7 +1383,7 @@ async def active_character_traits_autocomp(ctx):
 async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to remove.",autocomplete=discord.utils.basic_autocomplete(active_character_traits_autocomp), required=True),
 	keep_item: discord.Option(bool, "If TRUE, the Trait's associated item will not be removed from your inventory.", required=False, default=False)):
 	
-	log(f"/remove_trait {trait}")
+	log(f"/remove_trait {trait}{' keep_item' if keep_item else ''}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -1914,6 +1946,8 @@ async def equip_weapon(ctx,
 	
 	character = get_active_char_object(ctx)
 	log(f"/equip_weapon {name} {damage}")
+	name = name.strip()
+	damage = damage.strip()
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
@@ -1946,6 +1980,7 @@ async def equip_armor(ctx,
 	name: discord.Option(str, "The armor's name.", autocomplete=discord.utils.basic_autocomplete(held_items_autocomplete), required=True),
 	damage: discord.Option(int, "Amount of damage it reduces.", autocomplete=discord.utils.basic_autocomplete(held_numbers_autocomplete), required=True)):
 	log(f"/equip_armor {name} {damage}")
+	name = name.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -1971,6 +2006,7 @@ trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 @trait_group.command(description="Looks up a trait by name or d666 number")
 async def lookup(ctx, trait: discord.Option(str,"The trait to search for",autocomplete=discord.utils.basic_autocomplete(trait_autocomp))):
 	log(f"/trait lookup {trait}")
+	trait = trait.strip()
 	message = search_for_trait(trait)
 	hidden = message in ["No trait exists with the given number. Trait numbers must be possible d666 roll outputs.","Could not find a trait with an approximately similar name."]
 	
@@ -1993,6 +2029,7 @@ role_group = discord.SlashCommandGroup("role", "Role Commands")
 @role_group.command(description="Looks up a role by name or d66 number")
 async def lookup(ctx, role: discord.Option(str,"The role to search for",autocomplete=discord.utils.basic_autocomplete(role_autocomp))):
 	log(f"/role lookup {role}")
+	role = role.strip()
 	message = search_for_role(role)
 	hidden = message in ["No role exists with the given number. Role numbers must be possible d66 roll outputs.","Could not find a role with an approximately similar name."]
 	await ctx.respond(message,ephemeral=hidden)
@@ -2189,11 +2226,11 @@ def roll_multiple_dice(syntax, amount):
 async def dice(ctx, syntax: discord.Option(str,"The dice syntax"),
 	instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1),
 	hidden: discord.Option(bool, "If TRUE, the output of this command is hidden to others", required=False, default=False)):
-	
+	log(f"/player dice {syntax} {instances} {hidden}")
+	syntax = syntax.strip()
 	if instances < 1:
 		instances = 1
 	
-	log(f"/player dice {syntax} {instances} {hidden}")
 	timeout = 2
 	output = ()
 	if instances > 1:
