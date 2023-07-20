@@ -1651,28 +1651,100 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 	codename = get_active_codename(ctx)
 	
 	if character['wd'] > 0:
+		fated = False
+		for trait in character['traits']:
+			if trait['Number'] == 236:
+				fated = True
+				break
+		
 		character['wd'] -= 1
+		remaining = character['wd']
 		if explode:
-			results = [d6()]
-			while results[-1] == 6:
-				results.append(d6())
-			message = f"**{codename.upper()}** spends a War Die:"
-			for result in results:
-				if result == 6:
-					message += f" **{num_to_die[result]} ({result}💥)**"
-				elif result == 1:
-					message += f" **{num_to_die[result]} ({result} - __roll dropped__!)**"
+			if fated:
+				first = [d6()]
+				second = [d6()]
+				if first[0] == second[0]:
+					while first[-1] == 6:
+						first.append(d6())
+					while second[-1] == 6:
+						second.append(d6())
+					message = f"**{codename.upper()}** spends a **Fated** War Die. **They rolled doubles—both are used!**"
+					message += f"\n-"
+					for result in first:
+						if result == 6:
+							message += f" **{num_to_die[result]} ({result}💥)**"
+						elif result == 1:
+							message += f" **{num_to_die[result]} ({result} - __roll dropped__!)**"
+						else:
+							message += f" **{num_to_die[result]} ({result})**"
+					message += f"\n-"
+					for result in second:
+						if result == 6:
+							message += f" **{num_to_die[result]} ({result}💥)**"
+						elif result == 1:
+							message += f" **{num_to_die[result]} ({result} - __roll dropped__!)**"
+						else:
+							message += f" **{num_to_die[result]} ({result})**"
+					message += f"\n- Total: **{0 if 1 in first or 1 in second else sum(first) + sum(second)}**"
+					message += f"\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left."
+					await ctx.respond(message)
+				elif first[0] == 6 or second[0] == 6:
+					nonsix = min([first[0],second[0]])
+					class DiePicker(discord.ui.View):
+						@discord.ui.button(label="Explode the 6", style=discord.ButtonStyle.red, emoji="💥")
+						async def explode_callback(self, button, interaction):
+							self.disable_all_items()
+							await interaction.response.edit_message(view=self)
+							results = [6]
+							while results[-1] == 6:
+								results.append(d6())
+							message = f"**{codename.upper()}** explodes the 6:"
+							for result in results:
+								if result == 6:
+									message += f" **{num_to_die[result]} ({result}💥)**"
+								elif result == 1:
+									message += f" **{num_to_die[result]} ({result} - __roll dropped__!)**"
+								else:
+									message += f" **{num_to_die[result]} ({result})**"
+							if len(results) > 1 or 1 in results:
+								message += f"\n- Total: **{0 if 1 in results else sum(results)}**"
+							await ctx.respond(message)
+						@discord.ui.button(label="Keep the " + str(nonsix), style=discord.ButtonStyle.blurple, emoji="🎲")
+						async def safety_callback(self, button, interaction):
+							self.disable_all_items()
+							await interaction.response.edit_message(view=self)
+							await ctx.respond(f"**{codename.upper()}** keeps the **{num_to_die[nonsix]} ({nonsix})**.{' The final result is **zero**.' if nonsix == 1 else ''}")
+					await ctx.respond(f"**{codename.upper()}** spends a **Fated** War Die. **They must choose:**\n- **{num_to_die[6]} (6💥)**\n- **{num_to_die[nonsix]} ({nonsix}{' - __reduces to 0__!' if nonsix == 1 else ''})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.",view=DiePicker())
 				else:
-					message += f" **{num_to_die[result]} ({result})**"
-			if len(results) > 1 or 1 in results:
-				message += f"\n- Total: **{0 if 1 in results else sum(results)}**"
-			remaining = character['wd']
-			message += f"\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left."
-			await ctx.respond(message)
+					results = [first[0],second[0]]
+					winner = max(results)
+					loser = min(results)
+					await ctx.respond(f"**{codename.upper()}** spends a **Fated** War Die: **{num_to_die[results[0]]}/{num_to_die[results[1]]} ({winner})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.")
+			else:
+				results = [d6()]
+				while results[-1] == 6:
+					results.append(d6())
+				message = f"**{codename.upper()}** spends a War Die:"
+				for result in results:
+					if result == 6:
+						message += f" **{num_to_die[result]} ({result}💥)**"
+					elif result == 1:
+						message += f" **{num_to_die[result]} ({result} - __roll dropped__!)**"
+					else:
+						message += f" **{num_to_die[result]} ({result})**"
+				if len(results) > 1 or 1 in results:
+					message += f"\n- Total: **{0 if 1 in results else sum(results)}**"
+				message += f"\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left."
+				await ctx.respond(message)
 		else:
-			result = d6()
-			remaining = character['wd']
-			await ctx.respond(f"**{codename.upper()}** spends a War Die: **{num_to_die[result]} ({result})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.")
+			if fated:
+				results = [d6(),d6()]
+				winner = max(results)
+				loser = min(results)
+				await ctx.respond(f"**{codename.upper()}** spends a **Fated** War Die: **{num_to_die[results[0]]}/{num_to_die[results[1]]} ({winner})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.")
+			else:
+				result = d6()
+				await ctx.respond(f"**{codename.upper()}** spends a War Die: **{num_to_die[result]} ({result})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.")
 		await save_character_data()
 	else:
 		await ctx.respond(f"{codename.upper()} has no War Dice to spend!",ephemeral=True)
