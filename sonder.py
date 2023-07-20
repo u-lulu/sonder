@@ -1743,7 +1743,7 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 				loser = min(results)
 				if winner == loser:
 					winner = winner + loser
-				await ctx.respond(f"**{codename.upper()}** spends a **Fated** War Die: **{num_to_die[results[0]]}/{num_to_die[results[1]]} ({winner})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.")
+				await ctx.respond(f"**{codename.upper()}** spends a **Fated** War Die: **{num_to_die[results[0]]}{' + ' if results[0] == results[1] else '/'}{num_to_die[results[1]]} ({winner})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.")
 			else:
 				result = d6()
 				await ctx.respond(f"**{codename.upper()}** spends a War Die: **{num_to_die[result]} ({result})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.")
