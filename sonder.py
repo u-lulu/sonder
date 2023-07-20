@@ -1642,7 +1642,7 @@ async def remove_item(ctx,
 	await save_character_data()
 
 @bot.command(description="Spend a War Die from your active character")
-async def war_die(ctx):
+async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows the 'Exploding WAR DICE' optional rule.", required=False, default=False)):
 	log(f"/war_die")
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -1652,9 +1652,27 @@ async def war_die(ctx):
 	
 	if character['wd'] > 0:
 		character['wd'] -= 1
-		result = d6()
-		remaining = character['wd']
-		await ctx.respond(f"**{codename.upper()}** spends a War Die: **{num_to_die[result]} ({result})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.")
+		if explode:
+			results = [d6()]
+			while results[-1] == 6:
+				results.append(d6())
+			message = f"**{codename.upper()}** spends a War Die:"
+			for result in results:
+				if result == 6:
+					message += f" **{num_to_die[result]} ({result}💥)**"
+				elif result == 1:
+					message += f" **{num_to_die[result]} ({result} - __roll dropped__!)**"
+				else:
+					message += f" **{num_to_die[result]} ({result})**"
+			if len(results) > 1 or 1 in results:
+				message += f"\n- Total: **{0 if 1 in results else sum(results)}**"
+			remaining = character['wd']
+			message += f"\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left."
+			await ctx.respond(message)
+		else:
+			result = d6()
+			remaining = character['wd']
+			await ctx.respond(f"**{codename.upper()}** spends a War Die: **{num_to_die[result]} ({result})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.")
 		await save_character_data()
 	else:
 		await ctx.respond(f"{codename.upper()} has no War Dice to spend!",ephemeral=True)
