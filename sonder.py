@@ -1278,7 +1278,6 @@ async def ammo_check(ctx,
 	log(f"/ammo_check {item} {counter_name}")
 	item = item.strip()
 	counter_name = counter_name.strip()
-	amount = amount.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -1298,6 +1297,10 @@ async def ammo_check(ctx,
 		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'.",ephemeral=True)
 		return
 	
+	if character['counters'][item][counter_name] <= 0:
+		await ctx.respond("The specified counter must have a value above zero to be used for an ammo check! If the AMMO score of a weapon is zero or less, it cannot be used.",ephemeral=True)
+		return
+	
 	die = d6()
 	current = character['counters'][item][counter_name]
 	message = f"**{codename.upper()}** performs an AMMO check with their **{item}**'s {counter_name.upper()} counter."
@@ -1313,7 +1316,7 @@ async def ammo_check(ctx,
 	else:
 		message += f"**Ammo is conserved.** The counter is **unchanged**."
 	
-	ctx.respond(message)
+	await ctx.respond(message)
 	
 	if character['counters'][item][counter_name] != current:
 		await save_character_data()
