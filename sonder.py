@@ -1269,6 +1269,55 @@ async def adjust_item_counter(ctx,
 	await ctx.respond(message)
 	await save_character_data()
 
+@bot.command(description="Performs an Ammo check on one of your item's counters")
+async def ammo_check(ctx,
+	item: discord.Option(str, "The item with the associated counter",autocomplete=discord.utils.basic_autocomplete(items_with_counters_autocomp), required=True),
+	counter_name: discord.Option(str, "The name of the counter",autocomplete=discord.utils.basic_autocomplete(counters_on_the_item_autocomp), required=True)
+	):
+	
+	log(f"/ammo_check {item} {counter_name}")
+	item = item.strip()
+	counter_name = counter_name.strip()
+	amount = amount.strip()
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		return
+	
+	if item not in character['items']:
+		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'. The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
+		return
+	
+	counter_name = counter_name.lower()
+	if counter_name.lower() not in character['counters'][item]:
+		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'.",ephemeral=True)
+		return
+	
+	die = d6()
+	current = character['counters'][item][counter_name]
+	message = f"**{codename.upper()}** performs an AMMO check with their **{item}**'s {counter_name.upper()} counter."
+	message += f"\n- Counter value: **{current}**"
+	message += f"\n- Dice result: **{num_to_die[die]} ({die})**\n"
+	
+	if die > current:
+		character['counters'][item][counter_name] = 0
+		message += f"**Ammo has run dry!** The counter has been set to **zero**."
+	elif die < current:
+		character['counters'][item][counter_name] -= 1
+		message += f"**Some ammo is consumed.** The counter has decreased to **{character['counters'][item][counter_name]}**."
+	else:
+		message += f"**Ammo is conserved.** The counter is **unchanged**."
+	
+	ctx.respond(message)
+	
+	if character['counters'][item][counter_name] != current:
+		await save_character_data()
+
 @bot.command(description="Set an item counter on your character")
 async def set_item_counter(ctx,
 	item: discord.Option(str, "The item with the associated counter",autocomplete=discord.utils.basic_autocomplete(items_with_counters_autocomp), required=True),
