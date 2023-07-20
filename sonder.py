@@ -1711,7 +1711,7 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 									message += f"\n- Total: **{0 if 1 in results else sum(results)}**"
 								await ctx.respond(message)
 							else:
-								await interaction.response.send_message("This is not your War Die roll.")
+								await interaction.response.send_message("This is not your War Die roll.",ephemeral=True)
 						@discord.ui.button(label="Keep the " + str(nonsix), style=discord.ButtonStyle.blurple, emoji="🎲")
 						async def safety_callback(self, button, interaction):
 							if interaction.user.id == ctx.author.id:
@@ -1719,7 +1719,7 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 								await interaction.response.edit_message(view=self)
 								await ctx.respond(f"**{codename.upper()}** keeps the **{num_to_die[nonsix]} ({nonsix})**.{' The final result is **zero**.' if nonsix == 1 else ''}")
 							else:
-								await interaction.response.send_message("This is not your War Die roll.")
+								await interaction.response.send_message("This is not your War Die roll.",ephemeral=True)
 					await ctx.respond(f"**{codename.upper()}** spends a **Fated** War Die. **They must choose:**\n- **{num_to_die[6]} (6💥)**\n- **{num_to_die[nonsix]} ({nonsix}{' - __reduces to 0__!' if nonsix == 1 else ''})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.",view=DiePicker())
 				else:
 					results = [first[0],second[0]]
