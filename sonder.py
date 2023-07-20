@@ -1276,7 +1276,7 @@ async def set_item_counter(ctx,
 	amount: discord.Option(str, "The value to set the counter to; supports dice syntax.", required=True)
 	):
 	
-	log(f"/set_counter {item} {amount} {counter_name}")
+	log(f"/set_item_counter {item} {amount} {counter_name}")
 	item = item.strip()
 	counter_name = counter_name.strip()
 	amount = amount.strip()
@@ -1330,7 +1330,7 @@ async def remove_item_counter(ctx,
 	counter_name: discord.Option(str, "The name of the counter",autocomplete=discord.utils.basic_autocomplete(counters_on_the_item_autocomp), required=True)
 	):
 	
-	log(f"/adjust_counter {item} {counter_name}")
+	log(f"/remove_item_counter {item} {counter_name}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
