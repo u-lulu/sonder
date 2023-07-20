@@ -1693,27 +1693,33 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 					class DiePicker(discord.ui.View):
 						@discord.ui.button(label="Explode the 6", style=discord.ButtonStyle.red, emoji="💥")
 						async def explode_callback(self, button, interaction):
-							self.disable_all_items()
-							await interaction.response.edit_message(view=self)
-							results = [6]
-							while results[-1] == 6:
-								results.append(d6())
-							message = f"**{codename.upper()}** explodes the 6:"
-							for result in results:
-								if result == 6:
-									message += f" **{num_to_die[result]} ({result}💥)**"
-								elif result == 1:
-									message += f" **{num_to_die[result]} ({result} - __roll dropped__!)**"
-								else:
-									message += f" **{num_to_die[result]} ({result})**"
-							if len(results) > 1 or 1 in results:
-								message += f"\n- Total: **{0 if 1 in results else sum(results)}**"
-							await ctx.respond(message)
+							if interaction.user.id == ctx.author.id:
+								self.disable_all_items()
+								await interaction.response.edit_message(view=self)
+								results = [6]
+								while results[-1] == 6:
+									results.append(d6())
+								message = f"**{codename.upper()}** explodes the 6:"
+								for result in results:
+									if result == 6:
+										message += f" **{num_to_die[result]} ({result}💥)**"
+									elif result == 1:
+										message += f" **{num_to_die[result]} ({result} - __roll dropped__!)**"
+									else:
+										message += f" **{num_to_die[result]} ({result})**"
+								if len(results) > 1 or 1 in results:
+									message += f"\n- Total: **{0 if 1 in results else sum(results)}**"
+								await ctx.respond(message)
+							else:
+								await interaction.response.send_message("This is not your War Die roll.")
 						@discord.ui.button(label="Keep the " + str(nonsix), style=discord.ButtonStyle.blurple, emoji="🎲")
 						async def safety_callback(self, button, interaction):
-							self.disable_all_items()
-							await interaction.response.edit_message(view=self)
-							await ctx.respond(f"**{codename.upper()}** keeps the **{num_to_die[nonsix]} ({nonsix})**.{' The final result is **zero**.' if nonsix == 1 else ''}")
+							if interaction.user.id == ctx.author.id:
+								self.disable_all_items()
+								await interaction.response.edit_message(view=self)
+								await ctx.respond(f"**{codename.upper()}** keeps the **{num_to_die[nonsix]} ({nonsix})**.{' The final result is **zero**.' if nonsix == 1 else ''}")
+							else:
+								await interaction.response.send_message("This is not your War Die roll.")
 					await ctx.respond(f"**{codename.upper()}** spends a **Fated** War Die. **They must choose:**\n- **{num_to_die[6]} (6💥)**\n- **{num_to_die[nonsix]} ({nonsix}{' - __reduces to 0__!' if nonsix == 1 else ''})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.",view=DiePicker())
 				else:
 					results = [first[0],second[0]]
