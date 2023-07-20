@@ -829,6 +829,36 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 		else:
 			await ctx.respond(message)
 
+@bot.command(description="Show your active character's inventory")
+async def inventory(ctx):
+	log(f"/inventory")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	message = f"**{codename.upper()}**'s inventory:"
+	if len(character['items']) <= 0:
+		message = f"**{codename.upper()}** has no items in their inventory."
+	else:
+		for item in character['items']:
+			message += f"\n- {item}"
+			if item in character['counters']:
+				counters = character['counters'][item]
+				counter_strings = []
+				for counter in counters:
+					counter_strings.append(f"{counter.upper()}: {counters[counter]}")
+				message += f" ({', '.join(counter_strings)})"
+	if len(message) > 2000:
+		message = message.replace("*","").replace("# ","")
+		with open("message.txt","w") as file:
+			file.write(message)
+		await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
+		os.remove('message.txt')
+		log("Sent inventory as file")
+	else:
+		await ctx.respond(message)
+
 @bot.command(description="Switch which character is active in this channel")
 async def switch_character(ctx, codename: discord.Option(str, "The codename of the character to switch to.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
 	log(f"/switch {codename}")
