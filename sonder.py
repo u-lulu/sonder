@@ -1111,6 +1111,116 @@ async def add_item(ctx,
 	await ctx.respond(f"**{codename.upper()}** has added **{item_to_add}** to their inventory.")
 	await save_character_data()
 
+async def full_item_autocomplete(ctx):
+	uid = str(ctx.interaction.user.id)
+	if uid in character_data:
+		# gotta get active character manually cus this is a different kind of ctx. ugh
+		your_actives = character_data[uid]['active']
+		if str(ctx.interaction.channel_id) in your_actives:
+			current_active = your_actives[str(ctx.interaction.channel_id)]
+			if current_active in character_data[uid]['chars']:
+				current_char = character_data[uid]['chars'][current_active]
+				return current_char['items']
+			else:
+				return []
+		else:
+			return []
+	else:
+		return []
+
+async def orig_item_name_autocomp(ctx):
+	uid = str(ctx.interaction.user.id)
+	if uid in character_data:
+		# gotta get active character manually cus this is a different kind of ctx. ugh
+		your_actives = character_data[uid]['active']
+		if str(ctx.interaction.channel_id) in your_actives:
+			current_active = your_actives[str(ctx.interaction.channel_id)]
+			if current_active in character_data[uid]['chars']:
+				current_char = character_data[uid]['chars'][current_active]
+				# get item here
+				item = ctx.options['original_item']
+				item = item.split(" (")
+				return [item[0]]
+			else:
+				return []
+		else:
+			return []
+	else:
+		return []
+
+async def orig_item_effect_autocomp(ctx):
+	uid = str(ctx.interaction.user.id)
+	if uid in character_data:
+		# gotta get active character manually cus this is a different kind of ctx. ugh
+		your_actives = character_data[uid]['active']
+		if str(ctx.interaction.channel_id) in your_actives:
+			current_active = your_actives[str(ctx.interaction.channel_id)]
+			if current_active in character_data[uid]['chars']:
+				current_char = character_data[uid]['chars'][current_active]
+				# get item here
+				item = ctx.options['original_item']
+				item = item.split(" (")
+				return [item[1][:-1],"REMOVE_EFFECT"]
+			else:
+				return []
+		else:
+			return []
+	else:
+		return []
+
+@bot.command(description="Edit an item in your inventory")
+async def edit_item(ctx,
+		original_item: discord.Option(str, "The name of the original item",autocomplete=discord.utils.basic_autocomplete(full_item_autocomplete), required=True),
+		name: discord.Option(str, "The new name of the item",autocomplete=discord.utils.basic_autocomplete(orig_item_name_autocomp), required=True), 
+		effect: discord.Option(str, "The new effect of the item",autocomplete=discord.utils.basic_autocomplete(orig_item_effect_autocomp), required=True)):
+	log(f"/edit_item {original_item} {name} {effect}")
+	name = name.strip()
+	effect = effect.strip()
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-subscribe to Expanded Character Management in Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		return
+	
+	if original_item not in character['items']:
+		await ctx.respond(f"The character **{codename.upper()}** is not carrying the item '{original_item}'. ",ephemeral=True)
+		return
+
+	concat = name+effect
+	if "(" in concat or ")" in concat:
+		await ctx.respond("For organizational reasons, please do not use parenthesis in the `name` or `effect` of your item.\nTo include an item's effect, use the optional `effect` argument for this command instead.",ephemeral=True)
+		return
+	
+	item_index = character['items'].index(original_item)
+	new_item = ""
+	if effect == "REMOVE_EFFECT":
+		new_item = name
+	else:
+		new_item = f"{name} ({effect})"
+	character['items'][item_index] = new_item
+	
+	message = f"**{codename.upper()}** has replaced the **{original_item}** in their inventory with **{new_item}**."
+	
+	# counter transfer
+	if original_item in character['counters']:
+		character['counters'][new_item] = character['counters'][original_item]
+		del character['counters'][original_item]
+		message += f"\n- {len(character['counters'][new_item])} counters have been transferred to the new item."
+	
+	# trait item override
+	for trait in character['traits']:
+		if original_item == trait['Item']:
+			trait['Item'] = new_item
+			message += f"\n- The trait item for {trait['Name']} has been updated accordingly."
+			break
+	
+	await ctx.respond(message)
+	await save_character_data()
+	
 async def item_counters_autocomp(ctx):
 	uid = str(ctx.interaction.user.id)
 	if uid in character_data:
@@ -1496,23 +1606,6 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 		
 		await save_character_data()
 		return
-
-async def full_item_autocomplete(ctx):
-	uid = str(ctx.interaction.user.id)
-	if uid in character_data:
-		# gotta get active character manually cus this is a different kind of ctx. ugh
-		your_actives = character_data[uid]['active']
-		if str(ctx.interaction.channel_id) in your_actives:
-			current_active = your_actives[str(ctx.interaction.channel_id)]
-			if current_active in character_data[uid]['chars']:
-				current_char = character_data[uid]['chars'][current_active]
-				return current_char['items']
-			else:
-				return []
-		else:
-			return []
-	else:
-		return []
 
 @bot.command(description="Remove an item from your active character")
 async def remove_item(ctx,
