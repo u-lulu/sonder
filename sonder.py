@@ -1103,10 +1103,14 @@ async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait
 
 item_limit = 50
 
+async def no_effect_autocomp(ctx):
+	return ["NO_EFFECT"]
+
 @bot.command(description="Add an item your active character")
 async def add_item(ctx,
-		name: discord.Option(str, "The name of the item", required=True), 
-		effect: discord.Option(str, "The effect of the item", required=False, default="")):
+	name: discord.Option(str, "The name of the item", required=True), 
+	effect: discord.Option(str, "The effect of the item",autocomplete=discord.utils.basic_autocomplete(no_effect_autocomp), required=True)):
+	
 	log(f"/add_item {name} {effect}")
 	name = name.strip()
 	effect = effect.strip()
@@ -1126,7 +1130,7 @@ async def add_item(ctx,
 	
 	concat = name+effect
 	if "(" in concat or ")" in concat:
-		await ctx.respond("For organizational reasons, please do not use parenthesis in the `name` or `effect` of your item.\nTo include an item's effect, use the optional `effect` argument for this command instead.",ephemeral=True)
+		await ctx.respond("For organizational reasons, please do not use parenthesis in the `name` or `effect` of your item.",ephemeral=True)
 		return
 	
 	for held_item in character['items']:
@@ -1136,7 +1140,7 @@ async def add_item(ctx,
 			return
 	
 	item_to_add = name
-	if len(effect) > 0:
+	if len(effect) > 0 and effect != "NO_EFFECT":
 		item_to_add += f" ({effect})"
 	
 	character['items'].append(item_to_add)
