@@ -172,7 +172,6 @@ if os.path.exists('player_data.json'):
 else:
 	log("Player data does not exist. Using empty data.")
 
-reporting_channel = 1101250179899867217
 async def save_character_data():
 	try:
 		with open("player_data.json", "w") as outfile:
@@ -190,8 +189,8 @@ async def save_character_data():
 		log(f"Character data saved ({size_in_kb if size_in_mb < 1 else size_in_mb} {'KB' if size_in_mb < 1 else 'MB'}). Storing data about {total_characters} characters & {total_traits} custom traits created by {total_users} users")
 	except Exception as e:
 		log(f"PLAYER DATA SAVING THREW AN ERROR: {e}")
-		report_channel = await bot.fetch_channel(reporting_channel)
-		await report_channel.send(f"**<@{ownerid}> An error occurred while saving character data!**\n```{e}```")
+		owner_object = await bot.fetch_user(ownerid)
+		await owner_object.send(f"**An error occurred while saving character data!**\n```{e}```")
 
 log("Creating generic commands")
 @bot.event
