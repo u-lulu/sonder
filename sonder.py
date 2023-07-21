@@ -184,7 +184,10 @@ async def save_character_data():
 			total_users += 1
 			total_characters += len(character_data[userid]['chars'])
 			total_traits += len(character_data[userid]['traits'])
-		log(f"Character data saved. Storing data about {total_characters} characters & {total_traits} custom traits created by {total_users} users")
+		sz = os.stat("player_data.json").st_size
+		size_in_kb = round(sz / (1024), 2)
+		size_in_mb = round(sz / (1024*1024), 2)
+		log(f"Character data saved ({size_in_kb if size_in_mb < 1 else size_in_mb} {'KB' if size_in_mb < 1 else 'MB'}). Storing data about {total_characters} characters & {total_traits} custom traits created by {total_users} users")
 	except Exception as e:
 		log(f"PLAYER DATA SAVING THREW AN ERROR: {e}")
 		report_channel = await bot.fetch_channel(reporting_channel)
