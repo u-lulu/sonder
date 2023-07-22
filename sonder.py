@@ -12,6 +12,7 @@ import rolldice # pip install py-rolldice
 from func_timeout import func_timeout, FunctionTimedOut # pip install func-timeout
 import qrcode # pip install qrcode
 import copy
+import asyncio
 
 def log(msg):
 	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
@@ -165,7 +166,51 @@ support_server_obj = None
 
 log("Loading user character data...")
 character_data = {}
-if os.path.exists('player_data.json'):
+
+async def save_character_data(userid=None):
+	if userid is None: #fallback to saving all data
+		log("Saving all character data...")
+		for userid in character_data:
+			await save_character_data(userid)
+		return
+	
+	try:
+		psavestart = time.time()
+		if not os.path.exists('playerdata'):
+			os.mkdir('playerdata')
+		with open(f"playerdata/{userid}.json", "w") as outfile:
+			outfile.write(json.dumps(character_data[userid],indent=2))
+		psaveend = time.time()
+		savetime = round(ploadend-ploadstart,5)
+		this_guys_chars = len(character_data[userid]['chars'])
+		this_guys_traits = len(character_data[userid]['traits'])
+		sz = os.stat(f"playerdata/{userid}.json").st_size
+		size_in_kb = round(sz / (1024), 2)
+		size_in_mb = round(sz / (1024*1024), 2)
+		log(f"Character data for {userid} saved in {savetime if savetime > 0 else '<0.00001'}s ({size_in_kb if size_in_mb < 1 else size_in_mb} {'KB' if size_in_mb < 1 else 'MB'}). Contains {this_guys_chars} characters & {this_guys_traits} custom traits.")
+	except Exception as e:
+		log(f"PLAYER DATA SAVING FOR {userid} THREW AN ERROR: {e}")
+		owner_object = await bot.fetch_user(ownerid)
+		await owner_object.send(f"**An error occurred while saving `{userid}.json`!**\n```{e}```")
+
+if os.path.exists('playerdata'):
+	present_files = os.listdir('playerdata')
+	for filename in present_files:
+		userid = filename.split(".")[0]
+		ploadstart = time.time()
+		file = open(f'playerdata/{filename}')
+		character_data[userid] = json.load(file)
+		file.close()
+		ploadend = time.time()
+		loadtime = round(ploadend-ploadstart,5)
+		this_guys_chars = len(character_data[userid]['chars'])
+		this_guys_traits = len(character_data[userid]['traits'])
+		sz = os.stat(f'playerdata/{filename}').st_size
+		size_in_kb = round(sz / (1024), 2)
+		size_in_mb = round(sz / (1024*1024), 2)
+		log(f"Loaded player data for {userid} in {loadtime if loadtime > 0 else '<0.00001'}s ({size_in_kb if size_in_mb < 1 else size_in_mb} {'KB' if size_in_mb < 1 else 'MB'}). Contains {this_guys_chars} characters & {this_guys_traits} custom traits.")
+elif os.path.exists('player_data.json'):
+	log("Old player data found. Converting...")
 	ploadstart = time.time()
 	file = open('player_data.json')
 	character_data = json.load(file)
@@ -182,30 +227,13 @@ if os.path.exists('player_data.json'):
 	size_in_kb = round(sz / (1024), 2)
 	size_in_mb = round(sz / (1024*1024), 2)
 	log(f"Loaded {size_in_kb if size_in_mb < 1 else size_in_mb} {'KB' if size_in_mb < 1 else 'MB'} file in {loadtime if loadtime > 0 else '<0.00001'}s. Storing data about {total_characters} characters & {total_traits} custom traits created by {total_users} users")
+	asyncio.run(save_character_data())
+	os.rename('player_data.json','player_data_old.json')
+	log('Restarting...')
+	exit()
 else:
 	log("Player data does not exist. Using empty data.")
-
-async def save_character_data():
-	try:
-		psavestart = time.time()
-		with open("player_data.json", "w") as outfile:
-			outfile.write(json.dumps(character_data,indent=2))
-		psaveend = time.time()
-		savetime = round(ploadend-ploadstart,5)
-		total_users = len(character_data)
-		total_characters = 0
-		total_traits = 0
-		for userid in character_data:
-			total_characters += len(character_data[userid]['chars'])
-			total_traits += len(character_data[userid]['traits'])
-		sz = os.stat("player_data.json").st_size
-		size_in_kb = round(sz / (1024), 2)
-		size_in_mb = round(sz / (1024*1024), 2)
-		log(f"Character data saved in {savetime if savetime > 0 else '<0.00001'}s ({size_in_kb if size_in_mb < 1 else size_in_mb} {'KB' if size_in_mb < 1 else 'MB'}). Storing data about {total_characters} characters & {total_traits} custom traits created by {total_users} users")
-	except Exception as e:
-		log(f"PLAYER DATA SAVING THREW AN ERROR: {e}")
-		owner_object = await bot.fetch_user(ownerid)
-		await owner_object.send(f"**An error occurred while saving character data!**\n```{e}```")
+	os.mkdir('playerdata')
 
 log("Creating generic commands")
 @bot.event
@@ -593,7 +621,7 @@ async def add_trait(ctx,
 		out += f"\n**This character now has a Max HP of {character['maxhp']}!!**"
 	out += f"\n>>> {trait_message_format(my_new_trait)}"
 	await ctx.respond(out)
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 
 standard_character_limit = 10
 premium_character_limit = 50
@@ -673,7 +701,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	if starter_trait_2 is not None:
 		await add_trait(ctx, starter_trait_2, None)
 	if not set_as_active and not starter_trait_1 and not starter_trait_2:
-		await save_character_data()
+		await save_character_data(str(ctx.author.id))
 	
 @bot.command(description="Make a copy of an existing character")
 async def clone(ctx,
@@ -775,7 +803,7 @@ async def delete_character(ctx,
 				message += f"\nYou now have {len(yourstuff['chars'])} characters."
 				
 			await ctx.respond(message)
-			await save_character_data()
+			await save_character_data(str(ctx.author.id))
 	else:
 		await ctx.respond("You must triple-confirm that you want to delete your character.",ephemeral=True)
 
@@ -892,7 +920,7 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 	else:
 		character_data[userid]['active'][str(ctx.channel_id)] = codename
 		await ctx.respond(f"Your active character in this channel is now **{codename.upper()}**.")
-		await save_character_data()
+		await save_character_data(str(ctx.author.id))
 	return
 
 @bot.command(description="Check your current active character")
@@ -959,7 +987,7 @@ async def set_role(ctx,
 	out = f"**{codename.upper()}** has changed their role:"
 	out += f"\n>>> **{name}**\n{description}"
 	await ctx.respond(out)
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 
 async def trait_autocomp(ctx):
 	return trait_names
@@ -1049,7 +1077,7 @@ async def create_custom_trait(ctx,
 	out += f"\nYou now have {len(character_data[userid]['traits'])} custom traits.\n>>> "
 	out += trait_message_format(new_trait)
 	await ctx.respond(out)
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 
 async def custom_traits_list_autocomp(ctx):
 	uid = str(ctx.interaction.user.id)
@@ -1082,7 +1110,7 @@ async def delete_custom_trait(ctx,
 		message += f"\nYou now have {len(character_data[uid]['traits'])} custom traits."
 	
 	await ctx.respond(message)
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 
 @bot.command(description="View your custom traits")
 async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait to view",autocomplete=discord.utils.basic_autocomplete(custom_traits_list_autocomp), required=False, default=None)):
@@ -1160,7 +1188,7 @@ async def add_item(ctx,
 	character['items'].append(item_to_add)
 	
 	await ctx.respond(f"**{codename.upper()}** has added **{item_to_add}** to their inventory.")
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 
 async def full_item_autocomplete(ctx):
 	uid = str(ctx.interaction.user.id)
@@ -1270,7 +1298,7 @@ async def edit_item(ctx,
 			break
 	
 	await ctx.respond(message)
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 	
 async def item_counters_autocomp(ctx):
 	uid = str(ctx.interaction.user.id)
@@ -1336,7 +1364,7 @@ async def add_item_counter(ctx,
 	character['counters'][item][counter_name] = starting_value
 	
 	await ctx.respond(f"{codename.upper()} has attached a counter to their **{item}**, called **'{counter_name}'**. It has a starting value of **{starting_value}**.")
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 
 async def items_with_counters_autocomp(ctx):
 	uid = str(ctx.interaction.user.id)
@@ -1428,7 +1456,7 @@ async def adjust_item_counter(ctx,
 	if 'd' in amount or 'D' in amount:
 		message += f"\n\nDice results: `{output[1]}`"
 	await ctx.respond(message)
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Performs an Ammo check on one of your item's counters")
 async def ammo_check(ctx,
@@ -1480,7 +1508,7 @@ async def ammo_check(ctx,
 	await ctx.respond(message)
 	
 	if character['counters'][item][counter_name] != current:
-		await save_character_data()
+		await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Set an item counter on your character")
 async def set_item_counter(ctx,
@@ -1535,7 +1563,7 @@ async def set_item_counter(ctx,
 	if 'd' in amount or 'D' in amount:
 		message += f"\n\nDice results: `{output[1]}`"
 	await ctx.respond(message)
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Remove a counter from one of your character's items")
 async def remove_item_counter(ctx,
@@ -1569,7 +1597,7 @@ async def remove_item_counter(ctx,
 		del character['counters'][item]
 		message += " It no longer has any associated counters."
 	await ctx.respond(message)
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 	
 async def active_character_traits_autocomp(ctx):
 	uid = str(ctx.interaction.user.id)
@@ -1655,7 +1683,7 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 			except ValueError as e:
 				log("Caught ValueError in attempt to remove trait item")
 		
-		await save_character_data()
+		await save_character_data(str(ctx.author.id))
 		return
 
 @bot.command(description="Remove an item from your active character")
@@ -1690,7 +1718,7 @@ async def remove_item(ctx,
 		del character['counters'][item]
 	
 	await ctx.respond(f"**{codename.upper()}** has removed **{item}** from their inventory.")
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Spend a War Die from your active character")
 async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows the 'Exploding WAR DICE' optional rule.", required=False, default=False)):
@@ -1808,7 +1836,7 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 			else:
 				result = d6()
 				await ctx.respond(f"**{codename.upper()}** spends a War Die: **{num_to_die[result]} ({result})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.")
-		await save_character_data()
+		await save_character_data(str(ctx.author.id))
 	else:
 		await ctx.respond(f"{codename.upper()} has no War Dice to spend!",ephemeral=True)
 
@@ -1873,7 +1901,7 @@ async def adjust(ctx,
 		message += f"\n\nDice results: `{output[1]}`"
 	
 	await ctx.respond(message)
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Reset your active character's stats and items to the trait defaults")
 async def refresh(ctx, 
@@ -1956,7 +1984,7 @@ async def refresh(ctx,
 	if reset_war_dice:
 		message += f"\nYour War Dice have been recalculated from the base 0, and is now **{character['wd']}**."
 	await ctx.respond(message)
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Roll +FORCEFUL with your active character")
 async def frc(ctx, 
@@ -2049,7 +2077,7 @@ async def damage(ctx,
 		if len(message) > limit:
 			message = message[:limit-5]+"...]`"
 	await ctx.respond(message)
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Heal your active character")
 async def heal(ctx, 
@@ -2106,7 +2134,7 @@ async def heal(ctx,
 		if len(message) > limit:
 			message = message[:limit-5]+"...]`"
 	await ctx.respond(message)
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Roll your active character's weapon damage")
 async def attack(ctx,
@@ -2271,7 +2299,7 @@ async def equip_weapon(ctx,
 	
 	await ctx.respond(f"**{codename.upper()}** has equipped **{name} ({damage} DAMAGE)**")
 	
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Set your equipped armor")
 async def equip_armor(ctx, 
@@ -2294,7 +2322,7 @@ async def equip_armor(ctx,
 	
 	await ctx.respond(f"**{codename.upper()}** has equipped **{name} ({damage} ARMOR)**")
 	
-	await save_character_data()
+	await save_character_data(str(ctx.author.id))
 
 log("Creating trait commands")
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
