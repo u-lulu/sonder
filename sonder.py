@@ -225,11 +225,11 @@ async def on_ready():
 	try:
 		log("Checking for support server...")
 		support_server_obj = await bot.fetch_guild(support_server_id)
-		log("Support server found")
+		log(f"Support server found: {support_server_obj.name} ({support_server_obj.id})")
 	except Exception as e:
 		log(f"Support server could not be found: {e}")
 		support_server_obj = None
-	log(f"{bot.user} is ready and online!")
+	log(f"{bot.user} is ready and online in {len(bot.guilds)} guilds!")
 	boot_time = int(time.time())
 
 @bot.command(description="Checks how long the bot has been online")
