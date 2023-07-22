@@ -175,19 +175,23 @@ async def save_character_data(userid=None):
 		return
 	
 	try:
-		psavestart = time.time()
-		if not os.path.exists('playerdata'):
-			os.mkdir('playerdata')
-		with open(f"playerdata/{userid}.json", "w") as outfile:
-			outfile.write(json.dumps(character_data[userid],indent=2))
-		psaveend = time.time()
-		savetime = round(ploadend-ploadstart,5)
-		this_guys_chars = len(character_data[userid]['chars'])
-		this_guys_traits = len(character_data[userid]['traits'])
-		sz = os.stat(f"playerdata/{userid}.json").st_size
-		size_in_kb = round(sz / (1024), 2)
-		size_in_mb = round(sz / (1024*1024), 2)
-		log(f"Character data for {userid} saved in {savetime if savetime > 0 else '<0.00001'}s ({size_in_kb if size_in_mb < 1 else size_in_mb} {'KB' if size_in_mb < 1 else 'MB'}). Contains {this_guys_chars} characters & {this_guys_traits} custom traits.")
+		if userid in character_data:
+			psavestart = time.time()
+			if not os.path.exists('playerdata'):
+				os.mkdir('playerdata')
+			with open(f"playerdata/{userid}.json", "w") as outfile:
+				outfile.write(json.dumps(character_data[userid],indent=2))
+			psaveend = time.time()
+			savetime = round(ploadend-ploadstart,5)
+			this_guys_chars = len(character_data[userid]['chars'])
+			this_guys_traits = len(character_data[userid]['traits'])
+			sz = os.stat(f"playerdata/{userid}.json").st_size
+			size_in_kb = round(sz / (1024), 2)
+			size_in_mb = round(sz / (1024*1024), 2)
+			log(f"Character data for {userid} saved in {savetime if savetime > 0 else '<0.00001'}s ({size_in_kb if size_in_mb < 1 else size_in_mb} {'KB' if size_in_mb < 1 else 'MB'}). Contains {this_guys_chars} characters & {this_guys_traits} custom traits.")
+		else:
+			if os.path.exists(f'playerdata/{userid}.json'):
+				os.remove(f'playerdata/{userid}.json')
 	except Exception as e:
 		log(f"PLAYER DATA SAVING FOR {userid} THREW AN ERROR: {e}")
 		owner_object = await bot.fetch_user(ownerid)
