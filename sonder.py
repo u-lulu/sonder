@@ -182,7 +182,7 @@ async def save_character_data(userid=None):
 			with open(f"playerdata/{userid}.json", "w") as outfile:
 				outfile.write(json.dumps(character_data[userid],indent=2))
 			psaveend = time.time()
-			savetime = round(ploadend-ploadstart,5)
+			savetime = round(psaveend-psavestart,5)
 			this_guys_chars = len(character_data[userid]['chars'])
 			this_guys_traits = len(character_data[userid]['traits'])
 			sz = os.stat(f"playerdata/{userid}.json").st_size
@@ -754,62 +754,76 @@ async def clone(ctx,
 	await switch_character(ctx, new_codename)
 
 @bot.command(description="Delete a character from your roster")
-async def delete_character(ctx,
-	codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True),
-	i_am_sure: discord.Option(bool, "Confirmation that you want the character deleted.", required=True),
-	i_am_very_sure: discord.Option(bool, "Confirmation that you want the character deleted.", required=True),
-	i_am_completely_absolutely_sure: discord.Option(bool, "Confirmation that you want the character deleted.", required=True)):
-	log(f"/delete {codename}{' affirmative' if i_am_sure else ''}{' affirmative' if i_am_very_sure else ''}{' affirmative' if i_am_completely_absolutely_sure else ''}")
-	
-	if i_am_sure and i_am_very_sure and i_am_completely_absolutely_sure:
-		yourid = str(ctx.author.id)
-		codename = codename.lower()
-		if yourid not in character_data:
-			await ctx.respond("You do not have any character data to delete.",ephemeral=True)
-			return
-		yourstuff = character_data[yourid]
-		if codename not in yourstuff['chars']:
-			await ctx.respond(f"You do not have a character named '{codename}' to delete.",ephemeral=True)
-			return
-		else:
-			message = f"Successfully deleted **{codename.upper()}**."
-			was_premium = yourstuff['chars'][codename]['premium']
-			del yourstuff['chars'][codename]
-			channel_unbinds = 0
-			keys_to_purge = []
-			for key in yourstuff['active']:
-				if yourstuff['active'][key] == codename:
-					channel_unbinds += 1
-					keys_to_purge.append(key)
-			if channel_unbinds > 0:
-				message += f"\nThis action has cleared your active character across {channel_unbinds} channels:"
-			for key in keys_to_purge:
-				message += f" <#{key}>"
-				del yourstuff['active'][key]
-			
-			earliest_time = math.inf
-			earliest_premium_char = None
-			earliest_prem_codename = None
-			if not was_premium:
-				for codename in yourstuff['chars']:
-					if yourstuff['chars'][codename]['premium'] and yourstuff['chars'][codename]['creation_time'] < earliest_time:
-						earliest_time = yourstuff['chars'][codename]['creation_time']
-						earliest_premium_char = yourstuff['chars'][codename]
-						earliest_prem_codename = codename
-				if earliest_premium_char is not None:
-					earliest_premium_char['premium'] = False
-					message += f"\nYou have freed up a non-premium slot. **{codename.upper()}** is no longer a premium character."
-			
-			if len(yourstuff['chars']) <= 0 and len(yourstuff['traits']) <= 0:
-				del character_data[yourid]
-				message += "\nYou no longer have any characters or traits. All data associated with your User ID has been deleted."
-			else:
-				message += f"\nYou now have {len(yourstuff['chars'])} characters."
-				
-			await ctx.respond(message)
-			await save_character_data(str(ctx.author.id))
+async def delete_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
+	log(f"/delete {codename}")
+	codename = codename.lower()
+	yourid = str(ctx.author.id)
+	if yourid not in character_data:
+		await ctx.respond("You do not have any character data to delete.",ephemeral=True)
+		return
+	yourstuff = character_data[yourid]
+	if codename not in yourstuff['chars']:
+		await ctx.respond(f"You do not have a character named '{codename}' to delete.",ephemeral=True)
+		return
 	else:
-		await ctx.respond("You must triple-confirm that you want to delete your character.",ephemeral=True)
+		class DeleteConfirm(discord.ui.View):
+			@discord.ui.button(label=f"Cancel deletion", style=discord.ButtonStyle.green, emoji="🔙")
+			async def stop_deletion_callback(self, button, interaction):
+				if interaction.user.id == ctx.author.id:
+					self.disable_all_items()
+					await interaction.response.edit_message(view=self)
+					log(f"Cancelling deletion")
+					await ctx.respond(f"Character deletion cancelled.")
+				else:
+					log("Denying invalid deletion response")
+					await interaction.response.send_message("This is not your character deletion prompt.",ephemeral=True)
+			@discord.ui.button(label=f"Confirm deletion of {codename.upper()}", style=discord.ButtonStyle.red, emoji="🗑️")
+			async def accept_deletion_callback(self, button, interaction):
+				if interaction.user.id == ctx.author.id:
+					deletion_target = codename.lower()
+					self.disable_all_items()
+					await interaction.response.edit_message(view=self)
+					log("Confirming deletion")
+					message = f"<@{yourid}> Successfully deleted **{deletion_target.upper()}**."
+					was_premium = yourstuff['chars'][deletion_target]['premium']
+					del yourstuff['chars'][deletion_target]
+					channel_unbinds = 0
+					keys_to_purge = []
+					for key in yourstuff['active']:
+						if yourstuff['active'][key] == deletion_target:
+							channel_unbinds += 1
+							keys_to_purge.append(key)
+					if channel_unbinds > 0:
+						message += f"\nThis action has cleared your active character across {channel_unbinds} channels:"
+					for key in keys_to_purge:
+						message += f" <#{key}>"
+						del yourstuff['active'][key]
+					
+					earliest_time = math.inf
+					earliest_premium_char = None
+					earliest_prem_codename = None
+					if not was_premium:
+						for deletion_target in yourstuff['chars']:
+							if yourstuff['chars'][deletion_target]['premium'] and yourstuff['chars'][deletion_target]['creation_time'] < earliest_time:
+								earliest_time = yourstuff['chars'][deletion_target]['creation_time']
+								earliest_premium_char = yourstuff['chars'][deletion_target]
+								earliest_prem_codename = deletion_target
+						if earliest_premium_char is not None:
+							earliest_premium_char['premium'] = False
+							message += f"\nYou have freed up a non-premium slot. **{deletion_target.upper()}** is no longer a premium character."
+					
+					if len(yourstuff['chars']) <= 0 and len(yourstuff['traits']) <= 0:
+						del character_data[yourid]
+						message += "\nYou no longer have any characters or traits. All data associated with your User ID has been deleted."
+					else:
+						message += f"\nYou now have {len(yourstuff['chars'])} characters."
+					await ctx.respond(message)
+					await save_character_data(str(ctx.author.id))
+				else:
+					log("Denying invalid deletion response")
+					await interaction.response.send_message("This is not your character deletion prompt.",ephemeral=True)
+		
+		await ctx.respond(f"⚠️ **This action will permanently delete your character {codename.upper()}, and all data associated with them.\nIt cannot be undone.\nContinue?**",view=DeleteConfirm())
 
 @bot.command(description="List all characters you've created")
 async def my_characters(ctx):
