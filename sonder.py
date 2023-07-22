@@ -186,8 +186,8 @@ else:
 	log("Player data does not exist. Using empty data.")
 
 async def save_character_data():
-	psavestart = time.time()
 	try:
+		psavestart = time.time()
 		with open("player_data.json", "w") as outfile:
 			outfile.write(json.dumps(character_data,indent=2))
 		psaveend = time.time()
