@@ -169,6 +169,16 @@ if os.path.exists('player_data.json'):
 	file = open('player_data.json')
 	character_data = json.load(file)
 	file.close()
+	total_users = len(character_data)
+	total_characters = 0
+	total_traits = 0
+	for userid in character_data:
+		total_characters += len(character_data[userid]['chars'])
+		total_traits += len(character_data[userid]['traits'])
+	sz = os.stat("player_data.json").st_size
+	size_in_kb = round(sz / (1024), 2)
+	size_in_mb = round(sz / (1024*1024), 2)
+	log(f"Loaded {size_in_kb if size_in_mb < 1 else size_in_mb} {'KB' if size_in_mb < 1 else 'MB'} file. Storing data about {total_characters} characters & {total_traits} custom traits created by {total_users} users")
 else:
 	log("Player data does not exist. Using empty data.")
 
@@ -176,11 +186,10 @@ async def save_character_data():
 	try:
 		with open("player_data.json", "w") as outfile:
 			outfile.write(json.dumps(character_data,indent=2))
-		total_users = 0
+		total_users = len(character_data)
 		total_characters = 0
 		total_traits = 0
 		for userid in character_data:
-			total_users += 1
 			total_characters += len(character_data[userid]['chars'])
 			total_traits += len(character_data[userid]['traits'])
 		sz = os.stat("player_data.json").st_size
