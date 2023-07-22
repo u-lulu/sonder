@@ -163,12 +163,15 @@ def roll_extra_possibility(input_string):
 support_server_id = 1101249440230154300
 support_server_obj = None
 
-log("Loading user character data")
+log("Loading user character data...")
 character_data = {}
 if os.path.exists('player_data.json'):
+	ploadstart = time.time()
 	file = open('player_data.json')
 	character_data = json.load(file)
 	file.close()
+	ploadend = time.time()
+	loadtime = round(ploadend-ploadstart,5)
 	total_users = len(character_data)
 	total_characters = 0
 	total_traits = 0
@@ -178,14 +181,17 @@ if os.path.exists('player_data.json'):
 	sz = os.stat("player_data.json").st_size
 	size_in_kb = round(sz / (1024), 2)
 	size_in_mb = round(sz / (1024*1024), 2)
-	log(f"Loaded {size_in_kb if size_in_mb < 1 else size_in_mb} {'KB' if size_in_mb < 1 else 'MB'} file. Storing data about {total_characters} characters & {total_traits} custom traits created by {total_users} users")
+	log(f"Loaded {size_in_kb if size_in_mb < 1 else size_in_mb} {'KB' if size_in_mb < 1 else 'MB'} file in {loadtime if loadtime > 0 else '<0.00001'}s. Storing data about {total_characters} characters & {total_traits} custom traits created by {total_users} users")
 else:
 	log("Player data does not exist. Using empty data.")
 
 async def save_character_data():
+	psavestart = time.time()
 	try:
 		with open("player_data.json", "w") as outfile:
 			outfile.write(json.dumps(character_data,indent=2))
+		psaveend = time.time()
+		savetime = round(ploadend-ploadstart,5)
 		total_users = len(character_data)
 		total_characters = 0
 		total_traits = 0
@@ -195,7 +201,7 @@ async def save_character_data():
 		sz = os.stat("player_data.json").st_size
 		size_in_kb = round(sz / (1024), 2)
 		size_in_mb = round(sz / (1024*1024), 2)
-		log(f"Character data saved ({size_in_kb if size_in_mb < 1 else size_in_mb} {'KB' if size_in_mb < 1 else 'MB'}). Storing data about {total_characters} characters & {total_traits} custom traits created by {total_users} users")
+		log(f"Character data saved in {savetime if savetime > 0 else '<0.00001'}s ({size_in_kb if size_in_mb < 1 else size_in_mb} {'KB' if size_in_mb < 1 else 'MB'}). Storing data about {total_characters} characters & {total_traits} custom traits created by {total_users} users")
 	except Exception as e:
 		log(f"PLAYER DATA SAVING THREW AN ERROR: {e}")
 		owner_object = await bot.fetch_user(ownerid)
