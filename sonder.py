@@ -191,6 +191,7 @@ async def save_character_data(userid=None):
 			log(f"Character data for {userid} saved in {savetime if savetime > 0 else '<0.00001'}s ({size_in_kb if size_in_mb < 1 else size_in_mb} {'KB' if size_in_mb < 1 else 'MB'}). Contains {this_guys_chars} characters & {this_guys_traits} custom traits.")
 		else:
 			if os.path.exists(f'playerdata/{userid}.json'):
+				log(f"Character data for {userid} deleted.")
 				os.remove(f'playerdata/{userid}.json')
 	except Exception as e:
 		log(f"PLAYER DATA SAVING FOR {userid} THREW AN ERROR: {e}")
@@ -627,6 +628,11 @@ async def add_trait(ctx,
 	await ctx.respond(out)
 	await save_character_data(str(ctx.author.id))
 
+valid_bonuses = ["+1D6 Max Hp","+1D6 War Dice","Random Standard Issue Item","Balaclava (hides identity)","Flashlight (can be used as a weapon attachment)","Knife (1D6 DAMAGE)","MRE field rations (+1D6 HP, one use)","Pistol (1D6 DAMAGE)","Riot shield (1 ARMOR, equip as weapon)"]
+
+async def starting_bonus_autocomp(ctx):
+	return valid_bonuses
+
 standard_character_limit = 10
 premium_character_limit = 50
 
@@ -634,6 +640,7 @@ premium_character_limit = 50
 async def create_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True),
 	starter_trait_1: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
 	starter_trait_2: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
+	starter_bonus: discord.Option(str, "The extra starting bonus for your character.",autocomplete=discord.utils.basic_autocomplete(starting_bonus_autocomp), required=False, default=None),
 	set_as_active: discord.Option(bool, "If TRUE, the new character will become your active character in this channel. FALSE by default.", required=False, default=True)):
 	log(f"/create {codename} {starter_trait_1 if starter_trait_1 is not None else '[no first trait]'} {starter_trait_2 if starter_trait_2 is not None else '[no second trait]'} {'set_as_active' if set_as_active else ''}")
 	
@@ -697,6 +704,8 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	msg += f"\nYou now have {len(character_data[userid]['chars'])} characters."
 	if premium_character:
 		msg += "\n*This character uses a premium slot!*"
+	if starter_bonus is not None and starter_bonus not in valid_bonuses:
+		msg += "\n*The provided `starter_bonus` is invalid. No starter bonus has been applied.*"
 	await ctx.respond(msg)
 	if set_as_active:
 		await switch_character(ctx, codename)
@@ -704,6 +713,20 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 		await add_trait(ctx, starter_trait_1, None)
 	if starter_trait_2 is not None:
 		await add_trait(ctx, starter_trait_2, None)
+	if starter_bonus is not None:
+		if starter_bonus == "+1D6 Max Hp":
+			await adjust(ctx,"MAX HP","1D6")
+		elif starter_bonus == "+1D6 War Dice":
+			await adjust(ctx,"WAR DICE","1D6")
+		else:
+			standard_issue_items = ["Balaclava (hides identity)","Flashlight (can be used as a weapon attachment)","Knife (1D6 DAMAGE)","MRE field rations (+1D6 HP, one use)","Pistol (1D6 DAMAGE)","Riot shield (1 ARMOR, equip as weapon)"]
+			if starter_bonus == "Random Standard Issue Item":
+				starter_bonus = rnd.choice(standard_issue_items)
+			if starter_bonus in standard_issue_items:
+				split_bonus = starter_bonus.split(" (")
+				starting_item_name = split_bonus[0]
+				starting_item_effect = split_bonus[1][:-1]
+				await add_item(ctx,starting_item_name,starting_item_effect)
 	if not set_as_active and not starter_trait_1 and not starter_trait_2:
 		await save_character_data(str(ctx.author.id))
 	
