@@ -1936,6 +1936,8 @@ async def adjust(ctx,
 		return
 	
 	character[translated_stat] += output[0]
+	if translated_stat == "maxhp" and output[0] > 0:
+		character['hp'] += output[0]
 	
 	message = f"{codename.upper()} has **{'in' if output[0] >= 0 else 'de'}creased** their **{stat}** by {abs(output[0])}!"
 	if 'd' in amount or 'D' in amount:
