@@ -1936,7 +1936,7 @@ async def adjust(ctx,
 		return
 	
 	character[translated_stat] += output[0]
-	if translated_stat == "maxhp"
+	if translated_stat == "maxhp":
 		if output[0] > 0:
 			character['hp'] += output[0]
 		elif character['hp'] > character['maxhp']:
