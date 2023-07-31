@@ -255,6 +255,10 @@ async def on_ready():
 				character_data[player]['chars'][char]['counters'] = {}
 				log(f"{char} (owned by {player}) updated to include counters field")
 				changed = True
+			if 'notes' not in character_data[player]['chars'][char]:
+				character_data[player]['chars'][char]['notes'] = ""
+				log(f"{char} (owned by {player}) updated to include notes field")
+				changed = True
 	
 	if changed:
 		await save_character_data()
@@ -698,6 +702,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 		"premium": premium_character,
 		"creation_time": time.time(),
 		"counters": {},
+		"notes": ""
 	}
 	
 	msg = f"Created character with the codename '{codename}'."
@@ -944,6 +949,46 @@ async def inventory(ctx):
 		log("Sent inventory as file")
 	else:
 		await ctx.respond(message)
+
+@bot.command(description="Show the notes field for your active character")
+async def view_notes(ctx):
+	log(f"/view_notes")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	note = character['notes']
+	if len(note) <= 0:
+		await ctx.respond(f"You have not written any notes for **{codename.upper()}**.",ephemeral=True)
+	else:
+		message = f"Notes for **{codename.upper()}**:\n>>> {note}"
+		await ctx.respond(message,ephemeral=True)
+
+@bot.command(description="Edit the notes field for your active character")
+async def edit_notes(ctx):
+	log(f"/edit_notes")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	note = character['notes']
+
+	class NotesModal(discord.ui.Modal):
+		def __init__(self, *args, **kwargs) -> None:
+			super().__init__(*args, **kwargs)
+
+			self.add_item(discord.ui.InputText(label=f"Notes for '{codename.upper()}'",placeholder="Type your notes here.\nLeave this blank to clear notes.",style=discord.InputTextStyle.long,required=False,value=note,max_length=1900))
+
+		async def callback(self, interaction: discord.Interaction):
+			log("Updating character notes...")
+			character['notes'] = value=self.children[0].value
+			await save_character_data(str(ctx.author.id))
+			await interaction.response.send_message(f"Notes for {codename.upper()} have been {'updated' if len(character['notes']) > 0 else '**cleared**'}.",ephemeral=True)
+	
+	modal = NotesModal(title=f"Notes editor")
+	await ctx.send_modal(modal)
 
 @bot.command(description="Switch which character is active in this channel")
 async def switch_character(ctx, codename: discord.Option(str, "The codename of the character to switch to.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
