@@ -951,7 +951,7 @@ async def inventory(ctx):
 		await ctx.respond(message)
 
 @bot.command(description="Show the notes field for your active character")
-async def view_notes(ctx):
+async def view_notes(ctx, hide_output: discord.Option(bool, "Hides the output message from everyone else.", required=False, default=True)):
 	log(f"/view_notes")
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -963,7 +963,7 @@ async def view_notes(ctx):
 		await ctx.respond(f"You have not written any notes for **{codename.upper()}**.",ephemeral=True)
 	else:
 		message = f"Notes for **{codename.upper()}**:\n>>> {note}"
-		await ctx.respond(message,ephemeral=True)
+		await ctx.respond(message,ephemeral=hide_output)
 
 @bot.command(description="Edit the notes field for your active character")
 async def edit_notes(ctx):
