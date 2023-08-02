@@ -1086,6 +1086,9 @@ async def stat_type_autocomp(ctx):
 async def stat_amount_autocomp(ctx):
 	return ["+1","-1","+2","-2","+1D6","-1D6"]
 
+async def no_effect_autocomp(ctx):
+	return ["NO_EFFECT"]
+
 standard_custrait_limit = 2 * standard_character_limit
 premium_custrait_limit = 2 * premium_character_limit
 
@@ -1096,7 +1099,7 @@ async def create_custom_trait(ctx,
 		stat_type: discord.Option(str, "The stat this trait changes", autocomplete=discord.utils.basic_autocomplete(stat_type_autocomp), required=True),
 		stat_amount: discord.Option(str, "The amount that the stat is changed (accepts dice syntax)", autocomplete=discord.utils.basic_autocomplete(stat_amount_autocomp), required=True),
 		item_name: discord.Option(str, "The name of the item that this trait grants you", required=True),
-		item_effect: discord.Option(str, "The effect of the item that this trait grants you", required=True)):
+		item_effect: discord.Option(str, "The effect of the item that this trait grants you",autocomplete=discord.utils.basic_autocomplete(no_effect_autocomp), required=True)):
 	userid = str(ctx.author.id)
 	title = title.strip()
 	description = description.strip()
@@ -1134,12 +1137,16 @@ async def create_custom_trait(ctx,
 	elif userid in character_data and title in character_data[userid]['traits']:
 		await ctx.respond(f"You have already made a trait called **{title}**.",ephemeral=True)
 		return
+		
+	item_full = item_name
+	if item_effect != "NO_EFFECT":
+		item_full += f" ({item_effect})"
 	
 	new_trait = {
 		"Number": "Custom",
 		"Name": title,
 		"Effect": description,
-		"Item": f"{item_name} ({item_effect})",
+		"Item": item_full,
 		"Stat": f"{stat_amount} {stat_type}"
 	}
 	
@@ -1230,9 +1237,6 @@ async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait
 			await ctx.respond(trait_message_format(yourtraits[name]))
 
 item_limit = 50
-
-async def no_effect_autocomp(ctx):
-	return ["NO_EFFECT"]
 
 @bot.command(description="Add an item your active character")
 async def add_item(ctx,
