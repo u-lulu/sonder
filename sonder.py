@@ -454,7 +454,7 @@ def output_character_short(codename, data):
 	attribute_strings = []
 	for attribute in ['frc','tac','cre','rfx']:
 		if data[attribute] != 0:
-			attribute_strings.append(f"{attribute.upper()}: {data[attribute]}")
+			attribute_strings.append(f"{attribute.upper()}: {'+' if data[attribute] > 0 else ''}{data[attribute]}")
 	attribute_strings = ", ".join(attribute_strings)
 	
 	if len(attribute_strings) > 0:
