@@ -424,7 +424,7 @@ def output_character(codename, data):
 		for trait in data['traits']:
 			out += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
 	
-	out += "\nITEMS:"
+	out += "\nINVENTORY:"
 	if len(data['items']) <= 0:
 		out += "\n- *No items yet.*"
 	else:
@@ -436,6 +436,46 @@ def output_character(codename, data):
 				for counter in counters:
 					counter_strings.append(f"{counter.upper()}: {counters[counter]}")
 				out += f" ({', '.join(counter_strings)})"
+	return out
+
+def output_character_short(codename, data):
+	out = f"# {codename.upper()}"
+	if data["role"] == {}:
+		out += "\nROLE: *No role yet.*"
+	else:
+		r = data["role"]
+		out += f"\nROLE: **{r['Name']}**"
+	
+	out += f"\n\nHP: {data['hp']}/{data['maxhp']}"
+	out += f"\nWAR DICE: {data['wd']}"
+	out += f"\nARMOR: {data['armor_name']} ({data['armor']})"
+	out += f"\nWEAPON: {data['weapon_name']} ({data['damage']})"
+	
+	attribute_strings = []
+	for attribute in ['frc','tac','cre','rfx']:
+		if data[attribute] != 0:
+			attribute_strings.append(f"{attribute.upper()}: {data[attribute]}")
+	attribute_strings = ", ".join(attribute_strings)
+	
+	if len(attribute_strings) > 0:
+		out+= "\n\n" + attribute_strings
+	
+	out += "\n\nTRAITS:\n"
+	if len(data['traits']) <= 0:
+		out += "*No traits yet.*"
+	else:
+		alltraits = []
+		for trait in data['traits']:
+			alltraits.append(f"**{trait['Name'][0].upper()+trait['Name'][1:].lower()}** ({trait['Number']})")
+			#out += f"- **{trait['Name']}** ({trait['Number']}, {trait['Stat']})\n"
+		alltraits = ", ".join(alltraits)
+		out += alltraits
+	
+	out += "\n\nINVENTORY: "
+	if len(data['items']) <= 0:
+		out += "\n *No items yet.*"
+	else:
+		out += f"*{len(data['items'])} items. View full inventory with `/inventory`*."
 	return out
 
 def get_active_codename(ctx):
@@ -885,7 +925,7 @@ async def my_characters(ctx):
 		await ctx.respond("You haven't created any characters yet.",ephemeral=True)
 	
 @bot.command(description="Displays your current active character's sheet")
-async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default=""), qr: discord.Option(bool, "Sends a QR code of the final output instead.", required=False, default=False)):
+async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default=""), full_detail: discord.Option(bool, "Sends the sheet with no information truncated.", required=False, default=False), qr: discord.Option(bool, "Sends a QR code of the final output instead.", required=False, default=False)):
 	log(f"/sheet {codename}")
 	codename = codename.lower().strip()
 	yourid = str(ctx.author.id)
@@ -899,7 +939,7 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 		return
 	
 	ch = character_data[yourid]['chars'][codename]
-	message = output_character(codename, ch)
+	message = output_character(codename, ch) if full_detail else output_character_short(codename, ch)
 	if qr:
 		message = message.replace("*","").replace("# ","")
 		if len(message) > 2331:
