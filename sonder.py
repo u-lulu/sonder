@@ -1405,11 +1405,10 @@ async def edit_item(ctx,
 		return
 	
 	item_index = character['items'].index(original_item)
-	new_item = ""
-	if effect == "REMOVE_EFFECT":
-		new_item = name
-	else:
-		new_item = f"{name} ({effect})"
+	new_item = name if effect == "REMOVE_EFFECT" else f"{name} ({effect})"
+	if new_item == original_item:
+		await ctx.respond("The provided new and old items are identical. No change has been made.",ephemeral=True)
+		return
 	character['items'][item_index] = new_item
 	
 	message = f"**{codename.upper()}** has replaced the **{original_item}** in their inventory with **{new_item}**."
