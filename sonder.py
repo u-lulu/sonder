@@ -475,7 +475,7 @@ def output_character_short(codename, data):
 	if len(data['items']) <= 0:
 		out += "\n *No items yet.*"
 	else:
-		out += f"*{len(data['items'])} items. View full inventory with `/inventory`*."
+		out += f"*{len(data['items'])} items. View with `/inventory`*."
 	return out
 
 def get_active_codename(ctx):
