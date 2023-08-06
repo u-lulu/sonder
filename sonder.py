@@ -1369,7 +1369,7 @@ async def orig_item_effect_autocomp(ctx):
 				# get item here
 				item = ctx.options['original_item']
 				item = item.split(" (")
-				return [item[1][:-1],"REMOVE_EFFECT"]
+				return [item[1][:-1],"REMOVE_EFFECT"] if len(item) > 1 else ["REMOVE_EFFECT"]
 			else:
 				return []
 		else:
