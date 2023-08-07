@@ -1881,19 +1881,15 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 					for result in first:
 						if result == 6:
 							message += f" **{num_to_die[result]} ({result}💥)**"
-						elif result == 1:
-							message += f" **{num_to_die[result]} ({result} - __roll dropped__!)**"
 						else:
 							message += f" **{num_to_die[result]} ({result})**"
 					message += f"\n-"
 					for result in second:
 						if result == 6:
 							message += f" **{num_to_die[result]} ({result}💥)**"
-						elif result == 1:
-							message += f" **{num_to_die[result]} ({result} - __roll dropped__!)**"
 						else:
 							message += f" **{num_to_die[result]} ({result})**"
-					message += f"\n- Total: **{0 if 1 in first or 1 in second else sum(first) + sum(second)}**"
+					message += f"\n- Total: **{0 if (1 in first and len(first) > 1) or (1 in second and len(second) > 1) else sum(first) + sum(second)}**"
 					message += f"\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left."
 					await ctx.respond(message)
 				elif first[0] == 6 or second[0] == 6:
@@ -1912,11 +1908,9 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 								for result in results:
 									if result == 6:
 										message += f" **{num_to_die[result]} ({result}💥)**"
-									elif result == 1:
-										message += f" **{num_to_die[result]} ({result} - __roll dropped__!)**"
 									else:
 										message += f" **{num_to_die[result]} ({result})**"
-								if len(results) > 1 or 1 in results:
+								if len(results) > 1 or (1 in results and len(results) > 1):
 									message += f"\n- Total: **{0 if 1 in results else sum(results)}**"
 								await ctx.respond(message)
 							else:
@@ -1928,11 +1922,11 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 								log("Sending safe response")
 								self.disable_all_items()
 								await interaction.response.edit_message(view=self)
-								await ctx.respond(f"**{codename.upper()}** keeps the **{num_to_die[nonsix]} ({nonsix})**.{' The final result is **zero**.' if nonsix == 1 else ''}")
+								await ctx.respond(f"**{codename.upper()}** keeps the **{num_to_die[nonsix]} ({nonsix})**.")
 							else:
 								log("Denying invalid safe response")
 								await interaction.response.send_message("This is not your War Die roll.",ephemeral=True)
-					await ctx.respond(f"**{codename.upper()}** spends a **Fated** War Die. **They must choose:**\n- **{num_to_die[6]} (6💥)**\n- **{num_to_die[nonsix]} ({nonsix}{' - __reduces to 0__!' if nonsix == 1 else ''})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.",view=DiePicker())
+					await ctx.respond(f"**{codename.upper()}** spends a **Fated** War Die. **They must choose:**\n- **{num_to_die[6]} (6💥)**\n- **{num_to_die[nonsix]} ({nonsix})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.",view=DiePicker())
 				else:
 					results = [first[0],second[0]]
 					winner = max(results)
@@ -1946,12 +1940,10 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 				for result in results:
 					if result == 6:
 						message += f" **{num_to_die[result]} ({result}💥)**"
-					elif result == 1:
-						message += f" **{num_to_die[result]} ({result} - __roll dropped__!)**"
 					else:
 						message += f" **{num_to_die[result]} ({result})**"
-				if len(results) > 1 or 1 in results:
-					message += f"\n- Total: **{0 if 1 in results else sum(results)}**"
+				if len(results) > 1 or (1 in results and len(results) > 1):
+					message += f"\n- Total: **{0 if 1 in results and len(results) > 1 else sum(results)}**"
 				message += f"\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left."
 				await ctx.respond(message)
 		else:
