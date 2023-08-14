@@ -774,7 +774,42 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 				await add_item(ctx,starting_item_name,starting_item_effect)
 	if not set_as_active and not starter_trait_1 and not starter_trait_2:
 		await save_character_data(str(ctx.author.id))
+
+@bot.command(description="Rename an existing character")
+async def rename(ctx,
+	codename: discord.Option(str, "The codename of the character to duplicate.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete),required=True),
+	new_codename: discord.Option(str, "The new codename of the duplicated character.",required=True)):
+	log(f"/rename {codename} {new_codename}")
+	codename = codename.strip()
+	new_codename = new_codename.strip()
+	userid = str(ctx.author.id)
+
+	name_limit = 50
+	if len(new_codename) > name_limit:
+		await ctx.respond(f"Codenames must be no longer than {name_limit} characters.",ephemeral=True)
+		return
 	
+	codename = codename.lower()
+	if userid not in character_data or codename not in character_data[userid]['chars']:
+		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create`.",ephemeral=True)
+		return
+	
+	new_codename = new_codename.lower()
+	if new_codename in character_data[userid]["chars"]:
+		await ctx.respond(f"You have already created a character with the codename '{new_codename}'.",ephemeral=True)
+		return
+	
+	character_data[userid]['chars'][new_codename] = copy.deepcopy(character_data[userid]['chars'][codename])
+	del character_data[userid]['chars'][codename]
+	
+	msg = f"Renamed the character '{codename}' to '{new_codename}'."
+	character_data[userid]
+	for key in character_data[userid]['active']:
+		if character_data[userid]['active'][key] == codename:
+			character_data[userid]['active'][key] = new_codename
+	await ctx.respond(msg)
+	await save_character_data(str(ctx.author.id))
+
 @bot.command(description="Make a copy of an existing character")
 async def clone(ctx,
 	codename: discord.Option(str, "The codename of the character to duplicate.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete),required=True),
@@ -808,11 +843,12 @@ async def clone(ctx,
 	
 	new_codename = new_codename.lower()
 	if new_codename in character_data[userid]["chars"]:
-		await ctx.respond(f"You have already created a character with the codename '{codename}'.",ephemeral=True)
+		await ctx.respond(f"You have already created a character with the codename '{new_codename}'.",ephemeral=True)
 		return
 	
 	character_data[userid]['chars'][new_codename] = copy.deepcopy(character_data[userid]['chars'][codename])
 	character_data[userid]['chars'][new_codename]['premium'] = premium_character
+	character_data[userid]['chars'][new_codename]['creation_time'] = time.time()
 	
 	msg = f"Cloned character with the codename '{codename}' with new codename '{new_codename}'."
 	msg += f"\nYou now have {len(character_data[userid]['chars'])} characters."
