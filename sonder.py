@@ -2509,6 +2509,30 @@ async def random(ctx):
 	message = trait_message_format(result)
 	await ctx.respond(message)
 
+@trait_group.command(description="Convert a barcode into a MONSTERS statblock")
+async def monsters(ctx, barcode: discord.Option(int,"The barcode to input")):
+	log(f"/trait monsters {barcode}")
+	barcode = str(barcode)
+	barcode = [int(digit) for digit in barcode]
+	barcode = sorted(barcode)
+	code_length = len(barcode)
+	
+	if code_length < 3:
+		await ctx.respond(f"Barcodes must be at least 3 digits long.",ephemeral=True)
+	
+	damage_bonus = barcode[0]
+	health = barcode[-1]
+	armor = None
+	if code_length % 2 == 1:
+		armor = barcode[code_length // 2]
+	else:
+		upper_middle_index = code_length // 2
+		lower_middle_index = upper_middle_index - 1
+		armor = (barcode[lower_middle_index] + barcode[upper_middle_index]) // 2
+	
+	await ctx.respond(f"Your summoned MONSTER has:\n- 💥 1D6+{damage_bonus} DAMAGE\n- ❤️ {health} HP\n- 🛡️ {armor} ARMOR")
+	
+
 bot.add_application_command(trait_group)
 
 log("Creating role commands")
