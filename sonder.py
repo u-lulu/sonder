@@ -524,7 +524,7 @@ async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
 	message = f"**{codename.upper()}** rolling +{stat.upper()}:\n> "
 	
 	if extra_mod != 0:
-		message += f"({dice_string}) + {character[stat.lower()]} ({stat.upper()}) + {extra_mod} (bonus) = **{total}**: "
+		message += f"({dice_string}) + {character[stat.lower()]} ({stat.upper()}) {'+' if extra_mod >= 0 else '-'} {abs(extra_mod)} ({'bonus' if extra_mod >= 0 else 'penalty'}) = **{total}**: "
 	else:
 		message += f"({dice_string}) + {character[stat.lower()]} ({stat.upper()}) = **{total}**: "
 	
