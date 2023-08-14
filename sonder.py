@@ -2510,15 +2510,19 @@ async def random(ctx):
 	await ctx.respond(message)
 
 @trait_group.command(description="Convert a barcode into a MONSTERS statblock")
-async def monsters(ctx, barcode: discord.Option(int,"The barcode to input")):
+async def monsters(ctx, barcode: discord.Option(str,"The barcode to input")):
 	log(f"/trait monsters {barcode}")
-	barcode = str(barcode)
-	barcode = [int(digit) for digit in barcode]
+	try:
+		barcode = [int(digit) for digit in barcode]
+	except ValueError:
+		await ctx.respond(f"Barcodes must consist of only integers.",ephemeral=True)
+		return
 	barcode = sorted(barcode)
 	code_length = len(barcode)
 	
 	if code_length < 3:
 		await ctx.respond(f"Barcodes must be at least 3 digits long.",ephemeral=True)
+		return
 	
 	damage_bonus = barcode[0]
 	health = barcode[-1]
