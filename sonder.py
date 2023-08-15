@@ -802,7 +802,7 @@ async def rename(ctx,
 	character_data[userid]['chars'][new_codename] = copy.deepcopy(character_data[userid]['chars'][codename])
 	del character_data[userid]['chars'][codename]
 	
-	msg = f"Renamed the character '{codename}' to '{new_codename}'."
+	msg = f"Renamed the character **{codename.upper()}** to **{new_codename.upper()}**."
 	character_data[userid]
 	for key in character_data[userid]['active']:
 		if character_data[userid]['active'][key] == codename:
