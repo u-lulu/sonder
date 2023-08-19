@@ -553,7 +553,7 @@ async def ext_character_management(id):
 	user = await support_server.fetch_member(id)
 	if user is None:
 		return False
-	role = user.get_role(1120763025465557062)
+	role = user.get_role(1142272148099055666)
 	if role is None:
 		return False
 	return True
