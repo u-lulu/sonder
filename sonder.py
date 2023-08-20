@@ -552,7 +552,7 @@ async def ext_character_management(id):
 	except:
 		log(f"Could not cast ID to int for ECM check, received value '{id}'")
 		return False
-	if id == str(ownerid):
+	if id == ownerid:
 		return True
 	if support_server_obj is None:
 		return False
@@ -783,8 +783,8 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 
 @bot.command(description="Rename an existing character")
 async def rename(ctx,
-	codename: discord.Option(str, "The codename of the character to duplicate.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete),required=True),
-	new_codename: discord.Option(str, "The new codename of the duplicated character.",required=True)):
+	codename: discord.Option(str, "The codename of the character to rename.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete),required=True),
+	new_codename: discord.Option(str, "The new codename of the character.",required=True)):
 	log(f"/rename {codename} {new_codename}")
 	codename = codename.strip()
 	new_codename = new_codename.strip()
@@ -800,7 +800,7 @@ async def rename(ctx,
 		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create`.",ephemeral=True)
 		return
 	
-	if character['premium'] and not await ext_character_management(ctx.author.id):
+	if character_data[userid]['chars'][codename]['premium'] and not await ext_character_management(ctx.author.id):
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 		return
 	
