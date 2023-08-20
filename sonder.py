@@ -555,13 +555,17 @@ async def ext_character_management(id):
 	#if id == ownerid:
 		#return True
 	if support_server_obj is None:
+		log(f"No support server object exists, membership check fails")
 		return False
 	user = await support_server.fetch_member(id)
 	if user is None:
+		log(f"User is not present on server, membership check fails")
 		return False
 	role = user.get_role(1142272148099055666)
 	if role is None:
+		log(f"User does not have role, membership check fails")
 		return False
+	log(f"Membership check succeeds!")
 	return True
 
 async def traits_and_customs_autocomp(ctx):
