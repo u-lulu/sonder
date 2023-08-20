@@ -552,8 +552,8 @@ async def ext_character_management(id):
 	except:
 		log(f"Could not cast ID to int for ECM check, received value '{id}'")
 		return False
-	if id == ownerid:
-		return True
+	#if id == ownerid:
+		#return True
 	if support_server_obj is None:
 		return False
 	user = await support_server.fetch_member(id)
