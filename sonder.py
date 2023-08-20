@@ -554,7 +554,8 @@ async def ext_character_management(id):
 		return False
 	#if id == ownerid:
 		#return True
-	if support_server_obj is None:
+	support_server = await bot.fetch_guild(support_server_id)
+	if support_server is None:
 		log(f"No support server object exists, membership check fails")
 		return False
 	user = await support_server.fetch_member(id)
