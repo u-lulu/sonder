@@ -546,6 +546,12 @@ async def character_names_autocomplete(ctx: discord.AutocompleteContext):
 		return []
 
 async def ext_character_management(id):
+	try:
+		if type(id) is not int:
+			id = int(id)
+	except:
+		log(f"Could not cast ID to int for ECM check, received value '{id}'")
+		return False
 	if id == str(ownerid):
 		return True
 	if support_server_obj is None:
@@ -709,7 +715,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	
 	premium_character = False
 	if len(character_data[userid]["chars"]) >= standard_character_limit:
-		premium_user = await ext_character_management(userid)
+		premium_user = await ext_character_management(ctx.author.id)
 		if not premium_user:
 			await ctx.respond(f"You may not create more than {standard_character_limit} characters.\nYou can increase your character limit to {premium_character_limit} by enrolling in a [server subscription](<https://discord.com/servers/sonder-s-garage-1101249440230154300>) at Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 			return
@@ -835,7 +841,7 @@ async def clone(ctx,
 	
 	premium_character = False
 	if len(character_data[userid]["chars"]) >= standard_character_limit:
-		premium_user = await ext_character_management(userid)
+		premium_user = await ext_character_management(ctx.author.id)
 		if not premium_user:
 			await ctx.respond(f"You may not create more than {standard_character_limit} characters.\nYou can increase your character limit to {premium_character_limit} by enrolling in a [server subscription](<https://discord.com/servers/sonder-s-garage-1101249440230154300>) at Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 			return
@@ -1190,7 +1196,7 @@ async def create_custom_trait(ctx,
 	log(f"/create_custom_trait {title} {description} {stat_type} {stat_amount} {item_name} {item_effect}")
 	
 	if userid in character_data and len(character_data[userid]['traits']) >= standard_custrait_limit:
-		premium_user = await ext_character_management(userid)
+		premium_user = await ext_character_management(ctx.author.id)
 		if not premium_user:
 			await ctx.respond(f"You may not create more than {standard_custrait_limit} custom traits.\nYou can increase your custom trait limit to {premium_custrait_limit} by enrolling in a [server subscription](<https://discord.com/servers/sonder-s-garage-1101249440230154300>) at Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
 			return
