@@ -405,6 +405,8 @@ def output_character(codename, data):
 		out += f"\nROLE: **{r['Name']}**\n{r['Text']}"
 	
 	out += f"\n\nHP: {data['hp']}/{data['maxhp']}"
+	if 'henshin_stored_hp' in data['special'] and 'henshin_stored_maxhp' in data['special'] and data['special']['henshin_stored_maxhp'] != 0:
+		out += f" - *({data['special']['henshin_stored_hp']}/{data['special']['henshin_stored_maxhp']} in normal form)*"
 	out += f"\nWAR DICE: {data['wd']}"
 	out += f"\nARMOR: {data['armor_name']} ({data['armor']})"
 	out += f"\nWEAPON: {data['weapon_name']} ({data['damage']})"
@@ -451,6 +453,8 @@ def output_character_short(codename, data):
 		out += f"\nROLE: **{r['Name']}**"
 	
 	out += f"\n\nHP: {data['hp']}/{data['maxhp']}"
+	if 'henshin_stored_hp' in data['special'] and 'henshin_stored_maxhp' in data['special'] and data['special']['henshin_stored_maxhp'] != 0:
+		out += f" - *({data['special']['henshin_stored_hp']}/{data['special']['henshin_stored_maxhp']} in normal form)*"
 	out += f"\nWAR DICE: {data['wd']}"
 	out += f"\nARMOR: {data['armor_name']} ({data['armor']})"
 	out += f"\nWEAPON: {data['weapon_name']} ({data['damage']})"
@@ -655,7 +659,8 @@ async def add_trait(ctx,
 	character['items'].append(my_new_trait['Item'])
 	if my_new_trait['Number'] == 316: #henshin bookkeeping
 		character['special']['henshin_trait'] = None
-		character['special']['henshin_hp'] = 0
+		character['special']['henshin_stored_hp'] = 0
+		character['special']['henshin_stored_maxhp'] = 0
 	
 	stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
 	
@@ -711,24 +716,21 @@ async def henshin(ctx, set_trait: discord.Option(str, "The core book name or num
 				await ctx.respond(f"{codename.upper()} does not yet have a trait set for HENSHIN. To add one, specify the `set_trait` argument for this command.",ephemeral=True)
 				return
 			else: #successful activation
-				if character['special']['henshin_hp'] > 0: #henshin is already active; revert it
-					old_maxhp = character['maxhp']
-					old_hp = old_max_hp = character['hp']
-					character['maxhp'] -= character['special']['henshin_hp']
-					if character['hp'] > character['maxhp']:
-						character['hp'] = character['maxhp']
-					character['special']['henshin_hp'] = 0
-					await ctx.respond(f"{codename.upper()} has deactivated HENSHIN.\n- They have lost the **{character['special']['henshin_trait']['Name']}** trait.\n- Their HP has changed from {old_hp}/{old_maxhp} to **{character['hp']}/{character['maxhp']}**.")
+				if character['special']['henshin_stored_maxhp'] != 0: #henshin is already active; revert it
+					character['hp'] = character['special']['henshin_stored_hp']
+					character['maxhp'] = character['special']['henshin_stored_maxhp']
+					character['special']['henshin_stored_hp'] = 0
+					character['special']['henshin_stored_maxhp'] = 0
+					await ctx.respond(f"{codename.upper()} has deactivated HENSHIN.\n- They have lost the **{character['special']['henshin_trait']['Name']}** trait.\n- Their HP has reverted to **{character['hp']}/{character['maxhp']}**.")
 					await save_character_data(str(ctx.author.id))
 					return
 				else: #henshin is not active; activate it
-					maxhp_bonus = d6()
-					old_maxhp = character['maxhp']
-					old_hp = old_max_hp = character['hp']
-					character['maxhp'] += maxhp_bonus
-					character['hp'] += maxhp_bonus
-					character['special']['henshin_hp'] = maxhp_bonus
-					await ctx.respond(f"**{codename.upper()} has activated HENSHIN!**\n- They have gained the **{character['special']['henshin_trait']['Name']}** trait.\n- Their HP has changed from {old_hp}/{old_maxhp} to **{character['hp']}/{character['maxhp']}**.")
+					new_hp = d6()
+					character['special']['henshin_stored_hp'] = character['hp']
+					character['special']['henshin_stored_maxhp'] = character['maxhp']
+					character['hp'] = new_hp
+					character['maxhp'] = new_hp
+					await ctx.respond(f"**{codename.upper()} has activated HENSHIN!**\n- They have gained the **{character['special']['henshin_trait']['Name']}** trait.\n- This form has **{character['maxhp']} MAX HP**.")
 					await save_character_data(str(ctx.author.id))
 					return
 		else: #setting the trait
@@ -1956,8 +1958,12 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 		if target_trait_number == 316: #henshin bookkeeping
 			if 'henshin_trait' in character['special']:
 				del character['special']['henshin_trait']
-			if 'henshin_hp' in character['special']:
-				del character['special']['henshin_hp']
+			if 'henshin_stored_hp' in character['special']:
+				character['hp'] = character['special']['henshin_stored_hp']
+				del character['special']['henshin_stored_hp']
+			if 'henshin_stored_maxhp' in character['special']:
+				character['maxhp'] = character['special']['henshin_stored_maxhp']
+				del character['special']['henshin_stored_maxhp']
 		
 		await save_character_data(str(ctx.author.id))
 		return
@@ -2164,12 +2170,22 @@ async def adjust(ctx,
 	
 	character[translated_stat] += output[0]
 	if translated_stat == "maxhp":
+		if character['maxhp'] < 1:
+			character['maxhp'] = 1
 		if output[0] > 0:
 			character['hp'] += output[0]
 		elif character['hp'] > character['maxhp']:
 			character['hp'] = character['maxhp']
 	
 	message = f"{codename.upper()} has **{'in' if output[0] >= 0 else 'de'}creased** their **{stat}** by {abs(output[0])}!"
+
+	if character['hp'] <= 0 and 'henshin_stored_maxhp' in character['special'] and character['special']['henshin_stored_maxhp'] > 0:
+		character['hp'] = character['special']['henshin_stored_hp']
+		character['maxhp'] = character['special']['henshin_stored_maxhp']
+		character['special']['henshin_stored_hp'] = 0
+		character['special']['henshin_stored_maxhp'] = 0
+		message += f"\n- **This has deactivated HENSHIN.** HP has been reverted to **{character['hp']}/{character['maxhp']}**."
+
 	if 'd' in amount or 'D' in amount:
 		message += f"\n\nDice results: `{output[1]}`"
 	
@@ -2344,6 +2360,14 @@ async def damage(ctx,
 	elif (armor_piercing and character['armor'] > 0):
 		message += f" (Ignores {character['armor']}{f' (+{bonus_armor} bonus)' if bonus_armor > 0 else ''} armor from {character['armor_name']}!)"
 	message += f"\nHP: {character['hp']}/{character['maxhp']}"
+	
+	if character['hp'] <= 0 and 'henshin_stored_maxhp' in character['special'] and character['special']['henshin_stored_maxhp'] > 0:
+		character['hp'] = character['special']['henshin_stored_hp']
+		character['maxhp'] = character['special']['henshin_stored_maxhp']
+		character['special']['henshin_stored_hp'] = 0
+		character['special']['henshin_stored_maxhp'] = 0
+		message += f"\n- **This has deactivated HENSHIN.** HP has been reverted to **{character['hp']}/{character['maxhp']}**."
+	
 	if ('d' in amount or 'd' in amount):
 		message += f"\n\nDice results: `{dice_results}`"
 		limit = 300
