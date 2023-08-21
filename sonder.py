@@ -277,7 +277,7 @@ async def on_ready():
 		if notify_about_henshin_change:
 			try:
 				person = await bot.fetch_user(player)
-				await person.send("Hello! I noticed you have at least one managed character with the HENSHIN trait.\nThis one-time message is to notify you that you can now make use of HENSHIN via the brand-new `/henshin` command! Please view the command's entry in the `/help` document for more information.")
+				await person.send("Hello! I noticed you have at least one managed character with the HENSHIN trait.\nThis one-time message is to notify you that you can now make use of HENSHIN via the brand-new `/henshin` command! Please view the command's entry in the `/help` document for more information. If you have questions or bug reports, please join [Sonder's Garage]( https://discord.gg/VeedQmQc7k ) to let me know!")
 				log(f"Notified {player} about HENSHIN change")
 			except Exception as e:
 				log(f"Could not notify {player} about HENSHIN change: {e}")
