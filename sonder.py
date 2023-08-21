@@ -609,7 +609,7 @@ async def add_trait(ctx,
 	codename = get_active_codename(ctx)
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	if len(character['traits']) >= trait_limit:
@@ -722,7 +722,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	if len(character_data[userid]["chars"]) >= standard_character_limit:
 		premium_user = await ext_character_management(ctx.author.id)
 		if not premium_user:
-			await ctx.respond(f"You may not create more than {standard_character_limit} characters.\nYou can increase your character limit to {premium_character_limit} by enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+			await ctx.respond(f"You may not create more than {standard_character_limit} characters.\nYou can increase your character limit to {premium_character_limit} by enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 			return
 		elif len(character_data[userid]["chars"]) >= premium_character_limit:
 			await ctx.respond(f"You may not create more than {premium_character_limit} characters.",ephemeral=True)
@@ -806,7 +806,7 @@ async def rename(ctx,
 		return
 	
 	if character_data[userid]['chars'][codename]['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	new_codename = new_codename.lower()
@@ -848,7 +848,7 @@ async def clone(ctx,
 	if len(character_data[userid]["chars"]) >= standard_character_limit:
 		premium_user = await ext_character_management(ctx.author.id)
 		if not premium_user:
-			await ctx.respond(f"You may not create more than {standard_character_limit} characters.\nYou can increase your character limit to {premium_character_limit} by enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+			await ctx.respond(f"You may not create more than {standard_character_limit} characters.\nYou can increase your character limit to {premium_character_limit} by enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 			return
 		elif len(character_data[userid]["chars"]) >= premium_character_limit:
 			await ctx.respond(f"You may not create more than {premium_character_limit} characters.",ephemeral=True)
@@ -1167,7 +1167,7 @@ async def set_role(ctx,
 	codename = get_active_codename(ctx)
 	
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	name = name.upper()
@@ -1218,7 +1218,7 @@ async def create_custom_trait(ctx,
 	if userid in character_data and len(character_data[userid]['traits']) >= standard_custrait_limit:
 		premium_user = await ext_character_management(ctx.author.id)
 		if not premium_user:
-			await ctx.respond(f"You may not create more than {standard_custrait_limit} custom traits.\nYou can increase your custom trait limit to {premium_custrait_limit} by enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+			await ctx.respond(f"You may not create more than {standard_custrait_limit} custom traits.\nYou can increase your custom trait limit to {premium_custrait_limit} by enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 			return
 		elif len(character_data[userid]['traits']) >= premium_custrait_limit:
 			await ctx.respond(f"You may not create more than {premium_custrait_limit} custom traits.",ephemeral=True)
@@ -1359,7 +1359,7 @@ async def add_item(ctx,
 	codename = get_active_codename(ctx)
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	if len(character['items']) >= item_limit:
@@ -1458,7 +1458,7 @@ async def edit_item(ctx,
 	codename = get_active_codename(ctx)
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	if original_item not in character['items']:
@@ -1536,7 +1536,7 @@ async def add_item_counter(ctx,
 	codename = get_active_codename(ctx)
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	limit = 20
@@ -1617,7 +1617,7 @@ async def adjust_item_counter(ctx,
 
 	
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	if item not in character['items']:
@@ -1669,7 +1669,7 @@ async def ammo_check(ctx,
 	codename = get_active_codename(ctx)
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	if item not in character['items']:
@@ -1724,7 +1724,7 @@ async def set_item_counter(ctx,
 
 	
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	if item not in character['items']:
@@ -1774,7 +1774,7 @@ async def remove_item_counter(ctx,
 	codename = get_active_codename(ctx)
 	
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	if item not in character['items']:
@@ -1827,7 +1827,7 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 	codename = get_active_codename(ctx)
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	if len(character['traits']) <= 0:
@@ -1892,7 +1892,7 @@ async def remove_item(ctx,
 	codename = get_active_codename(ctx)
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	if len(character['items']) <= 0:
@@ -2043,7 +2043,7 @@ async def adjust(ctx,
 	codename = get_active_codename(ctx)
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	stat = stat.upper()
@@ -2107,7 +2107,7 @@ async def refresh(ctx,
 	codename = get_active_codename(ctx)
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	weapon_reset = False
@@ -2224,7 +2224,7 @@ async def damage(ctx,
 	codename = get_active_codename(ctx)
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	timeout = 2
@@ -2284,7 +2284,7 @@ async def heal(ctx,
 	codename = get_active_codename(ctx)
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	timeout = 2
@@ -2342,7 +2342,7 @@ async def attack(ctx,
 		codename = get_active_codename(ctx)
 	
 		if character['premium'] and not await ext_character_management(ctx.author.id):
-			await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+			await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 			return
 		
 		base_damage = character['damage']
@@ -2472,7 +2472,7 @@ async def equip_weapon(ctx,
 	codename = get_active_codename(ctx)
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	timeout = 2
@@ -2506,7 +2506,7 @@ async def equip_armor(ctx,
 	codename = get_active_codename(ctx)
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
-		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription](https://ko-fi.com/solarashlulu/tiers), linking your Ko-fi account to Discord, and joining Sonder's Garage.\nhttps://discord.gg/VeedQmQc7k",ephemeral=True)
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
 	character['armor_name'] = name
