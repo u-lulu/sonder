@@ -259,6 +259,10 @@ async def on_ready():
 				character_data[player]['chars'][char]['notes'] = ""
 				log(f"{char} (owned by {player}) updated to include notes field")
 				changed = True
+			if 'special' not in character_data[player]['chars'][char]:
+				character_data[player]['chars'][char]['special'] = {}
+				log(f"{char} (owned by {player}) updated to include special field")
+				changed = True
 	
 	if changed:
 		await save_character_data()
@@ -649,6 +653,9 @@ async def add_trait(ctx,
 	
 	character['traits'].append(my_new_trait)
 	character['items'].append(my_new_trait['Item'])
+	if my_new_trait['Number'] == 316: #henshin bookkeeping
+		character['special']['henshin_trait'] = None
+		character['special']['henshin_hp'] = 0
 	
 	stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
 	
@@ -683,6 +690,71 @@ async def add_trait(ctx,
 	await ctx.respond(out)
 	await save_character_data(str(ctx.author.id))
 
+@bot.command(description="Activate (or set) your active character's HENSHIN trait")
+async def henshin(ctx, set_trait: discord.Option(str, "The core book name or number of the trait to set.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None)):
+	log(f"/henshin {set_trait if set_trait is not None else ''}")
+	if set_trait is not None:
+		set_trait = set_trait.strip()
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
+		return
+	
+	if "henshin_trait" in character["special"]: #character does indeed have henshin
+		if set_trait is None: #activating henshin
+			if character['special']['henshin_trait'] == None: #henshin trait has not been set
+				await ctx.respond(f"{codename.upper()} does not yet have a trait set for HENSHIN. To add one, specify the `set_trait` argument for this command.",ephemeral=True)
+				return
+			else: #successful activation
+				if character['special']['henshin_hp'] > 0: #henshin is already active; revert it
+					old_maxhp = character['maxhp']
+					old_hp = old_max_hp = character['hp']
+					character['maxhp'] -= character['special']['henshin_hp']
+					if character['hp'] > character['maxhp']:
+						character['hp'] = character['maxhp']
+					character['special']['henshin_hp'] = 0
+					await ctx.respond(f"{codename.upper()} has deactivated HENSHIN.\n- They have lost the **{character['special']['henshin_trait']['Name']}** trait.\n- Their HP has changed from {old_hp}/{old_maxhp} to **{character['hp']}/{character['maxhp']}**.")
+					await save_character_data(str(ctx.author.id))
+					return
+				else: #henshin is not active; activate it
+					maxhp_bonus = d6()
+					old_maxhp = character['maxhp']
+					old_hp = old_max_hp = character['hp']
+					character['maxhp'] += maxhp_bonus
+					character['hp'] += maxhp_bonus
+					character['special']['henshin_hp'] = maxhp_bonus
+					await ctx.respond(f"**{codename.upper()} has activated HENSHIN!**\n- They have gained the **{character['special']['henshin_trait']['Name']}** trait.\n- Their HP has changed from {old_hp}/{old_maxhp} to **{character['hp']}/{character['maxhp']}**.")
+					await save_character_data(str(ctx.author.id))
+					return
+		else: #setting the trait
+			set_trait = set_trait.upper()
+			current_traits_by_name = traits_by_name | character_data[str(ctx.author.id)]['traits']
+			
+			my_new_trait = None
+			if set_trait == "ABRACADABRA":
+				my_new_trait = secret_trait
+			elif set_trait in current_traits_by_name:
+				my_new_trait = current_traits_by_name[set_trait]
+			elif set_trait in traits_by_numstr:
+				my_new_trait = traits_by_numstr[set_trait]
+			
+			if my_new_trait == None:
+				await ctx.respond(f'No trait with the exact name or D666 number "{set_trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
+				return
+			
+			character['special']['henshin_trait'] = copy.deepcopy(my_new_trait)
+			await ctx.respond(f"{codename.upper()} has set their HENSHIN trait to **{my_new_trait['Name'].upper()} ({my_new_trait['Number']})**.")
+			await save_character_data(str(ctx.author.id))
+			return
+	else: #character does not have henshin
+		ctx.respond(f"**{codename.upper()}** does not have the HENSHIN trait. To add it, use `/add_trait trait:HENSHIN`.",ephemeral=True)
+		return
+	
 valid_bonuses = ["+1D6 Max Hp","+1D6 War Dice","Random Standard Issue Item","Balaclava (hides identity)","Flashlight (can be used as a weapon attachment)","Knife (1D6 DAMAGE)","MRE field rations (+1D6 HP, one use)","Pistol (1D6 DAMAGE)","Riot shield (1 ARMOR, equip as weapon)"]
 
 async def starting_bonus_autocomp(ctx):
@@ -753,7 +825,8 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 		"premium": premium_character,
 		"creation_time": time.time(),
 		"counters": {},
-		"notes": ""
+		"notes": "",
+		"special": {}
 	}
 	
 	msg = f"Created character with the codename '{codename}'."
@@ -1835,9 +1908,11 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 		return
 	
 	target_trait = None
+	target_trait_number = None
 	for current in character['traits']:
 		if current['Name'].lower() == trait.lower():
 			target_trait = current
+			target_trait_number = current['Number']
 			break
 	
 	if target_trait == None:
@@ -1877,6 +1952,12 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 				character['items'].remove(target_trait['Item'])
 			except ValueError as e:
 				log("Caught ValueError in attempt to remove trait item")
+		
+		if target_trait_number == 316: #henshin bookkeeping
+			if 'henshin_trait' in character['special']:
+				del character['special']['henshin_trait']
+			if 'henshin_hp' in character['special']:
+				del character['special']['henshin_hp']
 		
 		await save_character_data(str(ctx.author.id))
 		return
