@@ -949,22 +949,33 @@ async def my_characters(ctx):
 	log("/my_characters")
 	yourid = str(ctx.author.id)
 	if yourid in character_data and len(character_data[yourid]['chars']) > 0:
+		ctx.defer()
 		yourchars = character_data[yourid]['chars']
 		msg = f"Characters created by <@{yourid}> ({len(yourchars)}):"
 		premiums = False
 		for codename in yourchars:
-			char_traits = character_data[yourid]['chars'][codename]['traits']
-			msg += f"\n- **{codename.upper()}**"
+			if not yourchars[codename]['premium']:
+				char_traits = character_data[yourid]['chars'][codename]['traits']
+				msg += f"\n- **{codename.upper()}**"
+				if len(char_traits) > 0:
+					char_trait_names = []
+					for t in char_traits:
+						char_trait_names.append(t['Name'])
+					msg += f" ({'/'.join(char_trait_names)})"
+				else:
+					msg += f" (No traits)"
+		for codename in yourchars:
 			if yourchars[codename]['premium']:
-				msg += "\*"
 				premiums = True
-			if len(char_traits) > 0:
-				char_trait_names = []
-				for t in char_traits:
-					char_trait_names.append(t['Name'])
-				msg += f" ({'/'.join(char_trait_names)})"
-			else:
-				msg += f" (No traits)"
+				char_traits = character_data[yourid]['chars'][codename]['traits']
+				msg += f"\n- **{codename.upper()}**\*"
+				if len(char_traits) > 0:
+					char_trait_names = []
+					for t in char_traits:
+						char_trait_names.append(t['Name'])
+					msg += f" ({'/'.join(char_trait_names)})"
+				else:
+					msg += f" (No traits)"
 		if premiums:
 			msg += "\n\* *premium character*"
 		if len(msg) > 2000:
