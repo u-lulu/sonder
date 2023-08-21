@@ -246,6 +246,7 @@ async def on_ready():
 	log("Checking to see if character data needs to be updated...")
 	changed = False
 	for player in character_data:
+		notify_about_henshin_change = False
 		if 'traits' not in character_data[player]:
 			character_data[player]['traits'] = {}
 			log(f"{player} updated to include custom traits field")
@@ -267,11 +268,19 @@ async def on_ready():
 				for trt in character_data[player]['chars'][char]['traits']:
 					if trt['Number'] == 316:
 						changed = True
+						notify_about_henshin_change = True
 						log(f"{char} (owned by {player}) updated to include HENSHIN sub-fields")
 						character_data[player]['chars'][char]['special']['henshin_trait'] = None
 						character_data[player]['chars'][char]['special']['henshin_stored_hp'] = 0
 						character_data[player]['chars'][char]['special']['henshin_stored_maxhp'] = 0
 						break
+		if notify_about_henshin_change:
+			try:
+				person = await bot.fetch_user(player)
+				await person.send("Hello! I noticed you have at least one managed character with the HENSHIN trait.\nThis one-time message is to notify you that you can now make use of HENSHIN via the brand-new `/henshin` command! Please view the command's entry in the `/help` document for more information.")
+				log(f"Notified {player} about HENSHIN change")
+			except Exception as e:
+				log(f"Could not notify {player} about HENSHIN change: {e}")
 	
 	if changed:
 		await save_character_data()
