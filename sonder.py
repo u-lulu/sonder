@@ -662,7 +662,7 @@ async def add_trait(ctx,
 		await ctx.respond(f'No trait with the exact name or D666 number "{trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
 		return
 	
-	if 'henshin_trait' in character['special'] and my_new_trait['Name'] == character['special']['henshin_trait']['Name']:
+	if 'henshin_trait' in character['special'] and character['special']['henshin_trait'] is not None and my_new_trait['Name'] == character['special']['henshin_trait']['Name']:
 		await ctx.respond(f'**{codename.upper()}** is already using **{my_new_trait["Name"]} ({my_new_trait["Number"]})** as their HENSHIN trait.',ephemeral=True)
 		return
 	
@@ -718,6 +718,10 @@ async def add_trait(ctx,
 	out = f"**{codename.upper()}** has gained a trait!"
 	if old_max_hp > character['maxhp'] and character['maxhp'] <= 0:
 		out += f"\n**This character now has a Max HP of {character['maxhp']}!!**"
+	if my_new_trait['Number'] == 316: # henshin notice
+		out += "\n💡 You can manage switching forms with this trait by using the `/henshin` command."
+	if my_new_trait['Number'] == 414: # monsters notice
+		out += "\n💡 You can generate monster statblocks for this trait using the `/monsters` command."
 	out += f"\n>>> {trait_message_format(my_new_trait)}"
 	await ctx.respond(out)
 	await save_character_data(str(ctx.author.id))
@@ -2044,10 +2048,12 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 			if 'henshin_trait' in character['special']:
 				del character['special']['henshin_trait']
 			if 'henshin_stored_hp' in character['special']:
-				character['hp'] = character['special']['henshin_stored_hp']
+				if character['special']['henshin_stored_maxhp'] != 0:
+					character['hp'] = character['special']['henshin_stored_hp']
 				del character['special']['henshin_stored_hp']
 			if 'henshin_stored_maxhp' in character['special']:
-				character['maxhp'] = character['special']['henshin_stored_maxhp']
+				if character['special']['henshin_stored_maxhp'] != 0:
+					character['maxhp'] = character['special']['henshin_stored_maxhp']
 				del character['special']['henshin_stored_maxhp']
 		
 		await save_character_data(str(ctx.author.id))
