@@ -2539,7 +2539,7 @@ async def random(ctx):
 	message = trait_message_format(result)
 	await ctx.respond(message)
 
-@trait_group.command(description="Convert a barcode into a MONSTERS statblock")
+@bot.command(description="Convert a barcode into a MONSTERS statblock")
 async def monsters(ctx, barcode: discord.Option(str,"The barcode to input")):
 	log(f"/trait monsters {barcode}")
 	try:
