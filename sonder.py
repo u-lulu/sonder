@@ -2287,7 +2287,7 @@ async def adjust(ctx,
 async def refresh(ctx, 
 	reset_hp: discord.Option(bool, "If TRUE, sets your base HP to 6 and recalculates it. FALSE by default.", required=False, default=False), 
 	reset_war_dice: discord.Option(bool, "If TRUE, sets your War Dice to 0 and recalculates it. FALSE by default.", required=False, default=False)):
-	log(f"/refresh {'reset_hp' if reset_hp else ''}")
+	log(f"/refresh{' reset_hp' if reset_hp else ''}{' reset_war_dice' if reset_war_dice else ''}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
