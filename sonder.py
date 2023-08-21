@@ -441,7 +441,10 @@ def output_character(codename, data):
 	
 	if 'henshin_trait' in data['special'] and 'henshin_stored_maxhp' in data['special']:
 		htrait = data['special']['henshin_trait']
-		out += f"\nHENSHIN TRAIT ({'**__ACTIVE__**' if data['special']['henshin_stored_maxhp'] != 0 else 'INACTIVE'}):\n- **{htrait['Name']}** ({htrait['Number']}): {htrait['Effect']} ({htrait['Stat']})\n"
+		if htrait is not None:
+			out += f"\nHENSHIN TRAIT ({'**__ACTIVE__**' if data['special']['henshin_stored_maxhp'] != 0 else 'INACTIVE'}):\n- **{htrait['Name']}** ({htrait['Number']}): {htrait['Effect']} ({htrait['Stat']})\n"
+		else:
+			out += f"\nHENSHIN TRAIT:\n- *Not set. Try out `/henshin`!*\n"
 	
 	out += "\nINVENTORY:"
 	if len(data['items']) <= 0:
@@ -494,7 +497,10 @@ def output_character_short(codename, data):
 
 	if 'henshin_trait' in data['special'] and 'henshin_stored_maxhp' in data['special']:
 		htrait = data['special']['henshin_trait']
-		out += f"\n- Henshin ({'**__active__**' if data['special']['henshin_stored_maxhp'] != 0 else 'inactive'}): **{htrait['Name'][0].upper()+htrait['Name'][1:].lower()}** ({htrait['Number']})"
+		if htrait is not None:
+			out += f"\n- Henshin trait ({'**__active__**' if data['special']['henshin_stored_maxhp'] != 0 else 'inactive'}): **{htrait['Name'][0].upper()+htrait['Name'][1:].lower()}** ({htrait['Number']})"
+		else:
+			out += f"\n- Henshin trait: *Not set. Try out `/henshin`!*"
 	
 	out += "\n\nINVENTORY: "
 	if len(data['items']) <= 0:
