@@ -430,6 +430,10 @@ def output_character(codename, data):
 		for trait in data['traits']:
 			out += f"- **{trait['Name']}** ({trait['Number']}): {trait['Effect']} ({trait['Stat']})\n"
 	
+	if 'henshin_trait' in data['special'] and 'henshin_stored_maxhp' in data['special']:
+		htrait = data['special']['henshin_trait']
+		out += f"\nHENSHIN TRAIT ({'**__ACTIVE__**' if data['special']['henshin_stored_maxhp'] != 0 else 'INACTIVE'}):\n- **{htrait['Name']}** ({htrait['Number']}): {htrait['Effect']} ({htrait['Stat']})\n"
+	
 	out += "\nINVENTORY:"
 	if len(data['items']) <= 0:
 		out += "\n- *No items yet.*"
@@ -478,6 +482,10 @@ def output_character_short(codename, data):
 			#out += f"- **{trait['Name']}** ({trait['Number']}, {trait['Stat']})\n"
 		alltraits = ", ".join(alltraits)
 		out += alltraits
+
+	if 'henshin_trait' in data['special'] and 'henshin_stored_maxhp' in data['special']:
+		htrait = data['special']['henshin_trait']
+		out += f"\n- Henshin ({'**__active__**' if data['special']['henshin_stored_maxhp'] != 0 else 'inactive'}): **{htrait['Name'][0].upper()+htrait['Name'][1:].lower()}** ({htrait['Number']})"
 	
 	out += "\n\nINVENTORY: "
 	if len(data['items']) <= 0:
@@ -639,6 +647,10 @@ async def add_trait(ctx,
 		await ctx.respond(f'No trait with the exact name or D666 number "{trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
 		return
 	
+	if 'henshin_trait' in character['special'] and my_new_trait['Name'] == character['special']['henshin_trait']['Name']:
+		await ctx.respond(f'**{codename.upper()}** is already using **{my_new_trait["Name"]} ({my_new_trait["Number"]})** as their HENSHIN trait.',ephemeral=True)
+		return
+	
 	for existing_trait in character['traits']:
 		if existing_trait['Name'] == my_new_trait['Name']:
 			await ctx.respond(f'**{codename.upper()}** already has the trait **{my_new_trait["Name"]} ({my_new_trait["Number"]})**.',ephemeral=True)
@@ -717,11 +729,37 @@ async def henshin(ctx, set_trait: discord.Option(str, "The core book name or num
 				return
 			else: #successful activation
 				if character['special']['henshin_stored_maxhp'] != 0: #henshin is already active; revert it
+					stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
+
+					stats_translator = {
+						"MAX":"maxhp",
+						"WAR":"wd",
+						"FORCEFUL":"frc",
+						"TACTICAL":"tac",
+						"CREATIVE":"cre",
+						"REFLEXIVE":"rfx"
+					}
+
+					bonus = character['special']['henshin_trait']["Stat"].split(" ")
+					num = 0
+					if bonus[1] in stats:
+						translated_stat_bonus = stats_translator[bonus[1]]
+						try: 
+							num = rolldice.roll_dice(bonus[0])[0]
+						except Exception as e:
+							num = 0
+							log(f"Caught dice-rolling exception: {e}")
+						if translated_stat_bonus != 'wd':
+							character[translated_stat_bonus] -= num
+						if translated_stat_bonus == 'maxhp':
+							character['hp'] -= num
+					
 					character['hp'] = character['special']['henshin_stored_hp']
 					character['maxhp'] = character['special']['henshin_stored_maxhp']
 					character['special']['henshin_stored_hp'] = 0
 					character['special']['henshin_stored_maxhp'] = 0
-					await ctx.respond(f"{codename.upper()} has deactivated HENSHIN.\n- They have lost the **{character['special']['henshin_trait']['Name']}** trait.\n- Their HP has reverted to **{character['hp']}/{character['maxhp']}**.")
+					
+					await ctx.respond(f"{codename.upper()} has deactivated HENSHIN.\n- They have lost the **{character['special']['henshin_trait']['Name']}** trait.\n- They have lost the {character['special']['henshin_trait']['Stat']} bonus.\n- Their HP has reverted to **{character['hp']}/{character['maxhp']}**.")
 					await save_character_data(str(ctx.author.id))
 					return
 				else: #henshin is not active; activate it
@@ -730,31 +768,63 @@ async def henshin(ctx, set_trait: discord.Option(str, "The core book name or num
 					character['special']['henshin_stored_maxhp'] = character['maxhp']
 					character['hp'] = new_hp
 					character['maxhp'] = new_hp
-					await ctx.respond(f"**{codename.upper()} has activated HENSHIN!**\n- They have gained the **{character['special']['henshin_trait']['Name']}** trait.\n- This form has **{character['maxhp']} MAX HP**.")
+					stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
+	
+					stats_translator = {
+						"MAX":"maxhp",
+						"WAR":"wd",
+						"FORCEFUL":"frc",
+						"TACTICAL":"tac",
+						"CREATIVE":"cre",
+						"REFLEXIVE":"rfx"
+					}
+
+					bonus = character['special']['henshin_trait']['Stat'].split(" ")
+					num = 0
+					if bonus[1] in stats:
+						translated_stat_bonus = stats_translator[bonus[1]]
+						try: 
+							num = rolldice.roll_dice(bonus[0])[0]
+						except Exception as e:
+							num = 0
+							log(f"Caught dice-rolling exception: {e}")
+						character[translated_stat_bonus] += num
+						if translated_stat_bonus == 'maxhp':
+							character['hp'] += num
+					await ctx.respond(f"**{codename.upper()} has activated HENSHIN!**\n- They have gained the **{character['special']['henshin_trait']['Name']}** trait.\n- They have gained {character['special']['henshin_trait']['Stat']}.\n- This form has **{character['maxhp']} MAX HP**.")
 					await save_character_data(str(ctx.author.id))
 					return
 		else: #setting the trait
-			set_trait = set_trait.upper()
-			current_traits_by_name = traits_by_name | character_data[str(ctx.author.id)]['traits']
-			
-			my_new_trait = None
-			if set_trait == "ABRACADABRA":
-				my_new_trait = secret_trait
-			elif set_trait in current_traits_by_name:
-				my_new_trait = current_traits_by_name[set_trait]
-			elif set_trait in traits_by_numstr:
-				my_new_trait = traits_by_numstr[set_trait]
-			
-			if my_new_trait == None:
-				await ctx.respond(f'No trait with the exact name or D666 number "{set_trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
+			if character['special']['henshin_stored_maxhp'] != 0: #henshin is active; don't change anything!
+				await ctx.respond(f"You cannot change your HENSHIN trait while the alternate form is active.\nTo disable the alternate form, perform `/henshin`, without additional arguments.",ephemeral=True)
 				return
-			
-			character['special']['henshin_trait'] = copy.deepcopy(my_new_trait)
-			await ctx.respond(f"{codename.upper()} has set their HENSHIN trait to **{my_new_trait['Name'].upper()} ({my_new_trait['Number']})**.")
-			await save_character_data(str(ctx.author.id))
-			return
+			else:
+				set_trait = set_trait.upper()
+				current_traits_by_name = traits_by_name | character_data[str(ctx.author.id)]['traits']
+				
+				my_new_trait = None
+				if set_trait == "ABRACADABRA":
+					my_new_trait = secret_trait
+				elif set_trait in current_traits_by_name:
+					my_new_trait = current_traits_by_name[set_trait]
+				elif set_trait in traits_by_numstr:
+					my_new_trait = traits_by_numstr[set_trait]
+				
+				if my_new_trait == None:
+					await ctx.respond(f'No trait with the exact name or D666 number "{set_trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
+					return
+				
+				for t in character['traits']:
+					if t['Name'] == my_new_trait['Name']:
+						await ctx.respond(f"You cannot change your HENSHIN trait to a trait you already possess.",ephemeral=True)
+						return
+				
+				character['special']['henshin_trait'] = copy.deepcopy(my_new_trait)
+				await ctx.respond(f"{codename.upper()} has set their HENSHIN trait to **{my_new_trait['Name'].upper()} ({my_new_trait['Number']})**.")
+				await save_character_data(str(ctx.author.id))
+				return
 	else: #character does not have henshin
-		ctx.respond(f"**{codename.upper()}** does not have the HENSHIN trait. To add it, use `/add_trait trait:HENSHIN`.",ephemeral=True)
+		await ctx.respond(f"**{codename.upper()}** does not have the HENSHIN trait. To add it, use `/add_trait trait:HENSHIN`.",ephemeral=True)
 		return
 	
 valid_bonuses = ["+1D6 Max Hp","+1D6 War Dice","Random Standard Issue Item","Balaclava (hides identity)","Flashlight (can be used as a weapon attachment)","Knife (1D6 DAMAGE)","MRE field rations (+1D6 HP, one use)","Pistol (1D6 DAMAGE)","Riot shield (1 ARMOR, equip as weapon)"]
@@ -2272,6 +2342,10 @@ async def refresh(ctx,
 		message += f"\nYour Max HP has been recalculated from the base 6, and is now **{character['maxhp']}**."
 	if reset_war_dice:
 		message += f"\nYour War Dice have been recalculated from the base 0, and is now **{character['wd']}**."
+	if 'henshin_stored_maxhp' in character['special'] and character['special']['henshin_stored_maxhp'] != 0:
+		character['special']['henshin_stored_hp'] = 0
+		character['special']['henshin_stored_maxhp'] = 0
+		message += f"\nYour active HENSHIN status has been cleared."
 	await ctx.respond(message)
 	await save_character_data(str(ctx.author.id))
 
