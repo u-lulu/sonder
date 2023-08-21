@@ -929,7 +929,7 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 								earliest_prem_codename = deletion_target
 						if earliest_premium_char is not None:
 							earliest_premium_char['premium'] = False
-							message += f"\nYou have freed up a non-premium slot. **{deletion_target.upper()}** is no longer a premium character."
+							message += f"\nYou have freed up a non-premium slot. **{earliest_prem_codename.upper()}** is no longer a premium character."
 					
 					if len(yourstuff['chars']) <= 0 and len(yourstuff['traits']) <= 0:
 						del character_data[yourid]
@@ -951,9 +951,13 @@ async def my_characters(ctx):
 	if yourid in character_data and len(character_data[yourid]['chars']) > 0:
 		yourchars = character_data[yourid]['chars']
 		msg = f"Characters created by <@{yourid}> ({len(yourchars)}):"
+		premiums = False
 		for codename in yourchars:
 			char_traits = character_data[yourid]['chars'][codename]['traits']
 			msg += f"\n- **{codename.upper()}**"
+			if yourchars[codename]['premium']:
+				msg += "\*"
+				premiums = True
 			if len(char_traits) > 0:
 				char_trait_names = []
 				for t in char_traits:
@@ -961,8 +965,8 @@ async def my_characters(ctx):
 				msg += f" ({'/'.join(char_trait_names)})"
 			else:
 				msg += f" (No traits)"
-			if yourchars[codename]['premium']:
-				msg += " *(premium)*"
+		if premiums:
+			msg += "\n\* *premium character*"
 		if len(msg) > 2000:
 			msg = msg.replace("*","")
 			with open("message.txt","w") as file:
