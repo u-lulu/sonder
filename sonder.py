@@ -263,6 +263,15 @@ async def on_ready():
 				character_data[player]['chars'][char]['special'] = {}
 				log(f"{char} (owned by {player}) updated to include special field")
 				changed = True
+			if 'henshin_trait' not in character_data[player]['chars'][char]['special'] or 'henshin_stored_hp' not in character_data[player]['chars'][char]['special'] or 'henshin_stored_maxhp' not in character_data[player]['chars'][char]['special']:
+				for trt in character_data[player]['chars'][char]['traits']:
+					if trt['Number'] == 316:
+						changed = True
+						log(f"{char} (owned by {player}) updated to include HENSHIN sub-fields")
+						character_data[player]['chars'][char]['special']['henshin_trait'] = None
+						character_data[player]['chars'][char]['special']['henshin_stored_hp'] = 0
+						character_data[player]['chars'][char]['special']['henshin_stored_maxhp'] = 0
+						break
 	
 	if changed:
 		await save_character_data()
@@ -759,7 +768,7 @@ async def henshin(ctx, set_trait: discord.Option(str, "The core book name or num
 					character['special']['henshin_stored_hp'] = 0
 					character['special']['henshin_stored_maxhp'] = 0
 					
-					await ctx.respond(f"{codename.upper()} has deactivated HENSHIN.\n- They have lost the **{character['special']['henshin_trait']['Name']}** trait.\n- They have lost the {character['special']['henshin_trait']['Stat']} bonus.\n- Their HP has reverted to **{character['hp']}/{character['maxhp']}**.")
+					await ctx.respond(f"{codename.upper()} has deactivated HENSHIN.\n- They have lost the **{character['special']['henshin_trait']['Name']}** trait.\n- They have removed the {character['special']['henshin_trait']['Stat']} stat change.\n- Their HP has reverted to **{character['hp']}/{character['maxhp']}**.")
 					await save_character_data(str(ctx.author.id))
 					return
 				else: #henshin is not active; activate it
@@ -791,7 +800,7 @@ async def henshin(ctx, set_trait: discord.Option(str, "The core book name or num
 						character[translated_stat_bonus] += num
 						if translated_stat_bonus == 'maxhp':
 							character['hp'] += num
-					await ctx.respond(f"**{codename.upper()} has activated HENSHIN!**\n- They have gained the **{character['special']['henshin_trait']['Name']}** trait.\n- They have gained {character['special']['henshin_trait']['Stat']}.\n- This form has **{character['maxhp']} MAX HP**.")
+					await ctx.respond(f"**{codename.upper()} has activated HENSHIN!**\n- They have gained the **{character['special']['henshin_trait']['Name']}** trait.\n- They have taken {character['special']['henshin_trait']['Stat']}.\n- This form has **{character['maxhp']} MAX HP**.")
 					await save_character_data(str(ctx.author.id))
 					return
 		else: #setting the trait
