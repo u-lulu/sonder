@@ -2564,7 +2564,7 @@ async def monsters(ctx, barcode: discord.Option(str,"The barcode to input")):
 		lower_middle_index = upper_middle_index - 1
 		armor = (barcode[lower_middle_index] + barcode[upper_middle_index]) // 2
 	
-	await ctx.respond(f"Your summoned MONSTER has:\n- 💥 1D6+{damage_bonus} DAMAGE\n- ❤️ {health} HP\n- 🛡️ {armor} ARMOR")
+	await ctx.respond(f"Your summoned MONSTER has:\n- 💥 1D6{'+'+str(damage_bonus) if damage_bonus > 0 else ''} DAMAGE\n- ❤️ {health} HP\n- 🛡️ {armor} ARMOR")
 	
 
 bot.add_application_command(trait_group)
