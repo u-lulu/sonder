@@ -413,12 +413,6 @@ async def d666(ctx, instances: discord.Option(discord.SlashCommandOptionType.int
 	else:
 		await ctx.respond(message)
 
-# character_data structure:
-# - main object is a dict, keys are user IDs
-# - user IDs point to dicts with 2 keys: "active" and "chars"
-# - "chars" is a dict that contains all characters, with keys being codenames
-# - "active" is a dict; keys are channel IDs, values are character codenames
-
 def output_character(codename, data):
 	out = f"# {codename.upper()}"
 	if data["role"] == {}:
