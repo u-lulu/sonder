@@ -14,6 +14,11 @@ import qrcode # pip install qrcode
 import copy
 import asyncio
 
+standard_character_limit = 10
+premium_character_limit = 50
+standard_custrait_limit = 2 * standard_character_limit
+premium_custrait_limit = 2 * premium_character_limit
+
 def log(msg):
 	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
 
@@ -859,9 +864,6 @@ valid_bonuses = ["+1D6 Max Hp","+1D6 War Dice","Random Standard Issue Item","Bal
 async def starting_bonus_autocomp(ctx):
 	return valid_bonuses
 
-standard_character_limit = 10
-premium_character_limit = 50
-
 @bot.command(description="Create a new character to manage")
 async def create_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True),
 	starter_trait_1: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
@@ -1366,9 +1368,6 @@ async def stat_amount_autocomp(ctx):
 
 async def no_effect_autocomp(ctx):
 	return ["NO_EFFECT"]
-
-standard_custrait_limit = 2 * standard_character_limit
-premium_custrait_limit = 2 * premium_character_limit
 
 @bot.command(description="Create a custom trait")
 async def create_custom_trait(ctx,	
