@@ -587,8 +587,7 @@ async def character_names_autocomplete(ctx: discord.AutocompleteContext):
 
 async def ext_character_management(id):
 	try:
-		if type(id) is not int:
-			id = int(id)
+		id = int(id)
 	except:
 		log(f"Could not cast ID to int for ECM check, received value '{id}'")
 		return False
