@@ -166,6 +166,29 @@ def roll_extra_possibility(input_string):
 	else:
 		return input_string
 
+async def ext_character_management(id):
+	try:
+		id = int(id)
+	except:
+		log(f"Could not cast ID to int for ECM check, received value '{id}'")
+		return False
+	#if id == ownerid:
+		#return True
+	support_server = await bot.fetch_guild(support_server_id)
+	if support_server is None:
+		log(f"No support server object exists, membership check fails")
+		return False
+	user = await support_server.fetch_member(id)
+	if user is None:
+		log(f"User is not present on server, membership check fails")
+		return False
+	role = user.get_role(1142272148099055666)
+	if role is None:
+		log(f"User does not have role, membership check fails")
+		return False
+	log(f"Membership check succeeds!")
+	return True
+
 support_server_id = 1101249440230154300
 support_server_obj = None
 
@@ -583,29 +606,6 @@ async def character_names_autocomplete(ctx: discord.AutocompleteContext):
 		return list(character_data[uid]['chars'].keys())
 	else:
 		return []
-
-async def ext_character_management(id):
-	try:
-		id = int(id)
-	except:
-		log(f"Could not cast ID to int for ECM check, received value '{id}'")
-		return False
-	#if id == ownerid:
-		#return True
-	support_server = await bot.fetch_guild(support_server_id)
-	if support_server is None:
-		log(f"No support server object exists, membership check fails")
-		return False
-	user = await support_server.fetch_member(id)
-	if user is None:
-		log(f"User is not present on server, membership check fails")
-		return False
-	role = user.get_role(1142272148099055666)
-	if role is None:
-		log(f"User does not have role, membership check fails")
-		return False
-	log(f"Membership check succeeds!")
-	return True
 
 async def traits_and_customs_autocomp(ctx):
 	uid = str(ctx.interaction.user.id)
