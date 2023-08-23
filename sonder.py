@@ -367,16 +367,20 @@ async def membership(ctx):
 	await ctx.defer(ephemeral=True)
 	support_server = await bot.fetch_guild(support_server_id)
 	if support_server is None:
+		log("Result is NO; no support server")
 		await ctx.respond("This bot cannot locate the Support Server necessary to facilitate server subscriptions.\n**If you can see this message, something has gone wrong.**\nPlease contact me via the [Support Server]( https://discord.gg/VeedQmQc7k ) as soon as possible.",ephemeral=True)
 		return
 	user = await support_server.fetch_member(id)
 	if user is None:
+		log("Result is NO; not present on support server")
 		await ctx.respond(f"You do not have an active subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).\nYou are able to manage {standard_character_limit} characters and {standard_custrait_limit} custom traits.\nIf you have paid for a subscription but are seeing this message, you must join the [Support Server]( https://discord.gg/VeedQmQc7k ) and link your Ko-fi account to Discord before you can receive benefits.",ephemeral=True)
 		return
 	role = user.get_role(1142272148099055666)
 	if role is None:
+		log("Result is NO; no assigned role")
 		await ctx.respond(f"You do not have an active subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).\nYou are able to manage {standard_character_limit} characters and {standard_custrait_limit} custom traits.\nIf you have paid for a subscription but are seeing this message, you must link your Ko-fi account to Discord before you can receive benefits.",ephemeral=True)
 		return
+	log("Result is YES")
 	await ctx.respond(f"You have an active subscription!\nYou are able to manage {premium_character_limit} characters and {premium_custrait_limit} custom traits.\nYou can manage your subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).",ephemeral=True)
 	return
 
