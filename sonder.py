@@ -268,6 +268,15 @@ else:
 log("Creating generic commands")
 @bot.event
 async def on_ready():
+	try:
+		log("Checking for support server...")
+		global support_server_obj
+		support_server_obj = await bot.fetch_guild(support_server_id)
+		log(f"Support server found: {support_server_obj.name} ({support_server_obj.id})")
+	except Exception as e:
+		log(f"Support server could not be found: {e}")
+		support_server_obj = None
+
 	log("Checking to see if character data needs to be updated...")
 	changed = False
 	for player in character_data:
@@ -311,15 +320,7 @@ async def on_ready():
 		await save_character_data()
 	else:
 		log("No required changes to player data found.")
-
-	try:
-		log("Checking for support server...")
-		global support_server_obj
-		support_server_obj = await bot.fetch_guild(support_server_id)
-		log(f"Support server found: {support_server_obj.name} ({support_server_obj.id})")
-	except Exception as e:
-		log(f"Support server could not be found: {e}")
-		support_server_obj = None
+	
 	log(f"{bot.user} is ready and online in {len(bot.guilds)} guilds!")
 	boot_time = int(time.time())
 
