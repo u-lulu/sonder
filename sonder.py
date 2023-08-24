@@ -170,15 +170,12 @@ async def ext_character_management(id):
 	try:
 		id = int(id)
 	except:
-		log(f"Could not cast ID to int for ECM check, received value '{id}'")
+		log(f"Could not cast ID to integer for membership check, received value '{id}'")
 		return False
-	#if id == ownerid:
-		#return True
-	support_server = await bot.fetch_guild(support_server_id)
-	if support_server is None:
+	if support_server_obj is None:
 		log(f"No support server object exists, membership check fails")
 		return False
-	user = await support_server.fetch_member(id)
+	user = await support_server_obj.fetch_member(id)
 	if user is None:
 		log(f"User is not present on server, membership check fails")
 		return False
@@ -317,6 +314,7 @@ async def on_ready():
 
 	try:
 		log("Checking for support server...")
+		global support_server_obj
 		support_server_obj = await bot.fetch_guild(support_server_id)
 		log(f"Support server found: {support_server_obj.name} ({support_server_obj.id})")
 	except Exception as e:
@@ -365,12 +363,11 @@ async def membership(ctx):
 	log("/membership")
 	id = ctx.author.id
 	await ctx.defer(ephemeral=True)
-	support_server = await bot.fetch_guild(support_server_id)
-	if support_server is None:
+	if support_server_obj is None:
 		log("Result is NO; no support server")
 		await ctx.respond("This bot cannot locate the Support Server necessary to facilitate server subscriptions.\n**If you can see this message, something has gone wrong.**\nPlease contact me via the [Support Server]( https://discord.gg/VeedQmQc7k ) as soon as possible.",ephemeral=True)
 		return
-	user = await support_server.fetch_member(id)
+	user = await support_server_obj.fetch_member(id)
 	if user is None:
 		log("Result is NO; not present on support server")
 		await ctx.respond(f"You do not have an active subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).\nYou are able to manage {standard_character_limit} characters and {standard_custrait_limit} custom traits.\nIf you have paid for a subscription but are seeing this message, you must join the [Support Server]( https://discord.gg/VeedQmQc7k ) and link your Ko-fi account to Discord before you can receive benefits.",ephemeral=True)
