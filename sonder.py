@@ -1515,7 +1515,7 @@ async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait
 		for t in yourtraits:
 			full_trait = yourtraits[t]
 			
-			msg += f"\n- {t.upper()} ({full_trait['Stat']}, {full_trait['Item']})"
+			msg += f"\n- **{t.upper()}** ({full_trait['Stat']}, {full_trait['Item']})"
 		if len(msg) > 2000:
 			msg = msg.replace("*","")
 			with open("message.txt","w") as file:
