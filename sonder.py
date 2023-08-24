@@ -1141,7 +1141,7 @@ async def my_characters(ctx):
 	if yourid in character_data and len(character_data[yourid]['chars']) > 0:
 		await ctx.defer()
 		yourchars = character_data[yourid]['chars']
-		msg = f"Characters created by <@{yourid}> ({len(yourchars)}):"
+		msg = f"Characters created by <@{yourid}> ({len(yourchars)}/{premium_character_limit if await ext_character_management(yourid) else standard_character_limit}):"
 		premiums = False
 		for codename in yourchars:
 			if not yourchars[codename]['premium']:
@@ -1510,9 +1510,12 @@ async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait
 	
 	yourtraits = character_data[uid]['traits']
 	if name is None:
-		msg = f"Custom traits created by <@{uid}> ({len(yourtraits)}):"
+		await ctx.defer()
+		msg = f"Custom traits created by <@{uid}> ({len(yourtraits)}/{premium_custrait_limit if await ext_character_management(uid) else standard_custrait_limit}):"
 		for t in yourtraits:
-			msg += f"\n- {t.upper()}"
+			full_trait = yourtraits[t]
+			
+			msg += f"\n- {t.upper()} ({full_trait['Stat']}, {full_trait['Item']})"
 		if len(msg) > 2000:
 			msg = msg.replace("*","")
 			with open("message.txt","w") as file:
