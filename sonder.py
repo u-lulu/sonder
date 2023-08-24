@@ -1139,7 +1139,7 @@ async def my_characters(ctx):
 	log("/my_characters")
 	yourid = str(ctx.author.id)
 	if yourid in character_data and len(character_data[yourid]['chars']) > 0:
-		ctx.defer()
+		await ctx.defer()
 		yourchars = character_data[yourid]['chars']
 		msg = f"Characters created by <@{yourid}> ({len(yourchars)}):"
 		premiums = False
