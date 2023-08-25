@@ -2837,6 +2837,7 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 	if traitcount > 40:
 		await ctx.respond("Cannot generate a character with that many traits.",ephemeral=True)
 		return
+	await ctx.defer()
 	message += "\nROLE: "
 	
 	traits = rnd.sample(trait_data, traitcount)
