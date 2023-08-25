@@ -2124,8 +2124,8 @@ async def remove_item(ctx,
 	except ValueError as e:
 		log(f"Caught ValueError: {e}")
 		out = "The item that you wanted to remove could not be found. Your current items are:"
-		for x in character['items']:
-			out += "\n- x"
+		for i in character['items']:
+			out += f"\n- {i}"
 		await ctx.respond(out,ephemeral=True)
 		return
 	
