@@ -166,24 +166,35 @@ def roll_extra_possibility(input_string):
 	else:
 		return input_string
 
+subscription_cache = {}
+sub_cache_timeout = 60 * 60 # 1 hour
+
 async def ext_character_management(id):
 	try:
 		id = int(id)
 	except:
 		log(f"Could not cast ID to integer for membership check, received value '{id}'")
 		return False
+	if id in subscription_cache and time.time() < subscription_cache[id] + sub_cache_timeout:
+		log("Membership check succeeded via cache")
+		return True
 	if support_server_obj is None:
 		log(f"No support server object exists, membership check fails")
 		return False
 	user = await support_server_obj.fetch_member(id)
 	if user is None:
 		log(f"User is not present on server, membership check fails")
+		if id in subscription_cache:
+			del subscription_cache[id]
 		return False
 	role = user.get_role(1142272148099055666)
 	if role is None:
 		log(f"User does not have role, membership check fails")
+		if id in subscription_cache:
+			del subscription_cache[id]
 		return False
-	log(f"Membership check succeeds!")
+	log(f"Membership check succeeds")
+	subscription_cache[id] = time.time()
 	return True
 
 support_server_id = 1101249440230154300
@@ -372,14 +383,19 @@ async def membership(ctx):
 	if user is None:
 		log("Result is NO; not present on support server")
 		await ctx.respond(f"You do not have an active subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).\nYou are able to manage {standard_character_limit} characters and {standard_custrait_limit} custom traits.\nIf you have paid for a subscription but are seeing this message, you must join the [Support Server]( https://discord.gg/VeedQmQc7k ) and link your Ko-fi account to Discord before you can receive benefits.",ephemeral=True)
+		if id in subscription_cache:
+			del subscription_cache[id]
 		return
 	role = user.get_role(1142272148099055666)
 	if role is None:
 		log("Result is NO; no assigned role")
 		await ctx.respond(f"You do not have an active subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).\nYou are able to manage {standard_character_limit} characters and {standard_custrait_limit} custom traits.\nIf you have paid for a subscription but are seeing this message, you must link your Ko-fi account to Discord before you can receive benefits.",ephemeral=True)
+		if id in subscription_cache:
+			del subscription_cache[id]
 		return
 	log("Result is YES")
 	await ctx.respond(f"You have an active subscription!\nYou are able to manage {premium_character_limit} characters and {premium_custrait_limit} custom traits.\nYou can manage your subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).",ephemeral=True)
+	subscription_cache[id] = time.time()
 	return
 
 @bot.command(description="Pin (or unpin) a message inside a thread, if you own the thread")
