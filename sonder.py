@@ -1611,7 +1611,7 @@ async def add_item(ctx,
 	await ctx.respond(f"**{codename.upper()}** has added **{item_to_add}** to their inventory.")
 	await save_character_data(str(ctx.author.id))
 
-async def full_item_autocomplete(ctx):
+async def item_name_autocomplete(ctx):
 	uid = str(ctx.interaction.user.id)
 	if uid in character_data:
 		# gotta get active character manually cus this is a different kind of ctx. ugh
@@ -1620,13 +1620,24 @@ async def full_item_autocomplete(ctx):
 			current_active = your_actives[str(ctx.interaction.channel_id)]
 			if current_active in character_data[uid]['chars']:
 				current_char = character_data[uid]['chars'][current_active]
-				return current_char['items']
+				output = []
+				for item in current_char['items']:
+					item_name = item.split(" (")[0]
+					log(item_name)
+					output.append(item_name)
+				return output
 			else:
 				return []
 		else:
 			return []
 	else:
 		return []
+
+def get_full_item_from_name(item_name, character):
+	for full_item in character['items']:
+		if full_item.split(" (")[0] == item_name:
+			return full_item
+	return None
 
 async def orig_item_name_autocomp(ctx):
 	uid = str(ctx.interaction.user.id)
@@ -1670,7 +1681,7 @@ async def orig_item_effect_autocomp(ctx):
 
 @bot.command(description="Edit an item in your inventory")
 async def edit_item(ctx,
-		original_item: discord.Option(str, "The name of the original item",autocomplete=discord.utils.basic_autocomplete(full_item_autocomplete), required=True),
+		original_item: discord.Option(str, "The name of the original item",autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True),
 		name: discord.Option(str, "The new name of the item",autocomplete=discord.utils.basic_autocomplete(orig_item_name_autocomp), required=True), 
 		effect: discord.Option(str, "The new effect of the item",autocomplete=discord.utils.basic_autocomplete(orig_item_effect_autocomp), required=True)):
 	log(f"/edit_item {original_item} {name} {effect}")
@@ -1685,6 +1696,8 @@ async def edit_item(ctx,
 	if character['premium'] and not await ext_character_management(ctx.author.id):
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
+	
+	original_item = get_full_item_from_name(original_item, character)
 	
 	if original_item not in character['items']:
 		await ctx.respond(f"The character **{codename.upper()}** is not carrying the item '{original_item}'. ",ephemeral=True)
@@ -2122,7 +2135,7 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 
 @bot.command(description="Remove an item from your active character")
 async def remove_item(ctx,
-		item: discord.Option(str, "The item to be removed",autocomplete=discord.utils.basic_autocomplete(full_item_autocomplete), required=True)):
+		item: discord.Option(str, "The item to be removed",autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True)):
 	log(f"/remove_item {item}")
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -2137,6 +2150,8 @@ async def remove_item(ctx,
 	if len(character['items']) <= 0:
 		await ctx.respond(f"**{codename.upper()}** does not have any items.",ephemeral=True)
 		return
+	
+	item = get_full_item_from_name(item, character)
 	
 	try:
 		character['items'].remove(item)
