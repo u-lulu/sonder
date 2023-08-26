@@ -1255,7 +1255,7 @@ async def inventory(ctx):
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
-	message = f"**{codename.upper()}**'s inventory:"
+	message = f"**{codename.upper()}**'s inventory ({len(character['items'])}/{item_limit}):"
 	if len(character['items']) <= 0:
 		message = f"**{codename.upper()}** has no items in their inventory."
 	else:
