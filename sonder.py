@@ -25,7 +25,7 @@ def log(msg):
 log("Initializing...")
 boot_time = int(time.time())
 
-bot = discord.Bot(activity=discord.Game(name='FIST: Ultra Edition'))
+bot = discord.Bot(activity=discord.Game(name='Loading...'),status=discord.Status.dnd)
 
 log("Loading token")
 token_file = open('token.json')
@@ -339,6 +339,7 @@ async def on_ready():
 	else:
 		log("No required changes to player data found.")
 	
+	await bot.change_presence(activity=discord.Game(name='FIST: Ultra Edition'),status=discord.Status.online)
 	log(f"{bot.user} is ready and online in {len(bot.guilds)} guilds!")
 	boot_time = int(time.time())
 
