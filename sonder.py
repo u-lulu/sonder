@@ -1583,6 +1583,10 @@ async def add_item(ctx,
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
+	if len(name) > 100:
+		await ctx.respond(f"Item names must be no longer than 100 characters.",ephemeral=True)
+		return
+	
 	if len(character['items']) >= item_limit:
 		await ctx.respond(f"Characters cannot carry more than {item_limit} items.",ephemeral=True)
 		return
