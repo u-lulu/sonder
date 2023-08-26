@@ -181,7 +181,14 @@ async def ext_character_management(id):
 	if support_server_obj is None:
 		log(f"No support server object exists, membership check fails")
 		return False
-	user = await support_server_obj.fetch_member(id)
+	user = None
+	try:
+		user = await support_server_obj.fetch_member(id)
+	except Exception as e:
+		log(f"User is not present on server (threw error), membership check fails")
+		if id in subscription_cache:
+			del subscription_cache[id]
+		return False
 	if user is None:
 		log(f"User is not present on server, membership check fails")
 		if id in subscription_cache:
@@ -379,7 +386,14 @@ async def membership(ctx):
 		log("Result is NO; no support server")
 		await ctx.respond("This bot cannot locate the Support Server necessary to facilitate server subscriptions.\n**If you can see this message, something has gone wrong.**\nPlease contact me via the [Support Server]( https://discord.gg/VeedQmQc7k ) as soon as possible.",ephemeral=True)
 		return
-	user = await support_server_obj.fetch_member(id)
+	try:
+		user = await support_server_obj.fetch_member(id)
+	except Exception as e:
+		log("Result is NO; not present on support server (threw exception)")
+		await ctx.respond(f"You do not have an active subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).\nYou are able to manage {standard_character_limit} characters and {standard_custrait_limit} custom traits.\nIf you have paid for a subscription but are seeing this message, you must join the [Support Server]( https://discord.gg/VeedQmQc7k ) and link your Ko-fi account to Discord before you can receive benefits.",ephemeral=True)
+		if id in subscription_cache:
+			del subscription_cache[id]
+		return
 	if user is None:
 		log("Result is NO; not present on support server")
 		await ctx.respond(f"You do not have an active subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).\nYou are able to manage {standard_character_limit} characters and {standard_custrait_limit} custom traits.\nIf you have paid for a subscription but are seeing this message, you must join the [Support Server]( https://discord.gg/VeedQmQc7k ) and link your Ko-fi account to Discord before you can receive benefits.",ephemeral=True)
@@ -2126,7 +2140,15 @@ async def remove_item(ctx,
 		out = "The item that you wanted to remove could not be found. Your current items are:"
 		for i in character['items']:
 			out += f"\n- {i}"
-		await ctx.respond(out,ephemeral=True)
+		if len(out) > 2000:
+			out = out.replace("*","").replace("# ","")
+			with open("message.txt","w") as file:
+				file.write(out)
+			await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
+			os.remove('message.txt')
+			log("Sent inventory as file")
+		else:
+			await ctx.respond(message)
 		return
 	
 	if item in character['counters']:
