@@ -20,9 +20,16 @@ standard_custrait_limit = 2 * standard_character_limit
 premium_custrait_limit = 2 * premium_character_limit
 
 item_limit = 50
+logging_channel_id = 1145165620082638928
+logging_channel = None
 
 def log(msg):
 	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
+	try:
+		if logging_channel is not None:
+			asyncio.create_task(logging_channel.send(f"<t:{int(time.time())}:T>\n>>> `{msg}`"))
+	except Exception as e:
+		print(date.today(), datetime.now().strftime("| %H:%M:%S |"), f"Could not log previous message: {e}")
 
 log("Initializing...")
 boot_time = int(time.time())
@@ -296,6 +303,15 @@ async def on_ready():
 	except Exception as e:
 		log(f"Support server could not be found: {e}")
 		support_server_obj = None
+
+	try:
+		log("Checking for logging channel...")
+		global logging_channel
+		logging_channel = await bot.fetch_channel(logging_channel_id)
+		log(f"Hello logging channel!: {logging_channel.name} ({logging_channel.id})")
+	except Exception as e:
+		log(f"Logging channel could not be found: {e}")
+		logging_channel = None
 
 	log("Checking to see if character data needs to be updated...")
 	changed = False
