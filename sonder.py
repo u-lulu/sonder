@@ -804,6 +804,8 @@ async def add_trait(ctx,
 		out += "\n💡 You can manage switching forms with this trait by using the `/henshin` command."
 	if my_new_trait['Number'] == 414: # monsters notice
 		out += "\n💡 You can generate monster statblocks for this trait using the `/monsters` command."
+	if my_new_trait['Number'] == 611: # sunder notice
+		out += "\n💡 You can deal damage with this trait using the `/sunder` command."
 	out += f"\n>>> {trait_message_format(my_new_trait)}"
 	await ctx.respond(out)
 	await save_character_data(str(ctx.author.id))
