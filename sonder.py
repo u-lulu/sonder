@@ -1643,7 +1643,6 @@ async def item_name_autocomplete(ctx):
 				output = []
 				for item in current_char['items']:
 					item_name = item.split(" (")[0]
-					log(item_name)
 					output.append(item_name)
 				return output
 			else:
