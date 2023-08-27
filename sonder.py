@@ -2868,7 +2868,62 @@ async def monsters(ctx, barcode: discord.Option(str,"The barcode to input")):
 		armor = (barcode[lower_middle_index] + barcode[upper_middle_index]) // 2
 	
 	await ctx.respond(f"Your summoned MONSTER has:\n- 💥 1D6{'+'+str(damage_bonus) if damage_bonus > 0 else ''} DAMAGE\n- ❤️ {health} HP\n- 🛡️ {armor} ARMOR")
+
+sunder_tracker = {}
+
+@bot.command(description="Rolls damage for SUNDER, and then applies the damage to your active character")
+async def sunder(ctx):
+	log("/sunder")
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
 	
+	sunder_present = False
+	for trait in character['traits']:
+		if trait['Number'] == 611:
+			sunder_present = True
+			break
+	if not sunder_present:
+		await ctx.respond(f"{codename.upper()} does not have the SUNDER trait.",ephemeral=True)
+		return
+	
+	sunder_tracker[ctx.interaction.id] = d6()
+	
+	class SunderStacking(discord.ui.View):
+		@discord.ui.button(label=f"+1D6",style=discord.ButtonStyle.blurple,emoji="🎲")
+		async def sunder_stack_callback(self, button, interaction):
+			if interaction.user.id == ctx.author.id:
+				log("Sunder +1D6 callback")
+				sunder_tracker[ctx.interaction.id] += d6()
+				await interaction.response.edit_message(content=f"{codename.upper()} activates SUNDER...\n> - The target will take {sunder_tracker[ctx.interaction.id]} damage.\n> - {codename.upper()} will take {math.floor(sunder_tracker[ctx.interaction.id]/2)} damage.",view=self)
+			else:
+				log("Denying invalid Sunder response")
+				await interaction.response.send_message("This is not your SUNDER prompt.",ephemeral=True)
+		@discord.ui.button(label=f"Finish & take self-damage",style=discord.ButtonStyle.red,emoji="💥")
+		async def sunder_finish_callback(self, button, interaction):
+			if interaction.user.id == ctx.author.id:
+				log("Sunder damage callback")
+				self.disable_all_items()
+				await interaction.response.edit_message(view=self)
+				await damage(ctx,str(math.floor(sunder_tracker[ctx.interaction.id]/2)),True,0)
+				del sunder_tracker[ctx.interaction.id]
+			else:
+				log("Denying invalid Sunder response")
+				await interaction.response.send_message("This is not your SUNDER prompt.",ephemeral=True)
+		@discord.ui.button(label=f"Cancel",emoji="🚫")
+		async def sunder_cancel_callback(self, button, interaction):
+			if interaction.user.id == ctx.author.id:
+				log("Sunder cancel callback")
+				del sunder_tracker[ctx.interaction.id]
+				self.disable_all_items()
+				await interaction.response.edit_message(content=f"{codename.upper()} activates SUNDER...\n> *Activation cancelled.*",view=self)
+			else:
+				log("Denying invalid Sunder response")
+				await interaction.response.send_message("This is not your SUNDER prompt.",ephemeral=True)
+	
+	await ctx.respond(f"{codename.upper()} activates SUNDER...\n> - The target will take {sunder_tracker[ctx.interaction.id]} damage.\n> - {codename.upper()} will take {math.floor(sunder_tracker[ctx.interaction.id]/2)} damage.", view=SunderStacking())
 
 bot.add_application_command(trait_group)
 
