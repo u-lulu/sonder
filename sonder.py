@@ -27,7 +27,7 @@ def log(msg):
 	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
 	try:
 		if logging_channel is not None:
-			asyncio.create_task(logging_channel.send(f"<t:{int(time.time())}:T>\n>>> `{msg}`"))
+			asyncio.create_task(logging_channel.send(f"<t:{int(time.time())}:R>\n>>> `{msg}`"))
 	except Exception as e:
 		print(date.today(), datetime.now().strftime("| %H:%M:%S |"), f"Could not log previous message: {e}")
 
