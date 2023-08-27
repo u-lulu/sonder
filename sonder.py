@@ -19,6 +19,8 @@ premium_character_limit = 50
 standard_custrait_limit = 2 * standard_character_limit
 premium_custrait_limit = 2 * premium_character_limit
 
+item_limit = 50
+
 def log(msg):
 	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
 
@@ -705,6 +707,10 @@ async def add_trait(ctx,
 	
 	if len(character['traits']) >= trait_limit:
 		await ctx.respond(f"Characters cannot have more than {trait_limit} traits.",ephemeral=True)
+		return
+	
+	if len(character['items']) >= item_limit:
+		await ctx.respond(f"Adding this trait would cause {codename.upper()}'s inventory to exceed 50 {item_limit} items, which is not allowed.",ephemeral=True)
 		return
 	
 	trait = trait.upper()
@@ -1562,8 +1568,6 @@ async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait
 			await ctx.respond(f"You do not have a custom trait called {name}.",ephemeral=True)
 		else:
 			await ctx.respond(trait_message_format(yourtraits[name]))
-
-item_limit = 50
 
 @bot.command(description="Add an item your active character")
 async def add_item(ctx,
