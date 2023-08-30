@@ -185,7 +185,7 @@ async def ext_character_management(id):
 	except:
 		log(f"Could not cast ID to integer for membership check, received value '{id}'")
 		return False
-	if id in subscription_cache and time.time() < subscription_cache[id] + sub_cache_timeout:
+	if id in subscription_cache and time.time() < subscription_cache[id]:
 		log("Membership check succeeded via cache")
 		return True
 	if support_server_obj is None:
@@ -211,7 +211,7 @@ async def ext_character_management(id):
 			del subscription_cache[id]
 		return False
 	log(f"Membership check succeeds")
-	subscription_cache[id] = time.time()
+	subscription_cache[id] = time.time() + sub_cache_timeout
 	return True
 
 support_server_id = 1101249440230154300
@@ -429,7 +429,7 @@ async def membership(ctx):
 		return
 	log("Result is YES")
 	await ctx.respond(f"You have an active subscription!\nYou are able to manage {premium_character_limit} characters and {premium_custrait_limit} custom traits.\nYou can manage your subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).",ephemeral=True)
-	subscription_cache[id] = time.time()
+	subscription_cache[id] = time.time() + sub_cache_timeout
 	return
 
 @bot.command(description="Pin (or unpin) a message inside a thread, if you own the thread")
