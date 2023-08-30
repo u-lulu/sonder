@@ -24,6 +24,7 @@ logging_channel_id = 1145165620082638928
 logging_channel = None
 
 def log(msg):
+	msg = msg.strip()
 	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
 	try:
 		if logging_channel is not None:
