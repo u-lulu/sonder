@@ -721,7 +721,7 @@ async def add_trait(ctx,
 		return
 	
 	if len(character['items']) >= item_limit:
-		await ctx.respond(f"Adding this trait would cause {codename.upper()}'s inventory to exceed 50 {item_limit} items, which is not allowed.",ephemeral=True)
+		await ctx.respond(f"Adding this trait would cause {codename.upper()}'s inventory to exceed {item_limit} items, which is not allowed.",ephemeral=True)
 		return
 	
 	trait = trait.upper()
