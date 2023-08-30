@@ -248,6 +248,7 @@ async def save_character_data(userid=None):
 				os.remove(f'playerdata/{userid}.json')
 	except Exception as e:
 		log(f"PLAYER DATA SAVING FOR {userid} THREW AN ERROR: {e}")
+		await bot.wait_until_ready()
 		owner_object = await bot.fetch_user(ownerid)
 		await owner_object.send(f"**An error occurred while saving `{userid}.json`!**\n```{e}```")
 
@@ -293,6 +294,41 @@ else:
 	log("Player data does not exist. Using empty data.")
 	os.mkdir('playerdata')
 
+log("Checking to see if character data needs to be updated...")
+changed = False
+for player in character_data:
+	if 'traits' not in character_data[player]:
+		character_data[player]['traits'] = {}
+		log(f"{player} updated to include custom traits field")
+		changed = True
+	for char in character_data[player]['chars']:
+		if 'counters' not in character_data[player]['chars'][char]:
+			character_data[player]['chars'][char]['counters'] = {}
+			log(f"{char} (owned by {player}) updated to include counters field")
+			changed = True
+		if 'notes' not in character_data[player]['chars'][char]:
+			character_data[player]['chars'][char]['notes'] = ""
+			log(f"{char} (owned by {player}) updated to include notes field")
+			changed = True
+		if 'special' not in character_data[player]['chars'][char]:
+			character_data[player]['chars'][char]['special'] = {}
+			log(f"{char} (owned by {player}) updated to include special field")
+			changed = True
+		if 'henshin_trait' not in character_data[player]['chars'][char]['special'] or 'henshin_stored_hp' not in character_data[player]['chars'][char]['special'] or 'henshin_stored_maxhp' not in character_data[player]['chars'][char]['special']:
+			for trt in character_data[player]['chars'][char]['traits']:
+				if trt['Number'] == 316:
+					changed = True
+					log(f"{char} (owned by {player}) updated to include HENSHIN sub-fields")
+					character_data[player]['chars'][char]['special']['henshin_trait'] = None
+					character_data[player]['chars'][char]['special']['henshin_stored_hp'] = 0
+					character_data[player]['chars'][char]['special']['henshin_stored_maxhp'] = 0
+					break
+
+if changed:
+	asyncio.run(save_character_data())
+else:
+	log("No required changes to player data found.")
+
 log("Creating generic commands")
 @bot.event
 async def on_ready():
@@ -313,41 +349,6 @@ async def on_ready():
 	except Exception as e:
 		log(f"Logging channel could not be found: {e}")
 		logging_channel = None
-
-	log("Checking to see if character data needs to be updated...")
-	changed = False
-	for player in character_data:
-		if 'traits' not in character_data[player]:
-			character_data[player]['traits'] = {}
-			log(f"{player} updated to include custom traits field")
-			changed = True
-		for char in character_data[player]['chars']:
-			if 'counters' not in character_data[player]['chars'][char]:
-				character_data[player]['chars'][char]['counters'] = {}
-				log(f"{char} (owned by {player}) updated to include counters field")
-				changed = True
-			if 'notes' not in character_data[player]['chars'][char]:
-				character_data[player]['chars'][char]['notes'] = ""
-				log(f"{char} (owned by {player}) updated to include notes field")
-				changed = True
-			if 'special' not in character_data[player]['chars'][char]:
-				character_data[player]['chars'][char]['special'] = {}
-				log(f"{char} (owned by {player}) updated to include special field")
-				changed = True
-			if 'henshin_trait' not in character_data[player]['chars'][char]['special'] or 'henshin_stored_hp' not in character_data[player]['chars'][char]['special'] or 'henshin_stored_maxhp' not in character_data[player]['chars'][char]['special']:
-				for trt in character_data[player]['chars'][char]['traits']:
-					if trt['Number'] == 316:
-						changed = True
-						log(f"{char} (owned by {player}) updated to include HENSHIN sub-fields")
-						character_data[player]['chars'][char]['special']['henshin_trait'] = None
-						character_data[player]['chars'][char]['special']['henshin_stored_hp'] = 0
-						character_data[player]['chars'][char]['special']['henshin_stored_maxhp'] = 0
-						break
-	
-	if changed:
-		await save_character_data()
-	else:
-		log("No required changes to player data found.")
 	
 	await bot.change_presence(activity=discord.Game(name='FIST: Ultra Edition'),status=discord.Status.online)
 	log(f"{bot.user} is ready and online in {len(bot.guilds)} guilds!")
@@ -367,6 +368,8 @@ async def ping(ctx):
 async def shutdown(ctx):
 	log(f"/shutdown ({ctx.author.id})")
 	if ctx.author.id == ownerid:
+		await ctx.defer()
+		await bot.change_presence(activity=discord.Game(name='Shutting down...'),status=discord.Status.dnd)
 		await save_character_data()
 		await ctx.respond(f"Restarting.")
 		await bot.close()
