@@ -3286,25 +3286,28 @@ async def part_success_autocomplete(ctx: discord.AutocompleteContext):
 	return ["COMBAT","GENERAL","MENTAL","MOVEMENT","SOCIAL","WEIRD"]
 
 @matrix_group.command(description="Causes random consequences for a Partial Success")
-async def partial(ctx, type: discord.Option(str,"The type of consequence that should be inflicted",autocomplete=discord.utils.basic_autocomplete(part_success_autocomplete),required=False,default="")):
+async def partial(ctx, type: discord.Option(str,"The type of consequence that should be inflicted",autocomplete=discord.utils.basic_autocomplete(part_success_autocomplete),required=False,default=None)):
 	log(f"/matrix partial {type}")
-	hidden = False
-	type = type.upper()
-	message = ""
-	if type == "":
+	if type is not None:
+		type = type.upper()
+	if type == None:
+		await ctx.defer()
 		message = roll_intelligence_matrix(intelligence["misc"][11])
+		message = message.split(" ")
+		message[0] = f"({message[0]})"
+		message = " ".join(message)
+		await ctx.respond(message)
 	elif type in ["COMBAT","GENERAL","MENTAL","MOVEMENT","SOCIAL","WEIRD"]:
+		await ctx.defer()
 		all = intelligence["misc"][11]["Values"].values()
 		outcomes = []
 		for item in all:
 			if item.startswith(type):
 				split_point = len(type) + 1
 				outcomes.append(item[split_point:])
-		message = rnd.choice(outcomes)
+		await ctx.respond(rnd.choice(outcomes))
 	else:
-		hidden = True
-		message = "Valid partial success types are COMBAT, GENERAL, MOVEMENT, SOCIAL, and WEIRD."
-	await ctx.respond(message,ephemeral=hidden)
+		await ctx.respond("Valid partial success types are COMBAT, GENERAL, MOVEMENT, SOCIAL, and WEIRD.",ephemeral=True)
 
 @matrix_group.command(description="Spawns a Random Encounter")
 async def encounter(ctx):
