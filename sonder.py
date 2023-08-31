@@ -934,9 +934,8 @@ async def starting_bonus_autocomp(ctx):
 async def create_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True),
 	starter_trait_1: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
 	starter_trait_2: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
-	starter_bonus: discord.Option(str, "The extra starting bonus for your character.",autocomplete=discord.utils.basic_autocomplete(starting_bonus_autocomp), required=False, default=None),
-	set_as_active: discord.Option(bool, "If TRUE, the new character will become your active character in this channel. FALSE by default.", required=False, default=True)):
-	log(f"/create {codename} {starter_trait_1 if starter_trait_1 is not None else '[no first trait]'} {starter_trait_2 if starter_trait_2 is not None else '[no second trait]'} {'set_as_active' if set_as_active else ''}")
+	starter_bonus: discord.Option(str, "The extra starting bonus for your character.",autocomplete=discord.utils.basic_autocomplete(starting_bonus_autocomp), required=False, default=None)):
+	log(f"/create {codename} {starter_trait_1 if starter_trait_1 is not None else '[no first trait]'} {starter_trait_2 if starter_trait_2 is not None else '[no second trait]'}")
 	
 	codename = codename.strip()
 	if starter_trait_1 is not None:
@@ -1003,8 +1002,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	if starter_bonus is not None and starter_bonus not in valid_bonuses:
 		msg += "\n*The provided `starter_bonus` is invalid. No starter bonus has been applied.*"
 	await ctx.respond(msg)
-	if set_as_active:
-		await switch_character(ctx, codename)
+	await switch_character(ctx, codename)
 	if starter_trait_1 is not None:
 		await add_trait(ctx, starter_trait_1, None)
 	if starter_trait_2 is not None:
@@ -1023,7 +1021,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 				starting_item_name = split_bonus[0]
 				starting_item_effect = split_bonus[1][:-1]
 				await add_item(ctx,starting_item_name,starting_item_effect)
-	if not set_as_active and not starter_trait_1 and not starter_trait_2:
+	if not starter_trait_1 and not starter_trait_2:
 		await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Rename an existing character")
