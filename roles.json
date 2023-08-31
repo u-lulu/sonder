@@ -82,7 +82,7 @@
   {
     "Number": 35,
     "Name": "MASK",
-    "Text": "Describe your vice as you would for the WILDCARD trait, and describe why you pretend to be eccentric and unpredictable. Advance if you took off the mask to protect someone in your path of chaos, without giving your true nature away to your enemies."
+    "Text": "Describe your vice as you would for the WILDCARD role, and describe why you pretend to be eccentric and unpredictable. Advance if you took off the mask to protect someone in your path of chaos, without giving your true nature away to your enemies."
   },
   {
     "Number": 36,
@@ -122,7 +122,7 @@
   {
     "Number": 51,
     "Name": "PROVIDER",
-    "Text": "Describe the person or entity which cannot survive without you and your work. Advance if you found something that would make them deeply happy and brought it to the end of the mission."
+    "Text": "Describe the person or entity that cannot survive without you and your work. Advance if you found something that would make them deeply happy and brought it to the end of the mission."
   },
   {
     "Number": 52,

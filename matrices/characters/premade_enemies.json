@@ -1,10 +1,85 @@
 [
   {
+    "Head": "AMATEUR TERRORIST (3 HP, 3D6 appear)",
+    "Features": [
+      "AK-47 assault rifle (1D6+1 DAMAGE)",
+      "Homemade pipe bomb (1D6+2 DAMAGE, one use)",
+      "Walkie-talkie (speak to other amateur terrorists)",
+      "Paisley bandana (sort of hides identity)",
+      "Military surplus jacket, ripped jeans"
+    ],
+    "Notes": [
+      "NERVOUS: Amateur terrorist groups are often fairly well-organized for the opening segment of their demonstration—in this case, planting pipe bombs throughout an area while holding its inhabitants hostage. Once the bombs have been set, however, internal bickering and overall antsiness will get the best of them. Nervous amateur terrorists who have already laid their bomb gain a CHOKE score, randomly determined by rolling 1D6, with the behavior: \"Freak out and mess something up.\""
+    ]
+  },
+  {
+    "Head": "ANTAREAN WARPRIEST (6 HP)",
+    "Features": [
+      "Laser rifle, long, slim, and chrome (1D6+1 DAMAGE)",
+      "Metallic staff (1D6 DAMAGE, NON-LETHAL)",
+      "Battle-trance herbs (stop the trance, one use)",
+      "Pointed ears, scaly skin, and textured robes"
+    ],
+    "Notes": [
+      "TRANCE: Antarean Warpriests can be found in stasis, frozen in drop pods planted on Earth from orbit 10,000 years ago, never opened due to a small but detrimental programming error. Upon leaving stasis, Warpriests enter a battle-trance which grants them 3 ARMOR for as long as it lasts. Only the herbs can break the trance."
+    ]
+  },
+  {
+    "Head": "BEAT COP (3 HP, 1D6 appear)",
+    "Features": [
+      "Colt Official Police revolver (1D6+1 DAMAGE)",
+      "Bulletproof vest (1 ARMOR)",
+      "Pepper spray (temporarily blinding, one use)",
+      "Police badge (confers institutional authority)",
+      "Confident swagger"
+    ],
+    "Notes": [
+      "BASTARD: Never expect a fair fight from a cop. As soon as a beat cop catches a whiff of danger, they will head to their **squad car** and call in 1D6 more beat cops with their own cars, and so on. If more than 10 beat cops are present for a fight, this switches to 2D6 cops in **helicopters** with rocket launchers (1D6+2 DAMAGE)."
+    ]
+  },
+  {
+    "Head": "BIO-BOTFLIES (3 HP)",
+    "Features": [
+      "Necrotizing bite (3 DAMAGE, roll +FRC or rotting infection spreads)",
+      "Swarm formation (1 ARMOR)",
+      "Mutated extra limbs",
+      "Fearsome nightmare buzz"
+    ],
+    "Notes": [
+      "HATCHERY: These genetically modified insects, escaped from a supposedly \"ultra-secure\" top-secret corporate (`/matrix faction corporation`) research lab, colonize human flesh to survive and propagate at a truly alarming rate. Any character who is killed by the bio-botflies' necrotizing bite spawns an additional swarm of bio-botflies within minutes if left unfumigated."
+    ]
+  },
+  {
+    "Head": "BOUNTY HUNTER (4 HP, 1 or 2 appear, CHOKE 6: Give up on the bounty)",
+    "Features": [
+      "Remington Model 700 sniper rifle (1D6+2 DAMAGE)",
+      "Bulletproof vest (1 ARMOR)",
+      "Ten-gallon cowboy hat (accessory)",
+      "Chevrolet Impala car (8 HP, 1 ARMOR)",
+      "Moustache, mirrored aviators, plaid flannel shirt"
+    ],
+    "Notes": [
+      "PROFESSIONAL: Most bounty hunters, save for a terrifying few, know exactly what they are: they kill people for the cops, for money, plain and simple. If you happen to have more money to offer than the state does, they'll drop the bounty and kill someone for you instead. After all, that's just business, ain't it?"
+    ]
+  },
+  {
+    "Head": "BUGHOG (8 HP, 0 ARMOR, 1-4 occupants)",
+    "Features": [
+      "Motorized swivel-mounted M60 machine gun (1D6+2 DAMAGE, has gunner footholds)",
+      "Three gunner seats (shotgun, back left/right)",
+      "Exposed gas tank (1 HP, 1 ARMOR, explodes for 2D6 DAMAGE)",
+      "Rusted frame, stripped tires, colorful paint"
+    ],
+    "Notes": [
+      "BAJA: The affectionately-named \"Bughog\" is in fact a civilian sandrail (also called a dune buggy) machine gun on a swivelling platform in the back. This fearsome slipshod technical is hampered only by its tendency to go flying over small hills."
+    ]
+  },
+  {
     "Head": "CYCLOPS GOON (3 HP, 2D6 appear)",
     "Features": [
       "4-in-1D6: M16 assault rifle (1D6+1 DAMAGE)",
       "M1911 pistol (1D6 DAMAGE)",
-      "Worst-of-2D6 frag grenades (1D6+1 DAMAGE)",
+      "Worst-of-2D6 grenades (1D6+1 DAMAGE, one use)",
       "Bulletproof vest (1 ARMOR)",
       "Black fatigues, balaclava, nondescript personality"
     ],
@@ -51,7 +126,7 @@
       "Ontologically evil"
     ],
     "Notes": [
-      "DOGWHISTLE: The closet fascist is a curious beast. They don't wear armbands and jackboots, they say they mean no harm, they claim to be \"just asking questions.\" When this enemy is present (and begins asking questions), all NPCs that a) aren't obviously anti-fascist, or b) haven't been thoroughly vetted as anti-fascist gain a new CHOKE score, \"CHOKE 6: Humor the fascist.\" Upon choking, the NPC transforms into another \"closet fascist\" enemy, but retains any previous items and abilties."
+      "DOGWHISTLE: The closet fascist is a curious beast. They don't wear armbands and jackboots, they say they mean no harm, they claim to be \"just asking questions.\" When this enemy is present (and begins asking questions), all characters that a) aren't obviously anti-fascist, or b) haven't been thoroughly vetted as anti-fascist gain a new CHOKE score, \"CHOKE 6: Humor the fascist.\" Upon choking, the NPC transforms into another \"closet fascist\" enemy, but retains any previous items and abilties."
     ]
   },
   {
@@ -275,7 +350,7 @@
   {
     "Head": "PACIFIC THEATER GHOST (3 HP)",
     "Features": [
-      "Spectral M1 Garand or Arisaka Type 99 (D6 DAMAGE, ARMOR-PIERCING)",
+      "Spectral M1 Garand or Arisaka Type 99 (1D6 DAMAGE, ARMOR-PIERCING)",
       "Bullet wound eyes",
       "Tattered uniform"
     ],
@@ -297,7 +372,7 @@
     ]
   },
   {
-    "Head": "RAMPANT ESPER (5 HP, CHOKE 3: Psionic shockwave, 1D6 DAMAGE to everyone nearby)",
+    "Head": "RUNAWAY ESPER (5 HP, CHOKE 3: Psionic shockwave, 1D6 DAMAGE to everyone nearby)",
     "Features": [
       "Orbiting cloud of objects and vehicles (4 ARMOR)",
       "Thrown objects (1D6 DAMAGE)",
@@ -307,7 +382,19 @@
       "Bare feet, always slightly off the ground"
     ],
     "Notes": [
-      "ESCAPEE: The rampant ESPer has broken free of the laboratory-cum-prison which still haunts their mind back to the first memory they can recall, with a cold, calculating scientist (`/matrix character scientist`) in hot pursuit. If the ESPer can be placated, there is no need for further suffering inflicted by your hands\u2014or their beautiful mind."
+      "ESCAPEE: The runaway ESPer has broken free of the laboratory-cum-prison which still haunts their mind back to the first memory they can recall, with a cold, calculating scientist (`/matrix character scientist`) in hot pursuit. If the ESPer can be placated, there is no need for further suffering inflicted by your hands\u2014or their beautiful mind."
+    ]
+  },
+  {
+    "Head": "SCORPION MINE (1 HP, 1D6 appear)",
+    "Features": [
+      "Disc-shaped body (explodes for 2D6 DAMAGE)",
+      "Blocky metal plating (1 ARMOR)",
+      "Skittering actuated legs (extremely fast)",
+      "Blinking warning light, piercing alarm"
+    ],
+    "Notes": [
+      "SURPRISE: The robotic scorpion mine is a mobile evolution of the classic, stationary landmine. Its design and programming are simple: lie quietly in wait beneath a tarp or bit of rubble, suddenly zip beneath the feet or between the tires of moving targets, and explode after a brief alarm."
     ]
   },
   {
@@ -322,18 +409,6 @@
     ],
     "Notes": [
       "ORDERS: There is a 3-in-1D6 chance the security contractor has been given a completely bogus briefing and is unaware of the specifics of the job they have taken."
-    ]
-  },
-  {
-    "Head": "SCORPION MINE (1 HP, 1D6 appear)",
-    "Features": [
-      "Disc-shaped body (explodes for 2D6 DAMAGE)",
-      "Blocky metal plating (1 ARMOR)",
-      "Skittering actuated legs (extremely fast)",
-      "Blinking warning light, piercing alarm"
-    ],
-    "Notes": [
-      "SURPRISE: The robotic scorpion mine is a mobile evolution of the classic, stationary landmine. Its design and programming are simple: lie quietly in wait beneath a tarp or bit of rubble, suddenly zip beneath the feet or between the tires of moving targets, and explode after a brief alarm."
     ]
   },
   {

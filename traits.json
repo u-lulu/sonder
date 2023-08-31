@@ -100,7 +100,7 @@
   {
     "Number": 133,
     "Name": "AURA",
-    "Effect": "You can see the auras of yourself and others; their colors are up to your interpretation. You may also regulate and amplify your aura to conduct it between bodies\u2014while doing so, NPCs who are touching you won't CHOKE, and anyone who remains in constant physical contact with you for about ten minutes regains 1D6 HP.",
+    "Effect": "You can perceive the auras of yourself and others; their qualities are up to your interpretation. You may also regulate and amplify your aura to conduct it between bodies\u2014while doing so, NPCs who are touching you won't CHOKE, and anyone who remains in constant physical contact with you for about ten minutes regains 1D6 HP.",
     "Item": "Psionic grenade (scrambles emotions, one use)",
     "Stat": "+1 FORCEFUL"
   },
@@ -135,7 +135,7 @@
   {
     "Number": 142,
     "Name": "BREAKDOWN",
-    "Effect": "Your mind is paranormally sensitive to the cacophony of the outside world (or perhaps is a cacophonous world in and of itself). When you take this trait, randomly roll a CHOKE score for your character (`/matrix choke`)\u2014and roll against it when appropriate, as the ref would with an NPC. If you CHOKE, you must either drop everything you're doing to perform the listed action, or immediately create a psionic shockwave from your skull, ten feet in diameter with the concussive force of a frag grenade. This shockwave deals 1D6+2 DAMAGE to everyone caught inside (including yourself).",
+    "Effect": "A directive burns in the back of your mind. When you take this trait, randomly roll a CHOKE score for your character (`/matrix choke`)\u2014and roll against it when appropriate, as the ref would with an NPC. If you CHOKE, you must either perform the listed action immediately or release a psionic shockwave from your skull, ten feet in diameter with the concussive force of a frag grenade. This shockwave deals 1D6+2 DAMAGE to everyone caught inside (not including yourself) and, if you spend a WAR DIE, additionally functions as a short-range EMP burst which shorts out power lines, burns out lights, and disables electronics.",
     "Item": "Needle gun (1D6+1 DAMAGE)",
     "Stat": "-1 TACTICAL"
   },
@@ -226,7 +226,7 @@
   {
     "Number": 163,
     "Name": "COMMANDO",
-    "Effect": "You're a real life action hero. You deal +1 DAMAGE during any solo fight where you are visibly outmatched, but take a -2 DAMAGE penalty when someone is fighting alongside you.",
+    "Effect": "You're a real life action hero. You deal +1 DAMAGE during any solo fight where you are clearly outmatched, but take a -2 DAMAGE penalty when someone is fighting alongside you.",
     "Item": "Rocket launcher (1D6+2 DAMAGE)",
     "Stat": "+1 FORCEFUL"
   },
@@ -317,15 +317,15 @@
   {
     "Number": 224,
     "Name": "DOORS",
-    "Effect": "When you enter through a door, you may emerge through any other door you have seen. You have a method for pushing through locked/barricaded doors (like lockpicks, bombs, or a heavy boot) that works every time, but always has an inconvenient downside\u2014the referee will tell you what.",
+    "Effect": "When you enter through a door, you may emerge through any other door you have encountered. You have a method for pushing through locked/barricaded doors (like lockpicks, bombs, or a heavy boot) that works every time, but always has an inconvenient downside\u2014the referee will tell you what.",
     "Item": "Keyring (3 DAMAGE)",
     "Stat": "+1 FORCEFUL"
   },
   {
     "Number": 225,
     "Name": "DRUID",
-    "Effect": "You are a perceptive lorekeeper who uses your surroundings for divination. When you enter a new area, you may ask the referee one question about the topography or ecosystem's relevance to the mission, and receive an honest answer.",
-    "Item": "Medicinal herb (cures an ailment, one use)",
+    "Effect": "You are a philosopher of science and prophecy. If an eligible sacrifice is at hand, you may observe the trajectory and resulting patterns of its spilled blood for a simple yes-or-no answer to any question, however complicated.",
+    "Item": "Psychoactive herb (cures a psionic ailment, one use)",
     "Stat": "+1 TACTICAL"
   },
   {
@@ -541,7 +541,7 @@
   {
     "Number": 316,
     "Name": "HENSHIN",
-    "Effect": "Using your device, you can take on another form. This alternate form has one additional trait and 1D6 HP (reroll each time). If you reach 0 HP while transformed, you're knocked out for a few minutes, revert to normal, and can't transform again until the next mission.",
+    "Effect": "Using your device, you can take on another form. This alternate form has 1D6 HP (reroll each time) and starts with one additional trait. If you reach 0 HP while transformed, you're knocked out for a few minutes, revert to normal, and can't transform again until the next mission.",
     "Item": "Mystery device (wearable)",
     "Stat": "-1 to ARMOR in normal form"
   },
@@ -583,14 +583,14 @@
   {
     "Number": 326,
     "Name": "HYBRID",
-    "Effect": "You are genetically spliced with an animal of your choice. You gain +1 to an attribute that you and the referee agree makes sense for your animal (+1 FORCEFUL for a shark, +1 REFLEXIVE for a hummingbird, etc.). Animals of the same type will always see you as one of their own, and tend towards trusting anyone you're with. Unfortunately, all armor is 1 point less effective due to its incorrect fit.",
+    "Effect": "You are genetically spliced with an animal of your choice. You gain +1 to an attribute that you and the referee agree makes sense for your animal (+1 FORCEFUL for a shark, +1 REFLEXIVE for a hummingbird, etc.). Animals of the same type will always see you as one of their own, and tend towards trusting anyone you're with. Unfortunately, all worn armor is 1 point less effective due to its incorrect fit.",
     "Item": "Animal feed (+1D6 HP, one use)",
     "Stat": "+1 to chosen attribute"
   },
   {
     "Number": 331,
     "Name": "HYPNOSIS",
-    "Effect": "You are locked in a permanent state of self-hypnosis which maximizes your efficiency but suppresses your sense of self. Any time you roll the dice to do something risky, you can reroll one die (use the new result even if it's lower). You cannot speak or use facial expressions.",
+    "Effect": "Your sustained state of self-hypnosis maximizes efficiency, but requires a suspended sense of self. Any time you do something risky while hypnotized, you can reroll one die (keeping lower results). If you muster any sentiment, your hypnosis ends for the rest of the mission.",
     "Item": "Nutrient slurry (+2D6 HP, one use)",
     "Stat": "-2 CREATIVE"
   },
@@ -604,7 +604,7 @@
   {
     "Number": 333,
     "Name": "ILLUSION",
-    "Effect": "If you have a free hand, you can attempt to manipulate another person into hallucinating anything of your choice by rolling +CREATIVE. Rolling higher creates a more believable illusion, and illusions borne of lower rolls may be influenced by the contents of the victim's psyche.",
+    "Effect": "If you're free to gesture, you can attempt to manipulate another person into hallucinating anything of your choice by rolling +CREATIVE. Rolling higher creates a more believable illusion, and illusions born of lower rolls may be influenced by the contents of the victim's psyche.",
     "Item": "Whip (1D6 DAMAGE)",
     "Stat": "+1 CREATIVE"
   },
@@ -681,7 +681,7 @@
   {
     "Number": 352,
     "Name": "LINK",
-    "Effect": "Touching someone's skin bonds their soul to yours. When you take damage, they take the same amount and vice versa. You may speak telepathically and share each other's five senses (one at a time).",
+    "Effect": "Touching someone's skin bonds their soul to yours. When you take damage, they take the same amount and vice versa. You may speak telepathically and share each other's senses (one at a time).",
     "Item": "Thick gloves (must be removed to establish link)",
     "Stat": "+1 REFLEXIVE"
   },
@@ -709,7 +709,7 @@
   {
     "Number": 356,
     "Name": "LYCANTHROPE",
-    "Effect": "At night, you transform and gain the HYBRID trait (but not the associated item). If you have transformed during a mission, your role becomes irrelevant, and you can only advance by fulfilling a specific animal desire\u2014roll 1D6 to let it wash over you (1-2: Challenge yourself as hunter or prey, 3-4: Consume the lifeforce of several human beings, 5-6: Stage a grand sacrifice to the gods of the Moon.)",
+    "Effect": "At night, you transform and gain the HYBRID trait (but not the associated item). If you have transformed during a mission, your role becomes irrelevant, and you can only advance by fulfilling a specific animal desire\u2014roll 1D6 to let it wash over you (1-2: Challenge yourself as hunter or prey, 3-4: Consume the lifeforce of several human beings, 5-6: Stage a grand sacrifice to the gods of the Moon).",
     "Item": "Handcuffs (titanium-reinforced)",
     "Stat": "+6 MAX HP in animal form"
   },
@@ -730,8 +730,8 @@
   {
     "Number": 363,
     "Name": "MEDIC",
-    "Effect": "With a reasonable amount of prep time, you can use your medkit to heal any living thing for 1D6+TACTICAL HP.",
-    "Item": "First aid kit (heal 1D6+TAC HP, three uses)",
+    "Effect": "With a reasonable amount of prep time, you can use your medkit to heal any ailment. For other healing items, add your TAC to the HP regained.",
+    "Item": "Medkit (heal 1D6+TAC HP, three uses)",
     "Stat": "+1 TACTICAL"
   },
   {
@@ -758,7 +758,7 @@
   {
     "Number": 411,
     "Name": "MOBILITY",
-    "Effect": "Your customized mobility aid (e.g. titanium cane with spring-loaded feet or a wheelchair with adaptive tank treads) is tricked out with additional gadgets and features. Choose one of the following add-ons, active when you're using the aid: 1) +1 to an attribute of your choice, 2) an always-concealable weapon that deals 1D6 DAMAGE, or 3) +1 to your ARMOR. If you roll the dice to do something risky that would normally involve your mobility aid, but you don't have access to it, roll 3D6 and take the worst two. When you advance, you can get another add-on instead of taking one of the usual advancement rewards.",
+    "Effect": "Your customized mobility aid (e.g. a titanium cane with spring-loaded feet or a wheelchair with adaptive tank treads) is tricked out with additional gadgets and features. Choose one of the following add-ons, active when you're using the aid: 1) +1 to an attribute of your choice, 2) an always-concealable weapon that deals 1D6 DAMAGE, or 3) +1 to your ARMOR. If you roll the dice to do something risky that would normally involve your mobility aid, but you don't have access to it, roll 3D6 and take the worst two. When you advance, you can get another add-on instead of taking one of the usual advancement rewards.",
     "Item": "Mobility aid (comes with an add-on)",
     "Stat": "+1 REFLEXIVE"
   },
@@ -772,7 +772,7 @@
   {
     "Number": 413,
     "Name": "MONOLOGUE",
-    "Effect": "When you give an impassioned ethical, political, or philosophical speech, roll +CREATIVE. On a partial success, you engage your target in the melodramatic speech temporarily, distracting them. On a full success, they see your line of reasoning and make an effort to join your school of thought.",
+    "Effect": "When you give an impassioned ethical, political, or philosophical speech, roll +CREATIVE. On a partial success, you engage your target in the melodramatic speech, temporarily distracting them. On a full success, they see your line of reasoning and make an effort to join your school of thought.",
     "Item": "Yorick's skull prop (very realistic)",
     "Stat": "+2 CREATIVE"
   },
@@ -780,7 +780,7 @@
     "Number": 414,
     "Name": "MONSTERS",
     "Effect": "Once per mission, you may use your computerized monster index to summon and command a monster from the barcode of any real-life object you have with you. Arrange the numbers in the barcode from lowest to highest and derive your monster's stats as follows: DAMAGE equal to 1D6 + the lowest number, HP equal to the highest number, and ARMOR equal to the middle number (if there are two, split the difference and round down). State and record the monster's appearance and name, and work out a special power with the referee that reflects the origin object (e.g. belches of flame from a bottle of hot sauce or answering any one question from a library card).",
-    "Item": "Monster index (hold aloft with both hands to summon)",
+    "Item": "Monster index (hold aloft to summon a monster)",
     "Stat": "-1 REFLEXIVE"
   },
   {
@@ -828,7 +828,7 @@
   {
     "Number": 425,
     "Name": "NUMBERS",
-    "Effect": "All numbers have meaning. At the beginning of each mission, roll 1D6. Once per mission, you may replace any number with the number rolled. This can be another roll (such as damage) or a number-based fact spoken by the referee (five enemies, ten days, six stars, etc.).",
+    "Effect": "All numbers have meaning. At the beginning of each mission, roll 1D6. Once per mission, you may replace any number with the number rolled. This can be another roll (such as damage) or a number-based fact spoken by the referee (five enemies, ten days, six stars, etc.)",
     "Item": "Sudoku workbook (keep someone occupied, one use)",
     "Stat": "+1 TACTICAL"
   },
@@ -891,7 +891,7 @@
   {
     "Number": 442,
     "Name": "POCKET",
-    "Effect": "You can fit pretty much anything into your personal pocket dimension (and retrieve it at will) as long as you have free appendages with which do so. Your pocket-space might be accessed through a bottomless bag, a door that follows you between rooms, or a wormhole you can summon with a wish.",
+    "Effect": "You can fit pretty much anything into your personal pocket dimension (and retrieve it at will) as long as you are not restrained or particularly distracted. Your pocket-space might be accessed through a bottomless bag, a door that follows you between rooms, or a wormhole you can summon with a wish.",
     "Item": "Refrigerator (well-stocked)",
     "Stat": "-1 REFLEXIVE"
   },
@@ -919,7 +919,7 @@
   {
     "Number": 446,
     "Name": "PROJECTION",
-    "Effect": "You can project your spirit from your body to view any faraway place remotely, as long as your physical body is safe. You can also cheat death and keep 1 HP once per mission by abandoning your body, but you will be stuck in spirit form until it gets medical attention.",
+    "Effect": "You can project your spirit from your body to access any faraway place remotely, as long as your physical body is safe. You can also cheat death and keep 1 HP once per mission by abandoning your body, but you will be stuck in spirit form until it gets medical attention.",
     "Item": "Flowing garment (1 ARMOR)",
     "Stat": "+1 CREATIVE"
   },
@@ -1010,7 +1010,7 @@
   {
     "Number": 511,
     "Name": "RIVAL",
-    "Effect": "Choose any other player to be your rival. Each time you spectacularly one-up or humiliate your rival, heal 1D6 HP. If your rival thoroughly one-ups you, you lose any WAR DICE you have. When you take this trait, you gain a new aesthetic quirk, like a streak of dyed hair, an eyepatch, or a cool scar.",
+    "Effect": "Choose any other player to be your rival. Each time you spectacularly one-up or humiliate your rival, heal 1D6 HP. If your rival thoroughly one-ups you, you lose any WAR DICE you have. When you take this trait, you gain a new aesthetic feature, like a streak of dyed hair, an eyepatch, or a cool scar.",
     "Item": "Carbine (1D6 DAMAGE)",
     "Stat": "+1 DAMAGE when showing off"
   },
@@ -1038,7 +1038,7 @@
   {
     "Number": 515,
     "Name": "SCAVENGER",
-    "Effect": "You understand that everything can be repurposed and that nothing need go to waste. If the referee narrates that you've run out of a finite resource (like ammo, medicine, or food), you may spend a WAR DIE and roll it to negate the referee and reveal your backup reserves, equal to the result rolled (e.g. 2 clips of ammo, 4 doses of antivenom, or 6 MREs).",
+    "Effect": "You understand that everything can be repurposed and that nothing need go to waste. If the referee narrates that you've run out of a finite resource (like ammo, medicine, or food), you may spend a WAR DIE and roll it to negate the referee and reveal your backup reserves, equal to the result rolled (e.g. 2 clips of ammo, 4 doses of antivenom, or 6 MREs). You always gain a WAR DIE at rendezvous points.",
     "Item": "Semi-automatic rifle (1D6+1 DAMAGE)",
     "Stat": "+1 TACTICAL"
   },
@@ -1101,7 +1101,7 @@
   {
     "Number": 532,
     "Name": "SHOW",
-    "Effect": "Your performance art (perhaps music, dance, acrobatics, or comedy) has inexplicable mind-altering effects on those who view it. While performing, choose one of the following: your allies have +1 to an attribute of your choice, enemies are dazed (they deal -1 DAMAGE), or one enemy gives in to fun. You take -1 to any rolls made while performing.",
+    "Effect": "Your performance art (perhaps music, dance, acrobatics, or comedy) has inexplicable mind-altering effects on its audience. While performing, choose one of the following: your allies have +1 to an attribute of your choice, enemies are dazed (they deal -1 DAMAGE), or one enemy gives in to fun. You take -1 to any rolls made while performing.",
     "Item": "Performing accoutrement (e.g. instrument, baton, mic)",
     "Stat": "+1 CREATIVE"
   },
@@ -1171,7 +1171,7 @@
   {
     "Number": 546,
     "Name": "SNEAK",
-    "Effect": "If you hold still in a good hiding spot, no one will see you until you make your presence known. You can also easily fit into small containers like barrels and cardboard boxes.",
+    "Effect": "If you hold still in a good hiding spot, no one will detect you until you make your presence known. You can also easily fit into small containers like barrels and cardboard boxes.",
     "Item": "Sneaking suit (1 ARMOR)",
     "Stat": "+1 REFLEXIVE"
   },
@@ -1227,7 +1227,7 @@
   {
     "Number": 562,
     "Name": "STICKY",
-    "Effect": "You can secrete a sticky substance from your hands which dries in seconds and is comparable in strength to the most powerful mundane adhesives. It can only be dissolved with a common substance of your choice (water, alcohol, blood, etc).",
+    "Effect": "You can secrete a sticky substance from your body which dries in seconds and is comparable in strength to the most powerful mundane adhesives. It can only be dissolved with a common substance of your choice (water, alcohol, blood, etc.)",
     "Item": "Flask of dissolving fluid (8 ounces)",
     "Stat": "-1 REFLEXIVE"
   },
@@ -1325,7 +1325,7 @@
   {
     "Number": 624,
     "Name": "TELEPORT",
-    "Effect": "You can teleport yourself (and any items you are wearing or holding) to a safe location within your line of sight at will. If you want to teleport under fire or to somewhere you can't see, roll +TACTICAL to avoid accidents.",
+    "Effect": "You can teleport yourself (and any items you are wearing or holding) to a safe location at will, but not directly through opaque objects. If you want to teleport under fire, through an object, or beyond the immediate perceivable area, roll +TACTICAL to avoid accidents.",
     "Item": "Flare gun (1D6 DAMAGE)",
     "Stat": "+2 REFLEXIVE"
   },
@@ -1339,14 +1339,14 @@
   {
     "Number": 626,
     "Name": "THIEF",
-    "Effect": "You may roll +REFLEXIVE to teleport an object you can see into your hands. On a failure, you take something else as well\u2014the referee will tell you what.",
+    "Effect": "You may roll +REFLEXIVE to teleport an object you can perceive into your possession. On a failure, you take something else as well\u2014the referee will tell you what.",
     "Item": "Smoke grenade (one use)",
     "Stat": "+1 REFLEXIVE"
   },
   {
     "Number": 631,
     "Name": "THRALL",
-    "Effect": "You are bound to an anomalous artifact, a weapon which drives you to commit evil. When you start a mission, roll 1D6 to receive its command (1-2: Make a good person suffer. 3-4: Spread chaos and permanent destruction. 5-6: Sabotage your teammates.) Your role is irrelevant\u2014you can only advance if you have completed this task. All damage dealt with your anomalous weapon is increased +1D6.",
+    "Effect": "You are bound to an anomalous artifact, a weapon which drives you to commit evil. When you start a mission, roll 1D6 to receive its command (1-2: Make a good person suffer. 3-4: Spread chaos and permanent destruction. 5-6: Sabotage your teammates). Your role is irrelevant\u2014you can only advance if you have completed this task. All damage dealt with your anomalous weapon is increased +1D6.",
     "Item": "Anomalous weapon (choose any)",
     "Stat": "+1 FORCEFUL"
   },
@@ -1360,7 +1360,7 @@
   {
     "Number": 633,
     "Name": "TRIPPER",
-    "Effect": "You are a psychedelics enthusiast. When you have some time to relax, you can drop a tab to expand your consciousness and take +2 to your next CREATIVE roll.",
+    "Effect": "You are a psychedelics enthusiast. When you have some time to unwind, you can drop a tab to expand your consciousness and take +2 to your next CREATIVE roll.",
     "Item": "Acid tab (one use)",
     "Stat": "+1 WAR DIE per mission"
   },
@@ -1381,7 +1381,7 @@
   {
     "Number": 636,
     "Name": "TURRET",
-    "Effect": "You have a portable mini-turret which can be deployed on any flat surface without rolling the dice. If it's somewhere difficult like a ceiling or dangerous outcropping, placing it will be more difficult and arduous\u2014the referee will tell you how. Your mini-turret begins with 3 MAX HP and 1 ARMOR, but you may increase its HP by 1D6 or its ARMOR by 1 as an alternative reward when you advance. Whenever you or one of your allies successfully deal DAMAGE, you may command the turret to deal DAMAGE as well to any target within its line of sight.",
+    "Effect": "You have a portable mini-turret which can be deployed on any flat surface without rolling the dice. If it's somewhere difficult like a ceiling or dangerous outcropping, placing it will be more difficult and arduous\u2014the referee will tell you how. Your mini-turret begins with 3 MAX HP and 1 ARMOR, but you may increase its HP by 1D6 or its ARMOR by 1 as an alternative reward when you advance. Whenever you or one of your allies successfully deal DAMAGE, you may command the turret to deal DAMAGE as well to any unobstructed target in the combat scene.",
     "Item": "Mini-turret (1D6+TAC DAMAGE)",
     "Stat": "+1 TACTICAL"
   },

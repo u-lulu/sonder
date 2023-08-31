@@ -93,7 +93,7 @@
       "Friendly smile, normal outfit"
     ],
     "Notes": [
-      "PLOT: As soon as the CYCLOPS plant enters the game, decide on what it is they're trying to accomplish (e.g. \"obtain crucial information,\" \"assassinate a politician,\" etc.) As long as the plant is undiscovered, each time a player rolls a failure, place a mysterious token on the table. At 4 counters, the plant succeeds and makes a smooth exit."
+      "PLOT: As soon as the CYCLOPS plant enters the game, decide on what it is they're trying to accomplish (e.g. \"obtain crucial information,\" \"assassinate a politician,\" etc.) As long as the plant is undiscovered, each time a player rolls a failure, place a mysterious token on the table. At 3 counters, the plant succeeds and makes a smooth exit."
     ]
   },
   {
@@ -150,7 +150,7 @@
       "Tan trenchcoat, fedora, wet cigarette"
     ],
     "Notes": [
-      "PARANOIA: Convincing the info broker to meet with FIST is easy. Getting them to trust FIST with even the slightest shred of real information is an almost insurmountable challenge."
+      "INFOSEC: Convincing the info broker to meet with FIST is easy. Getting them to trust FIST with even the slightest shred of real information is an almost insurmountable challenge."
     ]
   },
   {
@@ -159,7 +159,7 @@
       "Sonic bark (3 DAMAGE, roll +FRC to avoid temporary tinnitus)",
       "Hydraulic bite (1D6+2 DAMAGE)",
       "Stainless steel torso (2 ARMOR)",
-      "Ultra-servo legs (100 mph. top speed, K-9 takes +3 DAMAGE if leg servos are targeted)",
+      "Ultra-servo legs (100 mph top speed, K-9 takes +3 DAMAGE if leg servos are targeted)",
       "Underbelly battery (removable, deactivates K-9)"
     ],
     "Notes": [
@@ -355,7 +355,7 @@
     "Features": [
       "Muscle car (8 HP, 1 ARMOR, has a nitro system which blasts the car forward, one use)",
       "Steady hands (abilities equivalent to the ACE trait)",
-      "Carjacking hit (equivalent to the HIJACK trait)",
+      "Carjacking kit (equivalent to the HIJACK trait)",
       "Tight shirt, square jaw"
     ],
     "Notes": [
@@ -380,7 +380,7 @@
     "Head": "TEST SUBJECT (2 HP, 1D6 appear, CHOKE 3: Refuse to move from where they are)",
     "Features": [
       "1-in-1D6: Handmade shiv (3 DAMAGE)",
-      "Orange jumpsuit (soiled)",
+      "Orange jumpsuit (dirty)",
       "Thousand-yard stare"
     ],
     "Notes": [

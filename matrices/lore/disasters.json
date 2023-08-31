@@ -9,7 +9,7 @@
 				"3": "City",
 				"4": "Nation",
 				"5": "Continent",
-				"6": "Global"
+				"6": "World"
 			}
 	},
 	{
@@ -123,12 +123,12 @@
 				"15": "An experiment escapes into the area (`/matrix enemy experiment`)",
 				"16": "Area becomes closed to the public",
 				"21": "Area becomes flooded by ghosts of victims",
-				"22": "Area has to be bombed by the government",
+				"22": "Area to be bombed by the government",
 				"23": "CYCLOPS reverse engineers the disaster",
 				"24": "CYCLOPS seizes the recon opportunity",
 				"25": "Catalytic event for the summoning of a demon",
 				"26": "Celebrity writes an iconic protest song (`/matrix character celebrity`)",
-				"31": "City wracked with widespread paranoia (`/matrix location city`)",
+				"31": "City wracked with widespread agoraphobia (`/matrix location city`)",
 				"32": "Covert monster community outed (`/matrix enemy monster`)",
 				"33": "Criminal org takes over relief effort (`/matrix faction criminals`)",
 				"34": "Disaster presented as a divine punishment",
