@@ -622,7 +622,7 @@ def get_active_char_object(ctx):
 		return character_data[str(ctx.author.id)]['chars'][codename]
 
 async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
-	log(f"/{stat.lower()} {' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
+	log(f"/{stat.lower()} {extra_mod}{' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
 	
 	character = get_active_char_object(ctx)
 	if character == None:
