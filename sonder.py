@@ -353,6 +353,14 @@ async def on_ready():
 	await bot.change_presence(activity=discord.Game(name='FIST: Ultra Edition'),status=discord.Status.online)
 	log(f"{bot.user} is ready and online in {len(bot.guilds)} guilds!")
 	boot_time = int(time.time())
+	
+	report_player_count = len(character_data)
+	report_character_count = 0
+	report_trait_count = 0
+	for player in character_data:
+		report_character_count += len(character_data[player]['chars'])
+		report_trait_count += len(character_data[player]['traits'])
+	log(f"Currently tracking {report_player_count} players, {report_character_count} characters, and {report_trait_count} custom traits.")
 
 @bot.command(description="Checks how long the bot has been online")
 async def uptime(ctx):
