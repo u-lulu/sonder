@@ -1230,7 +1230,7 @@ async def my_characters(ctx):
 	
 @bot.command(description="Displays your current active character's sheet")
 async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default=""), full_detail: discord.Option(bool, "Sends the sheet with no information truncated.", required=False, default=False), qr: discord.Option(bool, "Sends a QR code of the final output instead.", required=False, default=False)):
-	log(f"/sheet {codename}")
+	log(f"/sheet {codename}{' full_detail' if full_detail else ''}{' qr' if qr else ''}")
 	codename = codename.lower().strip()
 	yourid = str(ctx.author.id)
 	if codename == "":
