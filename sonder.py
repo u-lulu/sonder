@@ -1898,8 +1898,10 @@ async def adjust_item_counter(ctx,
 		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
 		return
 	
-	character['counters'][item][counter_name] += output[0]
-	message = f"You have **{'in' if output[0] >= 0 else 'de'}creased** the {counter_name.upper()} counter on {codename.upper()}'s **{item}** by {abs(output[0])}. The new value is **{character['counters'][item][counter_name]}**."
+	character['counters'][item][counter_name] += int(output[0])
+	message = f"You have **{'in' if output[0] >= 0 else 'de'}creased** the {counter_name.upper()} counter on {codename.upper()}'s **{item}** by {abs(int(output[0]))}. The new value is **{character['counters'][item][counter_name]}**."
+	if output[0] - int(output[0]) != 0:
+		message += f"\nThe dice result or provided number was not an integer; it has been rounded down from {output[0]}"
 	if 'd' in amount or 'D' in amount:
 		message += f"\n\nDice results: `{output[1]}`"
 	await ctx.respond(message)
@@ -2357,7 +2359,7 @@ async def adjust(ctx,
 		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
 		return
 	
-	character[translated_stat] += output[0]
+	character[translated_stat] += int(output[0])
 	if translated_stat == "maxhp":
 		if character['maxhp'] < 1:
 			character['maxhp'] = 1
@@ -2366,8 +2368,9 @@ async def adjust(ctx,
 		elif character['hp'] > character['maxhp']:
 			character['hp'] = character['maxhp']
 	
-	message = f"{codename.upper()} has **{'in' if output[0] >= 0 else 'de'}creased** their **{stat}** by {abs(output[0])}!"
-
+	message = f"{codename.upper()} has **{'in' if output[0] >= 0 else 'de'}creased** their **{stat}** by {abs(int(output[0]))}!"
+	if output[0] - int(output[0]) != 0:
+		message += f"\nThe dice result or provided number was not an integer; it has been rounded down from {output[0]}"
 	if character['hp'] <= 0 and 'henshin_stored_maxhp' in character['special'] and character['special']['henshin_stored_maxhp'] > 0:
 		character['hp'] = character['special']['henshin_stored_hp']
 		character['maxhp'] = character['special']['henshin_stored_maxhp']
@@ -2543,13 +2546,13 @@ async def damage(ctx,
 	dice_results = output[1]
 	
 	if armor_piercing:
-		character['hp'] -= before_armor
+		character['hp'] -= int(before_armor)
 	else:
-		character['hp'] -= damage_taken
+		character['hp'] -= int(damage_taken)
 	
-	message = f"**{codename.upper()}** has taken **{before_armor} damage!**"
+	message = f"**{codename.upper()}** has taken **{int(before_armor)} damage!**"
 	if (not armor_piercing and character['armor'] > 0 and before_armor != damage_taken):
-		message += f" (Reduced to **{damage_taken}** by {character['armor']}{f' (+{bonus_armor} bonus)' if bonus_armor > 0 else ''} armor from {character['armor_name']}!)"
+		message += f" (Reduced to **{int(damage_taken)}** by {character['armor']}{f' (+{bonus_armor} bonus)' if bonus_armor > 0 else ''} armor from {character['armor_name']}!)"
 	elif (armor_piercing and character['armor'] > 0):
 		message += f" (Ignores {character['armor']}{f' (+{bonus_armor} bonus)' if bonus_armor > 0 else ''} armor from {character['armor_name']}!)"
 	message += f"\nHP: {character['hp']}/{character['maxhp']}"
@@ -2602,7 +2605,7 @@ async def heal(ctx,
 		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
 		return
 	
-	healing_taken = output[0]
+	healing_taken = int(output[0])
 	if healing_taken < 0:
 		healing_taken = 0
 	dice_results = output[1]
