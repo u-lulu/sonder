@@ -362,19 +362,31 @@ async def on_ready():
 		report_trait_count += len(character_data[player]['traits'])
 	log(f"Currently tracking {report_player_count} players, {report_character_count} characters, and {report_trait_count} custom traits.")
 
+@bot.event
+async def on_application_command(ctx):
+	args = []
+	if ctx.selected_options is not None:
+		for argument in ctx.selected_options:
+			args.append(f"{argument['name']}:{argument['value']}")
+	args = ' '.join(args)
+	if len(args) > 0:
+		log(f"/{ctx.command.qualified_name} {args}")
+	else:
+		log(f"/{ctx.command.qualified_name}")
+
 @bot.command(description="Checks how long the bot has been online")
 async def uptime(ctx):
-	log("/uptime")
+	#log("/uptime")
 	await ctx.respond(f"Online since <t:{boot_time}:D> at <t:{boot_time}:T> (<t:{boot_time}:R>)",ephemeral=True)
 
 @bot.command(description="Measures this bot's latency")
 async def ping(ctx):
-	log("/ping")
+	#log("/ping")
 	await ctx.respond(f"Pong! Latency is {bot.latency}")
 
 @bot.command(description="Shuts down the bot. Will not work unless you own the bot.")
 async def shutdown(ctx):
-	log(f"/shutdown ({ctx.author.id})")
+	#log(f"/shutdown ({ctx.author.id})")
 	if ctx.author.id == ownerid:
 		await ctx.defer()
 		await bot.change_presence(activity=discord.Game(name='Shutting down...'),status=discord.Status.dnd)
@@ -386,22 +398,22 @@ async def shutdown(ctx):
 
 @bot.command(description="Links to the Help document for this bot")
 async def help(ctx):
-	log("/help")
+	#log("/help")
 	await ctx.respond("[Full command documentation](https://docs.google.com/document/d/15pm5o5cJuQF_J3l-NMpziPEuxDkcWJVE3TNT7_IerbQ/edit?usp=sharing)",ephemeral=True)
 
 @bot.command(description="Links to the invite page for this bot")
 async def invite(ctx):
-	log("/invite")
+	#log("/invite")
 	await ctx.respond("[Invite page](https://discord.com/api/oauth2/authorize?client_id=1096635021395251352&permissions=274877908992&scope=bot%20applications.commands)",ephemeral=True)
 
 @bot.command(description="Links to the support server for this bot")
 async def server(ctx):
-	log("/server")
+	#log("/server")
 	await ctx.respond("https://discord.gg/VeedQmQc7k",ephemeral=True)
 
 @bot.command(description="Check to see if you have an active membership")
 async def membership(ctx):
-	log("/membership")
+	#log("/membership")
 	id = ctx.author.id
 	await ctx.defer(ephemeral=True)
 	if support_server_obj is None:
@@ -436,7 +448,7 @@ async def membership(ctx):
 
 @bot.command(description="Pin (or unpin) a message inside a thread, if you own the thread")
 async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin.", required=True)):
-	log(f"/threadpin {id}")
+	#log(f"/threadpin {id}")
 	try:
 		channel = ctx.channel
 		if type(channel) != discord.Thread:
@@ -464,7 +476,7 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 
 @bot.command(description="Roll 1d66")
 async def d66(ctx, instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1)):
-	log(f"/d66 {instances}")
+	#log(f"/d66 {instances}")
 	outs = []
 	
 	if instances > 1000:
@@ -488,7 +500,7 @@ async def d66(ctx, instances: discord.Option(discord.SlashCommandOptionType.inte
 
 @bot.command(description="Roll 1d666")
 async def d666(ctx, instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1)):
-	log(f"/d666 {instances}")
+	#log(f"/d666 {instances}")
 	outs = []
 
 	if instances > 1000:
@@ -630,7 +642,7 @@ def get_active_char_object(ctx):
 		return character_data[str(ctx.author.id)]['chars'][codename]
 
 async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
-	log(f"/{stat.lower()} {extra_mod}{' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
+	#log(f"/{stat.lower()} {extra_mod}{' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
 	
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -710,7 +722,7 @@ async def current_trait_item_autocomp(ctx):
 async def add_trait(ctx, 
 	trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=True),
 	rename_item: discord.Option(str, "Renames the item this trait provides. Autocomplete displays the item's default name.",autocomplete=discord.utils.basic_autocomplete(current_trait_item_autocomp), required=False, default=None)):
-	log(f"/add_trait {trait} {rename_item if rename_item is not None else ''}")
+	#log(f"/add_trait {trait} {rename_item if rename_item is not None else ''}")
 	trait = trait.strip()
 	if rename_item is not None:
 		rename_item = rename_item.strip()
@@ -815,7 +827,7 @@ async def add_trait(ctx,
 
 @bot.command(description="Activate (or set) your active character's HENSHIN trait")
 async def henshin(ctx, set_trait: discord.Option(str, "The core book name or number of the trait to set.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None)):
-	log(f"/henshin {set_trait if set_trait is not None else ''}")
+	#log(f"/henshin {set_trait if set_trait is not None else ''}")
 	if set_trait is not None:
 		set_trait = set_trait.strip()
 	character = get_active_char_object(ctx)
@@ -943,7 +955,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	starter_trait_1: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
 	starter_trait_2: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
 	starter_bonus: discord.Option(str, "The extra starting bonus for your character.",autocomplete=discord.utils.basic_autocomplete(starting_bonus_autocomp), required=False, default=None)):
-	log(f"/create {codename} {starter_trait_1 if starter_trait_1 is not None else '[no first trait]'} {starter_trait_2 if starter_trait_2 is not None else '[no second trait]'}")
+	#log(f"/create {codename} {starter_trait_1 if starter_trait_1 is not None else '[no first trait]'} {starter_trait_2 if starter_trait_2 is not None else '[no second trait]'}")
 	
 	codename = codename.strip()
 	if starter_trait_1 is not None:
@@ -1036,7 +1048,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 async def rename(ctx,
 	codename: discord.Option(str, "The codename of the character to rename.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete),required=True),
 	new_codename: discord.Option(str, "The new codename of the character.",required=True)):
-	log(f"/rename {codename} {new_codename}")
+	#log(f"/rename {codename} {new_codename}")
 	codename = codename.strip()
 	new_codename = new_codename.strip()
 	userid = str(ctx.author.id)
@@ -1075,7 +1087,7 @@ async def rename(ctx,
 async def clone(ctx,
 	codename: discord.Option(str, "The codename of the character to duplicate.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete),required=True),
 	new_codename: discord.Option(str, "The new codename of the duplicated character.",required=True)):
-	log(f"/clone {codename} {new_codename}")
+	#log(f"/clone {codename} {new_codename}")
 	codename = codename.strip()
 	new_codename = new_codename.strip()
 	userid = str(ctx.author.id)
@@ -1120,7 +1132,7 @@ async def clone(ctx,
 
 @bot.command(description="Delete a character from your roster")
 async def delete_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
-	log(f"/delete {codename}")
+	#log(f"/delete {codename}")
 	codename = codename.lower()
 	yourid = str(ctx.author.id)
 	if yourid not in character_data:
@@ -1192,7 +1204,7 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 
 @bot.command(description="List all characters you've created")
 async def my_characters(ctx):
-	log("/my_characters")
+	#log("/my_characters")
 	yourid = str(ctx.author.id)
 	if yourid in character_data and len(character_data[yourid]['chars']) > 0:
 		await ctx.defer()
@@ -1238,7 +1250,7 @@ async def my_characters(ctx):
 	
 @bot.command(description="Displays your current active character's sheet")
 async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default=""), full_detail: discord.Option(bool, "Sends the sheet with no information truncated.", required=False, default=False), qr: discord.Option(bool, "Sends a QR code of the final output instead.", required=False, default=False)):
-	log(f"/sheet{' ' + codename if len(codename) > 0 else ''}{' full_detail' if full_detail else ''}{' qr' if qr else ''}")
+	#log(f"/sheet{' ' + codename if len(codename) > 0 else ''}{' full_detail' if full_detail else ''}{' qr' if qr else ''}")
 	codename = codename.lower().strip()
 	yourid = str(ctx.author.id)
 	if codename == "":
@@ -1274,7 +1286,7 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 
 @bot.command(description="Show your active character's inventory")
 async def inventory(ctx):
-	log(f"/inventory")
+	#log(f"/inventory")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -1304,7 +1316,7 @@ async def inventory(ctx):
 
 @bot.command(description="Show the notes field for your active character")
 async def view_notes(ctx, hide_output: discord.Option(bool, "Hides the output message from everyone else.", required=False, default=True)):
-	log(f"/view_notes")
+	#log(f"/view_notes")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -1319,7 +1331,7 @@ async def view_notes(ctx, hide_output: discord.Option(bool, "Hides the output me
 
 @bot.command(description="Edit the notes field for your active character")
 async def edit_notes(ctx):
-	log(f"/edit_notes")
+	#log(f"/edit_notes")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -1344,7 +1356,7 @@ async def edit_notes(ctx):
 
 @bot.command(description="Switch which character is active in this channel")
 async def switch_character(ctx, codename: discord.Option(str, "The codename of the character to switch to.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
-	log(f"/switch {codename}")
+	#log(f"/switch {codename}")
 	codename = codename.strip()
 	userid = str(ctx.author.id)
 	if userid not in character_data or len(character_data[userid]['chars']) <= 0:
@@ -1363,7 +1375,7 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 
 @bot.command(description="Check your current active character")
 async def active_character(ctx, show_all: discord.Option(bool, "If TRUE, lists all channels you have active characters in. FALSE by default.", required=False, default=False)):
-	log(f"/active_character{' show_all' if show_all else ''}")
+	#log(f"/active_character{' show_all' if show_all else ''}")
 	if show_all:
 		your_actives = character_data[str(ctx.author.id)]['active']
 		if len(your_actives) > 0:
@@ -1403,7 +1415,7 @@ async def role_autocomp(ctx):
 async def set_role(ctx,
 	name: discord.Option(str,"The name of your role.",autocomplete=discord.utils.basic_autocomplete(role_autocomp),required=True),
 	description: discord.Option(str,"The role's description.",required=True)):
-	log(f"/set_role '{name}' '{description}'")
+	#log(f"/set_role '{name}' '{description}'")
 	name = name.strip()
 	description = description.strip()
 	character = get_active_char_object(ctx)
@@ -1456,7 +1468,7 @@ async def create_custom_trait(ctx,
 	stat_amount = stat_amount.strip()
 	item_name = item_name.strip()
 	item_effect = item_effect.strip()
-	log(f"/create_custom_trait {title} {description} {stat_type} {stat_amount} {item_name} {item_effect}")
+	#log(f"/create_custom_trait {title} {description} {stat_type} {stat_amount} {item_name} {item_effect}")
 	
 	if userid in character_data and len(character_data[userid]['traits']) >= standard_custrait_limit:
 		premium_user = await ext_character_management(ctx.author.id)
@@ -1531,7 +1543,7 @@ async def custom_traits_list_autocomp(ctx):
 @bot.command(description="Delete one of your custom traits")
 async def delete_custom_trait(ctx,	
 		name: discord.Option(str, "The name of the trait to delete",autocomplete=discord.utils.basic_autocomplete(custom_traits_list_autocomp), required=True)):
-	log(f"/delete_custom_trait {name}")
+	#log(f"/delete_custom_trait {name}")
 	uid = str(ctx.author.id)
 	if uid not in character_data or len(character_data[uid]['traits']) <= 0:
 		await ctx.respond("You do not have any custom traits on file.",ephemeral=True)
@@ -1556,7 +1568,7 @@ async def delete_custom_trait(ctx,
 
 @bot.command(description="View your custom traits")
 async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait to view",autocomplete=discord.utils.basic_autocomplete(custom_traits_list_autocomp), required=False, default=None)):
-	log(f"/my_traits {name if name is not None else ''}")
+	#log(f"/my_traits {name if name is not None else ''}")
 	if name is not None:
 		name = name.strip()
 	uid = str(ctx.author.id)
@@ -1593,7 +1605,7 @@ async def add_item(ctx,
 	name: discord.Option(str, "The name of the item", required=True), 
 	effect: discord.Option(str, "The effect of the item",autocomplete=discord.utils.basic_autocomplete(no_effect_autocomp), required=True)):
 	
-	log(f"/add_item {name} {effect}")
+	#log(f"/add_item {name} {effect}")
 	name = name.strip()
 	effect = effect.strip()
 	character = get_active_char_object(ctx)
@@ -1706,7 +1718,7 @@ async def edit_item(ctx,
 		original_item: discord.Option(str, "The name of the original item",autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True),
 		name: discord.Option(str, "The new name of the item",autocomplete=discord.utils.basic_autocomplete(orig_item_name_autocomp), required=True), 
 		effect: discord.Option(str, "The new effect of the item",autocomplete=discord.utils.basic_autocomplete(orig_item_effect_autocomp), required=True)):
-	log(f"/edit_item {original_item} {name} {effect}")
+	#log(f"/edit_item {original_item} {name} {effect}")
 	name = name.strip()
 	effect = effect.strip()
 	character = get_active_char_object(ctx)
@@ -1786,7 +1798,7 @@ async def add_item_counter(ctx,
 	starting_value: discord.Option(int, "The value the counter should start at", required=True)
 	):
 	
-	log(f"/add_item_counter {item} {starting_value} {counter_name}")
+	#log(f"/add_item_counter {item} {starting_value} {counter_name}")
 	item = item.strip()
 	counter_name = counter_name.strip()
 	character = get_active_char_object(ctx)
@@ -1865,7 +1877,7 @@ async def adjust_item_counter(ctx,
 	amount: discord.Option(str, "The value to change the counter by; supports dice syntax.", required=True)
 	):
 	
-	log(f"/adjust_item_counter {item} {amount} {counter_name}")
+	#log(f"/adjust_item_counter {item} {amount} {counter_name}")
 	item = item.strip()
 	counter_name = counter_name.strip()
 	amount = amount.strip()
@@ -1921,7 +1933,7 @@ async def ammo_check(ctx,
 	counter_name: discord.Option(str, "The name of the counter",autocomplete=discord.utils.basic_autocomplete(counters_on_the_item_autocomp), required=True)
 	):
 	
-	log(f"/ammo_check {item} {counter_name}")
+	#log(f"/ammo_check {item} {counter_name}")
 	item = item.strip()
 	counter_name = counter_name.strip()
 	character = get_active_char_object(ctx)
@@ -1974,7 +1986,7 @@ async def set_item_counter(ctx,
 	amount: discord.Option(str, "The value to set the counter to; supports dice syntax.", required=True)
 	):
 	
-	log(f"/set_item_counter {item} {amount} {counter_name}")
+	#log(f"/set_item_counter {item} {amount} {counter_name}")
 	item = item.strip()
 	counter_name = counter_name.strip()
 	amount = amount.strip()
@@ -2028,7 +2040,7 @@ async def remove_item_counter(ctx,
 	counter_name: discord.Option(str, "The name of the counter",autocomplete=discord.utils.basic_autocomplete(counters_on_the_item_autocomp), required=True)
 	):
 	
-	log(f"/remove_item_counter {item} {counter_name}")
+	#log(f"/remove_item_counter {item} {counter_name}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -2081,7 +2093,7 @@ async def active_character_traits_autocomp(ctx):
 async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to remove.",autocomplete=discord.utils.basic_autocomplete(active_character_traits_autocomp), required=True),
 	keep_item: discord.Option(bool, "If TRUE, the Trait's associated item will not be removed from your inventory.", required=False, default=False)):
 	
-	log(f"/remove_trait {trait}{' keep_item' if keep_item else ''}")
+	#log(f"/remove_trait {trait}{' keep_item' if keep_item else ''}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -2160,7 +2172,7 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 @bot.command(description="Remove an item from your active character")
 async def remove_item(ctx,
 		item: discord.Option(str, "The item to be removed",autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True)):
-	log(f"/remove_item {item}")
+	#log(f"/remove_item {item}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -2203,7 +2215,7 @@ async def remove_item(ctx,
 
 @bot.command(description="Spend a War Die from your active character")
 async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows the 'Exploding WAR DICE' optional rule.", required=False, default=False)):
-	log(f"/war_die{' explode' if explode else ''}")
+	#log(f"/war_die{' explode' if explode else ''}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -2321,7 +2333,7 @@ async def stats_autocomplete(ctx):
 async def adjust(ctx,
 	stat: discord.Option(str, "The stat to change.", autocomplete=discord.utils.basic_autocomplete(stats_autocomplete), required=True),
 	amount: discord.Option(str, "Amount to increase the stat by. Supports dice syntax. Negative values will decrease.", required=True)):
-	log(f"/adjust {stat} {amount}")
+	#log(f"/adjust {stat} {amount}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -2396,7 +2408,7 @@ async def adjust(ctx,
 async def refresh(ctx, 
 	reset_hp: discord.Option(bool, "If TRUE, sets your base HP to 6 and recalculates it. FALSE by default.", required=False, default=False), 
 	reset_war_dice: discord.Option(bool, "If TRUE, sets your War Dice to 0 and recalculates it. FALSE by default.", required=False, default=False)):
-	log(f"/refresh{' reset_hp' if reset_hp else ''}{' reset_war_dice' if reset_war_dice else ''}")
+	#log(f"/refresh{' reset_hp' if reset_hp else ''}{' reset_war_dice' if reset_war_dice else ''}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -2516,7 +2528,7 @@ async def damage(ctx,
 	amount: discord.Option(str, "Amount of damage to take. Supports dice syntax.", required=True),
 	armor_piercing: discord.Option(bool, "Skip armor when applying this damage.", required=False, default=False),
 	bonus_armor: discord.Option(discord.SlashCommandOptionType.integer, "Extra armor that applies to this instance of damage.", required=False, default=0)):
-	log(f"/damage {amount}{' armor_piercing' if armor_piercing else ''}")
+	#log(f"/damage {amount}{' armor_piercing' if armor_piercing else ''}")
 	
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -2584,7 +2596,7 @@ async def damage(ctx,
 async def heal(ctx, 
 	amount: discord.Option(str, "Amount of healing to receive. Supports dice syntax.", required=True),
 	):
-	log(f"/heal {amount}")
+	#log(f"/heal {amount}")
 	
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -2642,7 +2654,7 @@ async def attack(ctx,
 	bonus_damage: discord.Option(str, "Amount of extra damage to deal; supports dice syntax.", required=False, default="0"),
 	multiplier: discord.Option(int, "Amount to multiply the final damage by.", required=False, default=1)
 	):
-	log(f"/attack {bonus_damage} {multiplier}")
+	#log(f"/attack {bonus_damage} {multiplier}")
 	try:
 		character = get_active_char_object(ctx)
 		if character == None:
@@ -2772,7 +2784,7 @@ async def equip_weapon(ctx,
 	damage: discord.Option(str, "Amount of damage to deal; supports dice syntax.", autocomplete=discord.utils.basic_autocomplete(held_dice_autocomplete), required=True)):
 	
 	character = get_active_char_object(ctx)
-	log(f"/equip_weapon {name} {damage}")
+	#log(f"/equip_weapon {name} {damage}")
 	name = name.strip()
 	damage = damage.strip()
 	if character == None:
@@ -2806,7 +2818,7 @@ async def equip_weapon(ctx,
 async def equip_armor(ctx, 
 	name: discord.Option(str, "The armor's name.", autocomplete=discord.utils.basic_autocomplete(held_items_autocomplete), required=True),
 	damage: discord.Option(int, "Amount of damage it reduces.", autocomplete=discord.utils.basic_autocomplete(held_numbers_autocomplete), required=True)):
-	log(f"/equip_armor {name} {damage}")
+	#log(f"/equip_armor {name} {damage}")
 	name = name.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -2832,7 +2844,7 @@ trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
 @trait_group.command(description="Looks up a trait by name or d666 number")
 async def lookup(ctx, trait: discord.Option(str,"The trait to search for",autocomplete=discord.utils.basic_autocomplete(trait_autocomp))):
-	log(f"/trait lookup {trait}")
+	#log(f"/trait lookup {trait}")
 	trait = trait.strip()
 	message = search_for_trait(trait)
 	hidden = message in ["No trait exists with the given number. Trait numbers must be possible d666 roll outputs.","Could not find a trait with an approximately similar name."]
@@ -2841,7 +2853,7 @@ async def lookup(ctx, trait: discord.Option(str,"The trait to search for",autoco
 
 @trait_group.command(description="Produces a random trait")
 async def random(ctx):
-	log("/trait random")
+	#log("/trait random")
 	result = rnd.choice(trait_data)
 	if (rnd.randint(1,10000) == 1):
 		result = secret_trait
@@ -2850,7 +2862,7 @@ async def random(ctx):
 
 @bot.command(description="Convert a barcode into a MONSTERS statblock")
 async def monsters(ctx, barcode: discord.Option(str,"The barcode to input")):
-	log(f"/trait monsters {barcode}")
+	#log(f"/trait monsters {barcode}")
 	try:
 		barcode = [int(digit) for digit in barcode]
 	except ValueError:
@@ -2879,7 +2891,7 @@ sunder_tracker = {}
 
 @bot.command(description="Rolls damage for SUNDER, and then applies the damage to your active character")
 async def sunder(ctx):
-	log("/sunder")
+	#log("/sunder")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -2938,7 +2950,7 @@ role_group = discord.SlashCommandGroup("role", "Role Commands")
 
 @role_group.command(description="Looks up a role by name or d66 number")
 async def lookup(ctx, role: discord.Option(str,"The role to search for",autocomplete=discord.utils.basic_autocomplete(role_autocomp))):
-	log(f"/role lookup {role}")
+	#log(f"/role lookup {role}")
 	role = role.strip()
 	message = search_for_role(role)
 	hidden = message in ["No role exists with the given number. Role numbers must be possible d66 roll outputs.","Could not find a role with an approximately similar name."]
@@ -2946,7 +2958,7 @@ async def lookup(ctx, role: discord.Option(str,"The role to search for",autocomp
 
 @role_group.command(description="Produces a random role")
 async def random(ctx):
-	log("/role random")
+	#log("/role random")
 	result = rnd.choice(role_data)
 	message = role_message_format(result)
 	await ctx.respond(message)
@@ -2966,7 +2978,7 @@ file.close()
 
 @player_group.command(description="Produces a random character sheet")
 async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionType.integer, "The number of traits this character should have. Defaults to 2.", required=False, default=2)):
-	log(f"/player character {traitcount}")
+	#log(f"/player character {traitcount}")
 	
 	message = f"# {rnd.choice(merc_codenames)}"
 	if traitcount < 1:
@@ -3068,7 +3080,7 @@ async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionTy
 
 @player_group.command(description="Rolls against the Emergency Insertion table")
 async def emergencyinsertion(ctx):
-	log("/player emergencyinsertion")
+	#log("/player emergencyinsertion")
 	results = [d6(), d6()]
 	sum = results[0] + results[1]
 	
@@ -3092,7 +3104,7 @@ async def roll(ctx,
 	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
 	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
 	):
-	log(f"/player roll {modifier}{' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
+	#log(f"/player roll {modifier}{' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
 	results = [d6(), d6()]
 	if superior_dice ^ inferior_dice:
 		results.append(d6())
@@ -3137,7 +3149,7 @@ def roll_multiple_dice(syntax, amount):
 async def dice(ctx, syntax: discord.Option(str,"The dice syntax"),
 	instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1),
 	hidden: discord.Option(bool, "If TRUE, the output of this command is hidden to others", required=False, default=False)):
-	log(f"/player dice {syntax} {instances} {hidden}")
+	#log(f"/player dice {syntax} {instances} {hidden}")
 	syntax = syntax.strip()
 	if instances < 1:
 		instances = 1
@@ -3200,7 +3212,7 @@ file.close()
 
 @matrix_group.command(description="Provides a random Mission Dossier")
 async def mission(ctx):
-	log("/matrix mission")
+	#log("/matrix mission")
 	results = roll_all_matrices(intelligence["mission"])
 	instigator = decap_first(results[0])
 	activity = decap_first(results[1])
@@ -3216,7 +3228,7 @@ file.close()
 
 @matrix_group.command(description="Provides a random Mission Prompt")
 async def prompt(ctx):
-	log("/matrix prompt")
+	#log("/matrix prompt")
 	result = roll_intelligence_matrix(intelligence["prompt"][0])
 	await ctx.respond(result)
 
@@ -3226,7 +3238,7 @@ file.close()
 
 @matrix_group.command(description="Incants a Magical Word")
 async def syllables(ctx):
-	log("/matrix syllables")
+	#log("/matrix syllables")
 	result = ""
 	count = d6()
 	for i in range(count):
@@ -3235,19 +3247,19 @@ async def syllables(ctx):
 
 @matrix_group.command(description="Gives a random Operation Codename")
 async def codename(ctx):
-	log("/matrix codename")
+	#log("/matrix codename")
 	result = roll_intelligence_matrix(intelligence["misc"][1])
 	await ctx.respond(result)
 
 @matrix_group.command(description="Provokes a random Combat Behavior")
 async def tactics(ctx):
-	log("/matrix tactics")
+	#log("/matrix tactics")
 	result = roll_intelligence_matrix(intelligence["misc"][2])
 	await ctx.respond(result)
 
 @matrix_group.command(description="Strikes a random Hit Location")
 async def hit(ctx):
-	log("/matrix hit")
+	#log("/matrix hit")
 	result = [roll_intelligence_matrix(intelligence["misc"][3])]
 	while "Compound injury (roll two hit locations)" in result:
 		result.append(roll_intelligence_matrix(intelligence["misc"][3]))
@@ -3258,7 +3270,7 @@ async def hit(ctx):
 
 @matrix_group.command(description="Provokes a random Faction Action")
 async def factionaction(ctx):
-	log("/matrix factionaction")
+	#log("/matrix factionaction")
 	result = [roll_intelligence_matrix(intelligence["misc"][4])]
 	while "Fake-out zig-zag (roll two actions)" in result:
 		result.append(roll_intelligence_matrix(intelligence["misc"][4]))
@@ -3270,7 +3282,7 @@ async def factionaction(ctx):
 
 @matrix_group.command(description="Discloses a random Faction Mission")
 async def factionmission(ctx):
-	log("/matrix factionmission")
+	#log("/matrix factionmission")
 	result = [roll_intelligence_matrix(intelligence["misc"][5])]
 	while "Double mission (roll two objectives)" in result:
 		result.append(roll_intelligence_matrix(intelligence["misc"][5]))
@@ -3282,7 +3294,7 @@ async def factionmission(ctx):
 
 @matrix_group.command(description="Assigns a random CHOKE Score")
 async def choke(ctx):
-	log("/matrix choke")
+	#log("/matrix choke")
 	result = roll_intelligence_matrix(intelligence["misc"][10])
 	await ctx.respond(result)
 
@@ -3291,7 +3303,7 @@ async def part_success_autocomplete(ctx: discord.AutocompleteContext):
 
 @matrix_group.command(description="Causes random consequences for a Partial Success")
 async def partial(ctx, type: discord.Option(str,"The type of consequence that should be inflicted",autocomplete=discord.utils.basic_autocomplete(part_success_autocomplete),required=False,default=None)):
-	log(f"/matrix partial {type}")
+	#log(f"/matrix partial {type}")
 	if type is not None:
 		type = type.upper()
 	if type == None:
@@ -3315,13 +3327,13 @@ async def partial(ctx, type: discord.Option(str,"The type of consequence that sh
 
 @matrix_group.command(description="Spawns a Random Encounter")
 async def encounter(ctx):
-	log("/matrix encounter")
+	#log("/matrix encounter")
 	result = roll_intelligence_matrix(intelligence["misc"][12])
 	await ctx.respond(result)
 
 @matrix_group.command(description="Provokes a random Downtime Event")
 async def downtime(ctx):
-	log("/matrix downtime")
+	#log("/matrix downtime")
 	result = roll_intelligence_matrix(intelligence["misc"][13])
 	await ctx.respond(result)
 
@@ -3335,7 +3347,7 @@ file.close()
 
 @matrix_group.command(description="Plays a random Cassette Tape")
 async def cassette(ctx):
-	log("/matrix cassette")
+	#log("/matrix cassette")
 	audio = rnd.choice(intelligence["cassettes"])
 	if audio == "[Combination tape, roll 1D6 tapes]":
 		tapes = ["[Combination tape, roll 1D6 tapes]"]
@@ -3376,7 +3388,7 @@ async def bupgrade_autocomp(ctx):
 
 @gear_group.command(description="Applies a random Base Upgrade")
 async def baseupgrade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Base Upgrade instead",autocomplete=discord.utils.basic_autocomplete(bupgrade_autocomp),required=False,default="")):
-	log("/matrix gear baseupgrade")
+	#log("/matrix gear baseupgrade")
 	message = ""
 	if len(lookup) < 1:
 		result = rnd.choice(intelligence["gear_bupgrades"])
@@ -3394,14 +3406,14 @@ async def baseupgrade(ctx, lookup: discord.Option(str,"Including this argument s
 
 @gear_group.command(description="Divulges the contents of a random Crate")
 async def crate(ctx):
-	log("/matrix gear crate")
+	#log("/matrix gear crate")
 	result = roll_intelligence_matrix(intelligence["gear_items"][1])
 	message = f"You crack open a crate, revealing **{result}** inside."
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random Common Item")
 async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of items to produce (allows duplicates)", required=False, default=1)):
-	log(f"/matrix gear item {count}")
+	#log(f"/matrix gear item {count}")
 	max = 50
 	if count < 1:
 		count = 1
@@ -3426,7 +3438,7 @@ async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer
 
 @gear_group.command(description="Grants a random piece of Armor")
 async def armor(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of armor pieces to produce (allows duplicates)", required=False, default=1)):
-	log("/matrix gear armor")
+	#log("/matrix gear armor")
 	max = 50
 	if count < 1:
 		count = 1
@@ -3451,7 +3463,7 @@ async def armor(ctx, count: discord.Option(discord.SlashCommandOptionType.intege
 
 @gear_group.command(description="Grants a random Weapon")
 async def weapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of weapons to produce (allows duplicates)", required=False, default=1)):
-	log(f"/matrix gear weapon {count}")
+	#log(f"/matrix gear weapon {count}")
 	max = 50
 	if count < 1:
 		count = 1
@@ -3483,7 +3495,7 @@ async def tag_lookup_autocomp(ctx):
 
 @gear_group.command(description="Applies a random Weapon Tag")
 async def tag(ctx, lookup: discord.Option(str,"Including this argument searches for a specific tag instead",autocomplete=discord.utils.basic_autocomplete(tag_lookup_autocomp),required=False,default="")):
-	log("/matrix gear tag")
+	#log("/matrix gear tag")
 	tags = intelligence["gear_weapons_and_armor"][2]["Values"]
 	message = ""
 	hidden = False
@@ -3514,7 +3526,7 @@ async def tag(ctx, lookup: discord.Option(str,"Including this argument searches 
 
 @gear_group.command(description="Grants a random Vehicle")
 async def vehicle(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of vehicles to produce (allows duplicates)", required=False, default=1)):
-	log(f"/matrix gear vehicle {count}")
+	#log(f"/matrix gear vehicle {count}")
 	max = 50
 	if count < 1:
 		count = 1
@@ -3539,7 +3551,7 @@ async def vehicle(ctx, count: discord.Option(discord.SlashCommandOptionType.inte
 
 @gear_group.command(description="Grants a random Vehicle Weapon")
 async def vehicleweapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of vehicle weapons to produce (allows duplicates)", required=False, default=1)):
-	log(f"/matrix gear vehicleweapon {count}")
+	#log(f"/matrix gear vehicleweapon {count}")
 	max = 50
 	if count < 1:
 		count = 1
@@ -3564,7 +3576,7 @@ async def vehicleweapon(ctx, count: discord.Option(discord.SlashCommandOptionTyp
 
 @gear_group.command(description="Applies a random Weapon Skin")
 async def skin(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of weapon skins to produce (allows duplicates)", required=False, default=1)):
-	log(f"/matrix gear skin {count}")
+	#log(f"/matrix gear skin {count}")
 	max = 50
 	if count < 1:
 		count = 1
@@ -3589,7 +3601,7 @@ async def skin(ctx, count: discord.Option(discord.SlashCommandOptionType.integer
 
 @gear_group.command(description="Generates a fully unique Weapon")
 async def weaponsmith(ctx):
-	log("/matrix gear weaponsmith")
+	#log("/matrix gear weaponsmith")
 	model = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][1])
 	tag = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][2])
 	tag = f"**{tag['Name']}**: {tag['Effect']}"
@@ -3599,7 +3611,7 @@ async def weaponsmith(ctx):
 
 @gear_group.command(description="Generates a fully unique Vehicle")
 async def hangar(ctx):
-	log("/matrix gear weaponsmith")
+	#log("/matrix gear weaponsmith")
 	model = roll_intelligence_matrix(intelligence["gear_vehicles"][0])
 	weapon = roll_intelligence_matrix(intelligence["gear_vehicles"][1])
 	skin = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
@@ -3621,7 +3633,7 @@ async def gadget(ctx,
 	count: discord.Option(discord.SlashCommandOptionType.integer, "The number of CYCLOPS Gadgets to produce", required=False, default=1),
 	duplicates: discord.Option(bool, "Mark FALSE to prevent duplicate items being rolled if count > 1", required=False, default=True)
 	):
-	log(f"/matrix cyclops gadget {count}{' no_duplicates' if not duplicates else ''}")
+	#log(f"/matrix cyclops gadget {count}{' no_duplicates' if not duplicates else ''}")
 	message = ""
 	limit = 250
 	if count > limit:
@@ -3654,14 +3666,14 @@ async def gadget(ctx,
 
 @cyclops_group.command(description="Divulges where CYCLOPS High Command is (allegedly) located")
 async def location(ctx):
-	log("/matrix cyclops location")
+	#log("/matrix cyclops location")
 	result = roll_intelligence_matrix(intelligence["cyclops_rumors"][0])
 	message = f"Rumored location of CYCLOPS High Command: **{result}**"
 	await ctx.respond(message)
 
 @cyclops_group.command(description="Divulges the (alleged) origin of CYCLOPS")
 async def origin(ctx):
-	log("/matrix cyclops origin")
+	#log("/matrix cyclops origin")
 	result = roll_intelligence_matrix(intelligence["cyclops_rumors"][1])
 	message = f"Rumored origin of CYCLOPS: **{result}**"
 	await ctx.respond(message)
@@ -3674,21 +3686,21 @@ file.close()
 
 @world_group.command(description="Spawns a random Hazard")
 async def hazard(ctx):
-	log("/matrix world hazard")
+	#log("/matrix world hazard")
 	result = roll_intelligence_matrix(intelligence["world_hazards"][0])
 	message = f"Tread carefully; the area ahead contains **{result.lower()}**."
 	await ctx.respond(message)
 
 @world_group.command(description="Reveals a random Trap")
 async def trap(ctx):
-	log("/matrix world trap")
+	#log("/matrix world trap")
 	result = roll_intelligence_matrix(intelligence["world_hazards"][1])
 	message = f"You've sprung a trap! You suffer the effects of **{result.lower()}**."
 	await ctx.respond(message)
 
 @world_group.command(description="Starts in a random Year")
 async def year(ctx):
-	log("/matrix world year")
+	#log("/matrix world year")
 	start = int(roll_intelligence_matrix(intelligence["misc"][6]))
 	modifier = int(roll_intelligence_matrix(intelligence["misc"][7]))
 	year = start + modifier
@@ -3696,7 +3708,7 @@ async def year(ctx):
 
 @world_group.command(description="Randomly modifies the local Temperature and Precipitation")
 async def weather(ctx):
-	log("/matrix world weather")
+	#log("/matrix world weather")
 	temp = roll_intelligence_matrix(intelligence["misc"][8])
 	precip = roll_intelligence_matrix(intelligence["misc"][9])
 	result = f"**Temperature:** {temp}\n**Precipitation:** {precip}"
@@ -3730,7 +3742,7 @@ async def npc_lookup_autocomp(ctx):
 
 @chars_group.command(description="Spawns a random pre-made NPC")
 async def premade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific NPC instead",autocomplete=discord.utils.basic_autocomplete(npc_lookup_autocomp),required=False,default="")):
-	log(f"/matrix character premade {lookup}")
+	#log(f"/matrix character premade {lookup}")
 	message = ""
 	if len(lookup) < 1:
 		result = rnd.choice(intelligence["chars_premade"])
@@ -3752,7 +3764,7 @@ file.close()
 
 @chars_group.command(description="Spawns a random Celebrity")
 async def celebrity(ctx):
-	log("/matrix character celebrity")
+	#log("/matrix character celebrity")
 	result = roll_all_matrices(intelligence["chars_celebs"])
 	profession = [result[0]]
 	while "Roll twice, ignoring duplicates" in profession:
@@ -3773,7 +3785,7 @@ file.close()
 
 @chars_group.command(description="Spawns a random Civilian")
 async def civilian(ctx):
-	log("/matrix character civilian")
+	#log("/matrix character civilian")
 	result = roll_all_matrices(intelligence["chars_civvies"])
 	job = result[0]
 	name = result[1]
@@ -3788,7 +3800,7 @@ file.close()
 
 @chars_group.command(description="Spawns a random Politician")
 async def politician(ctx):
-	log("/matrix character politician")
+	#log("/matrix character politician")
 	result = roll_all_matrices(intelligence["chars_politicians"])
 	position = result[0]
 	vice = result[1]
@@ -3804,7 +3816,7 @@ file.close()
 
 @chars_group.command(description="Spawns a random Scientist")
 async def scientist(ctx):
-	log("/matrix character scientist")
+	#log("/matrix character scientist")
 	result = roll_all_matrices(intelligence["chars_scientists"])
 	alleg = result[0]
 	career = result[1]
@@ -3820,7 +3832,7 @@ file.close()
 
 @chars_group.command(description="Spawns a random Soldier")
 async def soldier(ctx):
-	log("/matrix character soldier")
+	#log("/matrix character soldier")
 	result = roll_all_matrices(intelligence["chars_soldiers"])
 	rank = result[0]
 	name = result[1]
@@ -3835,7 +3847,7 @@ file.close()
 
 @chars_group.command(description="Spawns a random Spy")
 async def spy(ctx):
-	log("/matrix character spy")
+	#log("/matrix character spy")
 	result = roll_all_matrices(intelligence["chars_spies"])
 	code = result[0]
 	clearance = result[1]
@@ -3864,7 +3876,7 @@ async def enemy_lookup_autocomp(ctx):
 
 @enemy_group.command(description="Spawns a random pre-made Enemy")
 async def premade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Enemy instead",autocomplete=discord.utils.basic_autocomplete(enemy_lookup_autocomp),required=False,default="")):
-	log(f"/matrix enemy premade {lookup}")
+	#log(f"/matrix enemy premade {lookup}")
 	message = ""
 	if len(lookup) < 1:
 		result = rnd.choice(intelligence["chars_enemy_premade"])
@@ -3886,7 +3898,7 @@ file.close()
 
 @enemy_group.command(description="Spawns a random Animal")
 async def animal(ctx):
-	log("/matrix enemy animal")
+	#log("/matrix enemy animal")
 	result = roll_all_matrices(intelligence["chars_animals"])
 	amount = result[0]
 	desc = result[1]
@@ -3901,7 +3913,7 @@ file.close()
 
 @enemy_group.command(description="Spawns a random Anomaly")
 async def anomaly(ctx):
-	log("/matrix enemy anomaly")
+	#log("/matrix enemy anomaly")
 	result = roll_all_matrices(intelligence["chars_anomalies"])
 	signature = result[0]
 	desc = result[1]
@@ -3916,7 +3928,7 @@ file.close()
 
 @enemy_group.command(description="Performs a random Experiment")
 async def experiment(ctx):
-	log("/matrix enemy experiment")
+	#log("/matrix enemy experiment")
 	result = roll_all_matrices(intelligence["chars_experiments"])
 	creation = result[0]
 	desc = result[1]
@@ -3943,7 +3955,7 @@ file.close()
 
 @enemy_group.command(description="Spawns a random Monster")
 async def monster(ctx):
-	log("/matrix enemy monster")
+	#log("/matrix enemy monster")
 	result = roll_all_matrices(intelligence["chars_monsters"])
 	amount = result[0]
 	desc = result[1]
@@ -3960,7 +3972,7 @@ file.close()
 
 @enemy_group.command(description="Spawns a random Robot")
 async def robot(ctx):
-	log("/matrix enemy robot")
+	#log("/matrix enemy robot")
 	result = roll_all_matrices(intelligence["chars_robots"])
 	budget = result[0]
 	desc = result[1]
@@ -3990,7 +4002,7 @@ file.close()
 
 @enemy_group.command(description="Spawns a random Squad")
 async def squad(ctx):
-	log("/matrix enemy squad")
+	#log("/matrix enemy squad")
 	result = roll_all_matrices(intelligence["chars_squads"])
 	rep = result[0]
 	command = result[1]
@@ -4010,7 +4022,7 @@ file.close()
 
 @fact_group.command(description="Establishes a random Alien faction")
 async def aliens(ctx):
-	log("/matrix faction aliens")
+	#log("/matrix faction aliens")
 	result = roll_all_matrices(intelligence["facs_aliens"])
 	origin = result[0]
 	mission = result[1]
@@ -4026,7 +4038,7 @@ file.close()
 
 @fact_group.command(description="Establishes a random Agency")
 async def agency(ctx):
-	log("/matrix faction agency")
+	#log("/matrix faction agency")
 	result = roll_all_matrices(intelligence["facs_agencies"])
 	parent = result[0]
 	name = result[1]
@@ -4041,7 +4053,7 @@ file.close()
 
 @fact_group.command(description="Establishes a random Corporation")
 async def corporation(ctx):
-	log("/matrix faction corporation")
+	#log("/matrix faction corporation")
 	result = roll_all_matrices(intelligence["facs_corporations"])
 	sector = result[0]
 	if sector == "Megacorp (roll 1D6 sectors)":
@@ -4061,7 +4073,7 @@ file.close()
 
 @fact_group.command(description="Establishes a random Criminal organization")
 async def criminals(ctx):
-	log("/matrix faction criminals")
+	#log("/matrix faction criminals")
 	result = roll_all_matrices(intelligence["facs_criminals"])
 	honor = result[0]
 	name = result[1]
@@ -4076,7 +4088,7 @@ file.close()
 
 @fact_group.command(description="Establishes a random Cult")
 async def cult(ctx):
-	log("/matrix faction cult")
+	#log("/matrix faction cult")
 	result = roll_all_matrices(intelligence["facs_cults"])
 	lead = result[0]
 	size = result[1]
@@ -4092,7 +4104,7 @@ file.close()
 
 @fact_group.command(description="Establishes a random Insurgent group")
 async def insurgents(ctx):
-	log("/matrix faction insurgents")
+	#log("/matrix faction insurgents")
 	result = roll_all_matrices(intelligence["facs_insurgents"])
 	foothold = result[0]
 	desc = result[1]
@@ -4114,7 +4126,7 @@ file.close()
 
 @loc_group.command(description="Locates a random Battlefield")
 async def battlefield(ctx):
-	log("/matrix location battlefield")
+	#log("/matrix location battlefield")
 	result = roll_all_matrices(intelligence["locs_battlefields"])
 	layout = result[0]
 	desc = result[1]
@@ -4129,7 +4141,7 @@ file.close()
 
 @loc_group.command(description="Locates a random City")
 async def city(ctx):
-	log("/matrix location city")
+	#log("/matrix location city")
 	result = roll_all_matrices(intelligence["locs_cities"])
 	cyclops = result[0]
 	name = result[1]
@@ -4144,7 +4156,7 @@ file.close()
 
 @loc_group.command(description="Locates a random location in Nature")
 async def nature(ctx):
-	log("/matrix location nature")
+	#log("/matrix location nature")
 	result = roll_all_matrices(intelligence["locs_nature"])
 	situation = result[0]
 	desc = result[1]
@@ -4165,7 +4177,7 @@ file.close()
 
 @loc_group.command(description="Locates a random Room")
 async def room(ctx):
-	log("/matrix location room")
+	#log("/matrix location room")
 	result = roll_all_matrices(intelligence["locs_rooms"])
 	exits = result[0]
 	doors = result[1]
@@ -4181,7 +4193,7 @@ file.close()
 
 @loc_group.command(description="Locates a random Structure")
 async def structure(ctx):
-	log("/matrix location structure")
+	#log("/matrix location structure")
 	result = roll_all_matrices(intelligence["locs_structures"])
 	owner = result[0]
 	security = result[1]
@@ -4198,7 +4210,7 @@ file.close()
 
 @loc_group.command(description="Locates a random Zone")
 async def zone(ctx):
-	log("/matrix location zone")
+	#log("/matrix location zone")
 	result = roll_all_matrices(intelligence["locs_zones"])
 	size = result[0]
 	integrity = result[1]
@@ -4223,7 +4235,7 @@ def starts_with_vowel(word):
 
 @lore_group.command(description="Forges a random Artifact")
 async def artifact(ctx):
-	log("/matrix lore artifact")
+	#log("/matrix lore artifact")
 	result = roll_all_matrices(intelligence["lore_artifacts"])
 	interest = result[0]
 	desc = result[1]
@@ -4254,7 +4266,7 @@ file.close()
 
 @lore_group.command(description="Uncovers a random Coverup")
 async def coverup(ctx):
-	log("/matrix lore coverup")
+	#log("/matrix lore coverup")
 	result = roll_all_matrices(intelligence["lore_coverups"])
 	suppression = result[0]
 	witness = result[1]
@@ -4272,7 +4284,7 @@ file.close()
 
 @lore_group.command(description="Establishes a random Diplomacy")
 async def diplomacy(ctx):
-	log("/matrix lore diplomacy")
+	#log("/matrix lore diplomacy")
 	result = roll_all_matrices(intelligence["lore_diplomacy"])
 	coverage = result[0]
 	desc = result[1]
@@ -4287,7 +4299,7 @@ file.close()
 
 @lore_group.command(description="Causes a random Disaster")
 async def disaster(ctx):
-	log("/matrix lore disaster")
+	#log("/matrix lore disaster")
 	result = roll_all_matrices(intelligence["lore_disasters"])
 	scale = result[0]
 	response = result[1]
@@ -4303,7 +4315,7 @@ file.close()
 
 @lore_group.command(description="Tells a random Legend")
 async def legend(ctx):
-	log("/matrix lore legend")
+	#log("/matrix lore legend")
 	result = roll_all_matrices(intelligence["lore_legends"])
 	fate = result[0]
 	if fate == "Many threads (roll two fates)":
@@ -4326,7 +4338,7 @@ file.close()
 
 @lore_group.command(description="Casts a random Spell")
 async def spell(ctx):
-	log("/matrix lore spell")
+	#log("/matrix lore spell")
 	result = roll_all_matrices(intelligence["lore_spells"])
 	level = result[0]
 	obscurity = result[1]
@@ -4351,14 +4363,14 @@ file.close()
 
 @atrx_group.command(description="Listens to a rumor from Vizhay")
 async def rumor(ctx):
-	log("/ataraxia rumor")
+	#log("/ataraxia rumor")
 	result = roll_intelligence_matrix(intelligence["ataraxia"][0])
 	message = f"You pick up on a rumor in Vizhay: {result}"
 	await ctx.respond(message)
 
 @atrx_group.command(description="Encounter something in Dyatlov Pass")
 async def encounter(ctx):
-	log("/ataraxia encounter")
+	#log("/ataraxia encounter")
 	result = roll_intelligence_matrix(intelligence["ataraxia"][1])
 	message = f"During your travels through Dyatlov Pass, you run into: **{result}**"
 	await ctx.respond(message)
@@ -4373,25 +4385,25 @@ file.close()
 
 @hzfc_group.command(description="Enter a new chamber")
 async def room(ctx):
-	log("/hazfunction room")
+	#log("/hazfunction room")
 	result = roll_intelligence_matrix(intelligence["hazfunction"][0])
 	await ctx.respond(result)
 
 @hzfc_group.command(description="Spawn a chamber's hazard")
 async def hazard(ctx):
-	log("/hazfunction hazard")
+	#log("/hazfunction hazard")
 	result = roll_intelligence_matrix(intelligence["hazfunction"][1])
 	await ctx.respond(result)
 
 @hzfc_group.command(description="Spawn a crucible animal")
 async def animal(ctx):
-	log("/hazfunction animal")
+	#log("/hazfunction animal")
 	result = roll_intelligence_matrix(intelligence["hazfunction"][4])
 	await ctx.respond(result)
 
 @hzfc_group.command(description="Spawn a chamber's encounter")
 async def encounter(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
-	log(f"/hazfunction encounter {rooms_cleared}")
+	#log(f"/hazfunction encounter {rooms_cleared}")
 	if rooms_cleared < 0:
 		await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
 		return
@@ -4404,7 +4416,7 @@ async def encounter(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptio
 
 @hzfc_group.command(description="Spawn a chamber's item")
 async def item(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
-	log(f"/hazfunction item {rooms_cleared}")
+	#log(f"/hazfunction item {rooms_cleared}")
 	if rooms_cleared < 0:
 		await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
 		return
@@ -4417,7 +4429,7 @@ async def item(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType
 
 @hzfc_group.command(description="Enter a new chamber, and outfit it with an encounter, hazard, and item")
 async def full_room(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
-	log(f"/hazfunction full_room {rooms_cleared}")
+	#log(f"/hazfunction full_room {rooms_cleared}")
 	if rooms_cleared < 0:
 		await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
 		return
@@ -4441,7 +4453,7 @@ def hazfunc_codename():
 
 @hzfc_group.command(description="Produces a random Hazard Function character")
 async def character(ctx):
-	log(f"/hazfunction character")
+	#log(f"/hazfunction character")
 	
 	message = f"# {hazfunc_codename()}"
 	message += "\nROLE: **SURVIVOR**\nDescribe why you want to live. If you live until the end of the mission, take another trait and gain a role, change your MAX HP to 6, then take a standard issue item, +1D6 MAX HP, or +1D6 WAR DICE.\n\n"
@@ -4518,7 +4530,7 @@ def strain():
 
 @ctsh_group.command(description="Provide a new Bacteria Canister from Colony's shop")
 async def canister(ctx, amount: discord.Option(discord.SlashCommandOptionType.integer, "The number of canisters to provide", required=False, default=1)):
-	log(f"/colony canister {amount}")
+	#log(f"/colony canister {amount}")
 	if amount < 1:
 		await ctx.respond("Canisters provided must be 1 or more.",ephemeral=True)
 	elif amount > 15:
@@ -4533,7 +4545,7 @@ async def canister(ctx, amount: discord.Option(discord.SlashCommandOptionType.in
 
 @ctsh_group.command(description="Roll to see if Colony will spawn.")
 async def spawn(ctx):
-	log(f"/colony spawn")
+	#log(f"/colony spawn")
 	if d6() % 2 == 1:
 		await ctx.respond("Colony **will** spawn in this region.")
 	else:
