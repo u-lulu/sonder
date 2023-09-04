@@ -1780,7 +1780,8 @@ async def item_counters_autocomp(ctx):
 				item_list = current_char['items']
 				output = []
 				for item in item_list:
-					output.append(item)
+					item_name = item.split(" (")[0]
+					output.append(item_name)
 				return output
 			else:
 				return []
@@ -1794,13 +1795,13 @@ async def example_counter_names(ctx):
 
 @bot.command(description="Add a counter to an item on your character")
 async def add_item_counter(ctx,
-	item: discord.Option(str, "The item to attach a counter to",autocomplete=discord.utils.basic_autocomplete(item_counters_autocomp), required=True),
+	item_name: discord.Option(str, "The item to attach a counter to",autocomplete=discord.utils.basic_autocomplete(item_counters_autocomp), required=True),
 	counter_name: discord.Option(str, "The name of the counter",autocomplete=discord.utils.basic_autocomplete(example_counter_names), required=True),
 	starting_value: discord.Option(int, "The value the counter should start at", required=True)
 	):
 	
 	#log(f"/add_item_counter {item} {starting_value} {counter_name}")
-	item = item.strip()
+	item_name = item_name.strip()
 	counter_name = counter_name.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -1817,7 +1818,13 @@ async def add_item_counter(ctx,
 		await ctx.respond(f"Counter names should be {limit} characters or shorter.",ephemeral=True)
 		return
 	
-	if item not in character['items']:
+	item = None
+	for stuff in character['items']:
+		if stuff.split(" (")[0] == item_name:
+			item = stuff
+			break
+	
+	if item is None or item not in character['items']:
 		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'. The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
 		return
 	
