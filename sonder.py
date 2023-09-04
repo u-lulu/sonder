@@ -386,14 +386,15 @@ async def ping(ctx):
 
 @bot.command(description="Shuts down the bot. Will not work unless you own the bot.")
 async def shutdown(ctx):
-	#log(f"/shutdown ({ctx.author.id})")
 	if ctx.author.id == ownerid:
+		log(f"Shutdown request accepted ({ctx.author.id})")
 		await ctx.defer()
 		await bot.change_presence(activity=discord.Game(name='Shutting down...'),status=discord.Status.dnd)
 		await save_character_data()
 		await ctx.respond(f"Restarting.")
 		await bot.close()
 	else:
+		log(f"Shutdown request denied ({ctx.author.id})")
 		await ctx.respond(f"Only <@{ownerid}> may use this command.",ephemeral=True)
 
 @bot.command(description="Links to the Help document for this bot")
