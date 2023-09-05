@@ -374,6 +374,11 @@ async def on_application_command(ctx):
 	else:
 		log(f"/{ctx.command.qualified_name}")
 
+@bot.event
+async def on_application_command_error(ctx, e):
+	log(f"Command threw an error: {e}")
+	await ctx.respond(f"This command could not be fulfilled due to the following error:\n`{e}`\nIf this continues, please submit a bug report on the [Support Server]( https://discord.gg/VeedQmQc7k ).")
+
 @bot.command(description="Checks how long the bot has been online")
 async def uptime(ctx):
 	#log("/uptime")
