@@ -1,6 +1,6 @@
 import discord # pip install py-cord
 import json
-import difflib
+from difflib import get_close_matches
 import re
 import random as rnd
 from datetime import datetime
@@ -11,7 +11,7 @@ import math
 import rolldice # pip install py-rolldice
 from func_timeout import func_timeout, FunctionTimedOut # pip install func-timeout
 import qrcode # pip install qrcode
-import copy
+from copy import deepcopy
 import asyncio
 
 standard_character_limit = 10
@@ -110,7 +110,7 @@ def search_for_trait(trait):
 	elif trait in traits_by_name:
 		return trait_message_format(traits_by_name[trait])
 	else:
-		best_match = difflib.get_close_matches(trait.upper(), trait_names, n=1, cutoff=0.0)
+		best_match = get_close_matches(trait.upper(), trait_names, n=1, cutoff=0.0)
 
 		if len(best_match) > 0 and best_match[0] in traits_by_name:
 			return trait_message_format(traits_by_name[best_match[0]])
@@ -130,7 +130,7 @@ def search_for_role(role):
 	elif role in roles_by_name:
 		return role_message_format(roles_by_name[role])
 	else:
-		best_match = difflib.get_close_matches(role.upper(), role_names, n=1, cutoff=0.0)
+		best_match = get_close_matches(role.upper(), role_names, n=1, cutoff=0.0)
 
 		if len(best_match) > 0 and best_match[0] in roles_by_name:
 			return role_message_format(roles_by_name[best_match[0]])
@@ -774,7 +774,7 @@ async def add_trait(ctx,
 			await ctx.respond(f'**{codename.upper()}** already has the trait **{my_new_trait["Name"]} ({my_new_trait["Number"]})**.',ephemeral=True)
 			return
 	
-	my_new_trait = copy.deepcopy(my_new_trait)
+	my_new_trait = deepcopy(my_new_trait)
 	if rename_item is not None:
 		if '(' in rename_item or ')' in rename_item:
 			await ctx.respond("For organizational reasons, please do not use parenthesis in item names.",ephemeral=True)
@@ -943,7 +943,7 @@ async def henshin(ctx, set_trait: discord.Option(str, "The core book name or num
 						await ctx.respond(f"You cannot change your HENSHIN trait to a trait you already possess.",ephemeral=True)
 						return
 				
-				character['special']['henshin_trait'] = copy.deepcopy(my_new_trait)
+				character['special']['henshin_trait'] = deepcopy(my_new_trait)
 				await ctx.respond(f"{codename.upper()} has set their HENSHIN trait to **{my_new_trait['Name'].upper()} ({my_new_trait['Number']})**.")
 				await save_character_data(str(ctx.author.id))
 				return
@@ -1078,7 +1078,7 @@ async def rename(ctx,
 		await ctx.respond(f"You have already created a character with the codename '{new_codename}'.",ephemeral=True)
 		return
 	
-	character_data[userid]['chars'][new_codename] = copy.deepcopy(character_data[userid]['chars'][codename])
+	character_data[userid]['chars'][new_codename] = deepcopy(character_data[userid]['chars'][codename])
 	del character_data[userid]['chars'][codename]
 	
 	msg = f"Renamed the character **{codename.upper()}** to **{new_codename.upper()}**."
@@ -1125,7 +1125,7 @@ async def clone(ctx,
 		await ctx.respond(f"You have already created a character with the codename '{new_codename}'.",ephemeral=True)
 		return
 	
-	character_data[userid]['chars'][new_codename] = copy.deepcopy(character_data[userid]['chars'][codename])
+	character_data[userid]['chars'][new_codename] = deepcopy(character_data[userid]['chars'][codename])
 	character_data[userid]['chars'][new_codename]['premium'] = premium_character
 	character_data[userid]['chars'][new_codename]['creation_time'] = time.time()
 	
@@ -3415,7 +3415,7 @@ async def baseupgrade(ctx, lookup: discord.Option(str,"Including this argument s
 		result = rnd.choice(intelligence["gear_bupgrades"])
 		message = f"**{result['Name']}:** {result['Effect']}"
 	else:
-		best_match = difflib.get_close_matches(lookup.upper(), bupgrade_names, n=1, cutoff=0.0)
+		best_match = get_close_matches(lookup.upper(), bupgrade_names, n=1, cutoff=0.0)
 		if len(best_match) > 0:
 			goodbup = {}
 			for bup in intelligence["gear_bupgrades"]:
@@ -3532,7 +3532,7 @@ async def tag(ctx, lookup: discord.Option(str,"Including this argument searches 
 				message = "No tag exists with the given number. Tag numbers must be possible d66 roll outputs."
 				hidden = True
 		else:
-			best_match = difflib.get_close_matches(lookup.upper(), wep_tag_names, n=1, cutoff=0.0)
+			best_match = get_close_matches(lookup.upper(), wep_tag_names, n=1, cutoff=0.0)
 			
 			if len(best_match) > 0:
 				for tag in tags.values():
@@ -3769,7 +3769,7 @@ async def premade(ctx, lookup: discord.Option(str,"Including this argument searc
 		result = rnd.choice(intelligence["chars_premade"])
 		message = format_premade(result)
 	else:
-		best_match = difflib.get_close_matches(lookup.upper(), premade_npc_names, n=1, cutoff=0.0)
+		best_match = get_close_matches(lookup.upper(), premade_npc_names, n=1, cutoff=0.0)
 		if len(best_match) > 0:
 			goodchar = {}
 			for char in intelligence["chars_premade"]:
@@ -3903,7 +3903,7 @@ async def premade(ctx, lookup: discord.Option(str,"Including this argument searc
 		result = rnd.choice(intelligence["chars_enemy_premade"])
 		message = format_premade(result)
 	else:
-		best_match = difflib.get_close_matches(lookup.upper(), premade_enemy_names, n=1, cutoff=0.0)
+		best_match = get_close_matches(lookup.upper(), premade_enemy_names, n=1, cutoff=0.0)
 		if len(best_match) > 0:
 			goodchar = {}
 			for char in intelligence["chars_enemy_premade"]:
