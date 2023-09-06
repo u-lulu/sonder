@@ -2584,9 +2584,9 @@ async def damage(ctx,
 		character['hp'] -= int(damage_taken)
 	
 	message = f"**{codename.upper()}** has taken **{int(before_armor)} damage!**"
-	if (not armor_piercing and character['armor'] > 0 and before_armor != damage_taken):
+	if (not armor_piercing and character['armor'] + bonus_armor > 0):
 		message += f" (Reduced to **{int(damage_taken)}** by {character['armor']}{f' (+{bonus_armor} bonus)' if bonus_armor > 0 else ''} armor from {character['armor_name']}!)"
-	elif (armor_piercing and character['armor'] > 0):
+	elif (armor_piercing and character['armor'] + bonus_armor > 0):
 		message += f" (Ignores {character['armor']}{f' (+{bonus_armor} bonus)' if bonus_armor > 0 else ''} armor from {character['armor_name']}!)"
 	message += f"\nHP: {character['hp']}/{character['maxhp']}"
 	
