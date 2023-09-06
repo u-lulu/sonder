@@ -3250,12 +3250,18 @@ intelligence["misc"] = json.load(file)
 file.close()
 
 @matrix_group.command(description="Incants a Magical Word")
-async def syllables(ctx):
+async def syllables(ctx, amount: discord.Option(int, "The amount of syllables the word will have.", required=False, default=None)):
 	#log("/matrix syllables")
 	result = ""
-	count = d6()
+	count = d6() if amount is None else amount
+	if count > 1000:
+		await ctx.respond("Please use 1000 syllables or less.",ephemeral=True)
+		return
 	for i in range(count):
 		result += roll_intelligence_matrix(intelligence["misc"][0])
+	if len(result) > 2000:
+		await ctx.respond("The output for this command exceeds 2000 characters and cannot be sent.",ephemeral=True)
+		return
 	await ctx.respond(result)
 
 @matrix_group.command(description="Gives a random Operation Codename")
