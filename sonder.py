@@ -3254,9 +3254,11 @@ async def syllables(ctx, amount: discord.Option(int, "The amount of syllables th
 	#log("/matrix syllables")
 	result = ""
 	count = d6() if amount is None else amount
-	if count > 1000:
-		await ctx.respond("Please use 1000 syllables or less.",ephemeral=True)
+	if count > 100:
+		await ctx.respond("Please use 100 syllables or less.",ephemeral=True)
 		return
+	elif count <= 0:
+		count = 1
 	for i in range(count):
 		result += roll_intelligence_matrix(intelligence["misc"][0])
 	if len(result) > 2000:
