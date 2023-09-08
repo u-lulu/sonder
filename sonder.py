@@ -724,6 +724,12 @@ async def current_trait_item_autocomp(ctx):
 		item_split = found_trait['Item'].split(' (')
 		return [item_split[0]]
 
+trait_tips = {
+	316: "You can manage switching forms with this trait by using the `/henshin` command.", #henshin
+	414: "You can generate monster statblocks for this trait using the `/monsters` command.", #monsters
+	611: "You can deal damage with this trait using the `/sunder` command." #sunder
+}
+
 @bot.command(description="Add a core book trait to your active character")
 async def add_trait(ctx, 
 	trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=True),
@@ -821,12 +827,8 @@ async def add_trait(ctx,
 	out = f"**{codename.upper()}** has gained a trait!"
 	if old_max_hp > character['maxhp'] and character['maxhp'] <= 0:
 		out += f"\n**This character now has a Max HP of {character['maxhp']}!!**"
-	if my_new_trait['Number'] == 316: # henshin notice
-		out += "\n💡 You can manage switching forms with this trait by using the `/henshin` command."
-	if my_new_trait['Number'] == 414: # monsters notice
-		out += "\n💡 You can generate monster statblocks for this trait using the `/monsters` command."
-	if my_new_trait['Number'] == 611: # sunder notice
-		out += "\n💡 You can deal damage with this trait using the `/sunder` command."
+	if my_new_trait['Number'] in trait_tips:
+		out += f"\n💡 {trait_tips[my_new_trait['Number']]}"
 	out += f"\n>>> {trait_message_format(my_new_trait)}"
 	await ctx.respond(out)
 	await save_character_data(str(ctx.author.id))
