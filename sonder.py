@@ -490,15 +490,9 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 		await ctx.respond(f"There was an error processing this command:\n```{e}```")
 
 @bot.command(description="Roll 1d66")
-async def d66(ctx, instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1)):
+async def d66(ctx, instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1, min_value=1, max_value=1000)):
 	#log(f"/d66 {instances}")
 	outs = []
-	
-	if instances > 1000:
-		await ctx.respond("Please roll 1000 or less instances.",ephemeral=True)
-		return
-	elif instances < 1:
-		instances = 1
 	
 	for i in range(instances):
 		outs.append(str(d6()) + str(d6()))
@@ -514,15 +508,9 @@ async def d66(ctx, instances: discord.Option(discord.SlashCommandOptionType.inte
 		await ctx.respond(message)
 
 @bot.command(description="Roll 1d666")
-async def d666(ctx, instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1)):
+async def d666(ctx, instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1, min_value=1, max_value=1000)):
 	#log(f"/d666 {instances}")
 	outs = []
-
-	if instances > 1000:
-		await ctx.respond("Please roll 1000 or less instances.",ephemeral=True)
-		return
-	elif instances < 1:
-		instances = 1
 
 	for i in range(instances):
 		outs.append(str(d6()) + str(d6()) + str(d6()))
@@ -799,7 +787,7 @@ trait_tips = {
 @bot.command(description="Add a core book trait to your active character")
 async def add_trait(ctx, 
 	trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=True),
-	rename_item: discord.Option(str, "Renames the item this trait provides. Autocomplete displays the item's default name.",autocomplete=discord.utils.basic_autocomplete(current_trait_item_autocomp), required=False, default=None)):
+	rename_item: discord.Option(str, "Renames the item this trait provides. Autocomplete displays the item's default name.",autocomplete=discord.utils.basic_autocomplete(current_trait_item_autocomp), required=False, default=None, max_length=100)):
 	#log(f"/add_trait {trait} {rename_item if rename_item is not None else ''}")
 	trait = trait.strip()
 	if rename_item is not None:
@@ -1025,7 +1013,7 @@ async def starting_bonus_autocomp(ctx):
 	return valid_bonuses
 
 @bot.command(description="Create a new character to manage")
-async def create_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True),
+async def create_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True, max_length=50),
 	starter_trait_1: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
 	starter_trait_2: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
 	starter_bonus: discord.Option(str, "The extra starting bonus for your character.",autocomplete=discord.utils.basic_autocomplete(starting_bonus_autocomp), required=False, default=None)):
@@ -1037,11 +1025,6 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	if starter_trait_2 is not None:
 		starter_trait_2 = starter_trait_2.strip()
 	userid = str(ctx.author.id)
-	
-	name_limit = 50
-	if len(codename) > name_limit:
-		await ctx.respond(f"Codenames must be no longer than {name_limit} characters.",ephemeral=True)
-		return
 	
 	if userid not in character_data:
 		character_data[userid] = {
@@ -1121,17 +1104,12 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 @bot.command(description="Rename an existing character")
 async def rename(ctx,
 	codename: discord.Option(str, "The codename of the character to rename.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete),required=True),
-	new_codename: discord.Option(str, "The new codename of the character.",required=True)):
+	new_codename: discord.Option(str, "The new codename of the character.",required=True,max_length=50)):
 	#log(f"/rename {codename} {new_codename}")
 	codename = codename.strip()
 	new_codename = new_codename.strip()
 	userid = str(ctx.author.id)
 
-	name_limit = 50
-	if len(new_codename) > name_limit:
-		await ctx.respond(f"Codenames must be no longer than {name_limit} characters.",ephemeral=True)
-		return
-	
 	codename = codename.lower()
 	if userid not in character_data or codename not in character_data[userid]['chars']:
 		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create`.",ephemeral=True)
@@ -1160,16 +1138,11 @@ async def rename(ctx,
 @bot.command(description="Make a copy of an existing character")
 async def clone(ctx,
 	codename: discord.Option(str, "The codename of the character to duplicate.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete),required=True),
-	new_codename: discord.Option(str, "The new codename of the duplicated character.",required=True)):
+	new_codename: discord.Option(str, "The new codename of the duplicated character.",required=True,max_length=50)):
 	#log(f"/clone {codename} {new_codename}")
 	codename = codename.strip()
 	new_codename = new_codename.strip()
 	userid = str(ctx.author.id)
-	
-	name_limit = 50
-	if len(new_codename) > name_limit:
-		await ctx.respond(f"Codenames must be no longer than {name_limit} characters.",ephemeral=True)
-		return
 	
 	codename = codename.lower()
 	if userid not in character_data or codename not in character_data[userid]['chars']:
@@ -1487,7 +1460,7 @@ async def role_autocomp(ctx):
 
 @bot.command(description="Set your active character's role")
 async def set_role(ctx,
-	name: discord.Option(str,"The name of your role.",autocomplete=discord.utils.basic_autocomplete(role_autocomp),required=True),
+	name: discord.Option(str,"The name of your role.",autocomplete=discord.utils.basic_autocomplete(role_autocomp),required=True,max_length=50),
 	description: discord.Option(str,"The role's description.",required=True)):
 	#log(f"/set_role '{name}' '{description}'")
 	name = name.strip()
@@ -1529,11 +1502,11 @@ async def no_effect_autocomp(ctx):
 
 @bot.command(description="Create a custom trait")
 async def create_custom_trait(ctx,	
-		title: discord.Option(str, "The name of the trait", required=True), 
+		title: discord.Option(str, "The name of the trait", required=True,max_length=50), 
 		description: discord.Option(str, "The trait's description", required=True),
 		stat_type: discord.Option(str, "The stat this trait changes", autocomplete=discord.utils.basic_autocomplete(stat_type_autocomp), required=True),
 		stat_amount: discord.Option(str, "The amount that the stat is changed (accepts dice syntax)", autocomplete=discord.utils.basic_autocomplete(stat_amount_autocomp), required=True),
-		item_name: discord.Option(str, "The name of the item that this trait grants you", required=True),
+		item_name: discord.Option(str, "The name of the item that this trait grants you", required=True,max_length=100),
 		item_effect: discord.Option(str, "The effect of the item that this trait grants you",autocomplete=discord.utils.basic_autocomplete(no_effect_autocomp), required=True)):
 	userid = str(ctx.author.id)
 	title = title.strip()
@@ -1676,7 +1649,7 @@ async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait
 
 @bot.command(description="Add an item your active character")
 async def add_item(ctx,
-	name: discord.Option(str, "The name of the item", required=True), 
+	name: discord.Option(str, "The name of the item", required=True,max_length=100), 
 	effect: discord.Option(str, "The effect of the item",autocomplete=discord.utils.basic_autocomplete(no_effect_autocomp), required=True)):
 	
 	#log(f"/add_item {name} {effect}")
@@ -1690,10 +1663,6 @@ async def add_item(ctx,
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
-		return
-	
-	if len(name) > 100:
-		await ctx.respond(f"Item names must be no longer than 100 characters.",ephemeral=True)
 		return
 	
 	if len(character['items']) >= item_limit:
@@ -1790,7 +1759,7 @@ async def orig_item_effect_autocomp(ctx):
 @bot.command(description="Edit an item in your inventory")
 async def edit_item(ctx,
 		original_item: discord.Option(str, "The name of the original item",autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True),
-		name: discord.Option(str, "The new name of the item",autocomplete=discord.utils.basic_autocomplete(orig_item_name_autocomp), required=True), 
+		name: discord.Option(str, "The new name of the item",autocomplete=discord.utils.basic_autocomplete(orig_item_name_autocomp), required=True, max_length=100), 
 		effect: discord.Option(str, "The new effect of the item",autocomplete=discord.utils.basic_autocomplete(orig_item_effect_autocomp), required=True)):
 	#log(f"/edit_item {original_item} {name} {effect}")
 	name = name.strip()
@@ -1869,11 +1838,10 @@ async def example_counter_names(ctx):
 @bot.command(description="Add a counter to an item on your character")
 async def add_item_counter(ctx,
 	item_name: discord.Option(str, "The item to attach a counter to",autocomplete=discord.utils.basic_autocomplete(item_counters_autocomp), required=True),
-	counter_name: discord.Option(str, "The name of the counter",autocomplete=discord.utils.basic_autocomplete(example_counter_names), required=True),
+	counter_name: discord.Option(str, "The name of the counter",autocomplete=discord.utils.basic_autocomplete(example_counter_names), required=True, max_length=20),
 	starting_value: discord.Option(int, "The value the counter should start at", required=True)
 	):
 	
-	#log(f"/add_item_counter {item} {starting_value} {counter_name}")
 	item_name = item_name.strip()
 	counter_name = counter_name.strip()
 	character = get_active_char_object(ctx)
@@ -1884,11 +1852,6 @@ async def add_item_counter(ctx,
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
-		return
-	
-	limit = 20
-	if len(counter_name) > limit:
-		await ctx.respond(f"Counter names should be {limit} characters or shorter.",ephemeral=True)
 		return
 	
 	item = None
@@ -2609,7 +2572,6 @@ async def damage(ctx,
 	amount: discord.Option(str, "Amount of damage to take. Supports dice syntax.", required=True),
 	armor_piercing: discord.Option(bool, "Skip armor when applying this damage.", required=False, default=False),
 	bonus_armor: discord.Option(discord.SlashCommandOptionType.integer, "Extra armor that applies to this instance of damage.", required=False, default=0)):
-	#log(f"/damage {amount}{' armor_piercing' if armor_piercing else ''}")
 	
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -2854,7 +2816,7 @@ async def held_numbers_autocomplete(ctx):
 	
 @bot.command(description="Set your equipped weapon")
 async def equip_weapon(ctx, 
-	name: discord.Option(str, "The weapon's name.", autocomplete=discord.utils.basic_autocomplete(held_items_autocomplete), required=True),
+	name: discord.Option(str, "The weapon's name.", autocomplete=discord.utils.basic_autocomplete(held_items_autocomplete), required=True,max_length=100),
 	damage: discord.Option(str, "Amount of damage to deal; supports dice syntax.", autocomplete=discord.utils.basic_autocomplete(held_dice_autocomplete), required=True)):
 	
 	character = get_active_char_object(ctx)
@@ -2890,7 +2852,7 @@ async def equip_weapon(ctx,
 
 @bot.command(description="Set your equipped armor")
 async def equip_armor(ctx, 
-	name: discord.Option(str, "The armor's name.", autocomplete=discord.utils.basic_autocomplete(held_items_autocomplete), required=True),
+	name: discord.Option(str, "The armor's name.", autocomplete=discord.utils.basic_autocomplete(held_items_autocomplete), required=True,max_length=100),
 	damage: discord.Option(int, "Amount of damage it reduces.", autocomplete=discord.utils.basic_autocomplete(held_numbers_autocomplete), required=True)):
 	#log(f"/equip_armor {name} {damage}")
 	name = name.strip()
@@ -2965,7 +2927,6 @@ sunder_tracker = {}
 
 @bot.command(description="Rolls damage for SUNDER, and then applies the damage to your active character")
 async def sunder(ctx):
-	#log("/sunder")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -3046,19 +3007,10 @@ merc_codenames = json.load(file)
 file.close()
 
 @player_group.command(description="Produces a random character sheet")
-async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionType.integer, "The number of traits this character should have. Defaults to 2.", required=False, default=2)):
+async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionType.integer, "The number of traits this character should have. Defaults to 2.", required=False, default=2, min_value=1, max_value=40)):
 	#log(f"/player character {traitcount}")
 	
 	message = f"# {rnd.choice(merc_codenames)}"
-	if traitcount < 1:
-		await ctx.respond("Generated characters must have at least 1 trait.",ephemeral=True)
-		return
-	if traitcount > 40:
-		await ctx.respond("Cannot generate a character with that many traits.",ephemeral=True)
-		return
-	await ctx.defer()
-	message += "\nROLE: "
-	
 	traits = rnd.sample(trait_data, traitcount)
 	role = rnd.choice(role_data)
 	
@@ -3272,12 +3224,10 @@ def roll_multiple_dice(syntax, amount):
 
 @player_group.command(description="Rolls dice using common dice syntax")
 async def dice(ctx, syntax: discord.Option(str,"The dice syntax"),
-	instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1),
+	instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1, min_value=1),
 	hidden: discord.Option(bool, "If TRUE, the output of this command is hidden to others", required=False, default=False)):
 	#log(f"/player dice {syntax} {instances} {hidden}")
 	syntax = syntax.strip()
-	if instances < 1:
-		instances = 1
 	
 	timeout = 2
 	output = ()
@@ -3362,15 +3312,10 @@ intelligence["misc"] = json.load(file)
 file.close()
 
 @matrix_group.command(description="Incants a Magical Word")
-async def syllables(ctx, amount: discord.Option(int, "The amount of syllables the word will have.", required=False, default=None)):
+async def syllables(ctx, amount: discord.Option(int, "The amount of syllables the word will have.", required=False, default=None, min_value=1, max_value=100)):
 	#log("/matrix syllables")
 	result = ""
 	count = d6() if amount is None else amount
-	if count > 100:
-		await ctx.respond("Please use 100 syllables or less.",ephemeral=True)
-		return
-	elif count <= 0:
-		count = 1
 	for i in range(count):
 		result += roll_intelligence_matrix(intelligence["misc"][0])
 	if len(result) > 2000:
@@ -3545,14 +3490,8 @@ async def crate(ctx):
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random Common Item")
-async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of items to produce (allows duplicates)", required=False, default=1)):
+async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of items to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)):
 	#log(f"/matrix gear item {count}")
-	max = 50
-	if count < 1:
-		count = 1
-	elif count > max:
-		await ctx.respond(f"You may only generate a maximum of {max} items.",ephemeral=True)
-		return
 	results = {}
 	for i in range(count):
 		item = roll_intelligence_matrix(intelligence["gear_items"][0])
@@ -3570,14 +3509,8 @@ async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random piece of Armor")
-async def armor(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of armor pieces to produce (allows duplicates)", required=False, default=1)):
+async def armor(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of armor pieces to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)):
 	#log("/matrix gear armor")
-	max = 50
-	if count < 1:
-		count = 1
-	elif count > max:
-		await ctx.respond(f"You may only generate a maximum of {max} armor pieces.",ephemeral=True)
-		return
 	results = {}
 	for i in range(count):
 		item = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][0])
@@ -3595,14 +3528,8 @@ async def armor(ctx, count: discord.Option(discord.SlashCommandOptionType.intege
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random Weapon")
-async def weapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of weapons to produce (allows duplicates)", required=False, default=1)):
+async def weapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of weapons to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)):
 	#log(f"/matrix gear weapon {count}")
-	max = 50
-	if count < 1:
-		count = 1
-	elif count > max:
-		await ctx.respond(f"You may only generate a maximum of {max} weapons.",ephemeral=True)
-		return
 	results = {}
 	for i in range(count):
 		item = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][1])
@@ -3658,14 +3585,8 @@ async def tag(ctx, lookup: discord.Option(str,"Including this argument searches 
 	await ctx.respond(message,ephemeral=hidden)
 
 @gear_group.command(description="Grants a random Vehicle")
-async def vehicle(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of vehicles to produce (allows duplicates)", required=False, default=1)):
+async def vehicle(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of vehicles to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)):
 	#log(f"/matrix gear vehicle {count}")
-	max = 50
-	if count < 1:
-		count = 1
-	elif count > max:
-		await ctx.respond(f"You may only generate a maximum of {max} vehicles.",ephemeral=True)
-		return
 	results = {}
 	for i in range(count):
 		item = roll_intelligence_matrix(intelligence["gear_vehicles"][0])
@@ -3683,14 +3604,8 @@ async def vehicle(ctx, count: discord.Option(discord.SlashCommandOptionType.inte
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random Vehicle Weapon")
-async def vehicleweapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of vehicle weapons to produce (allows duplicates)", required=False, default=1)):
+async def vehicleweapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of vehicle weapons to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)):
 	#log(f"/matrix gear vehicleweapon {count}")
-	max = 50
-	if count < 1:
-		count = 1
-	elif count > max:
-		await ctx.respond(f"You may only generate a maximum of {max} vehicle weapons.",ephemeral=True)
-		return
 	results = {}
 	for i in range(count):
 		item = roll_intelligence_matrix(intelligence["gear_vehicles"][1])
@@ -3708,14 +3623,8 @@ async def vehicleweapon(ctx, count: discord.Option(discord.SlashCommandOptionTyp
 	await ctx.respond(message)
 
 @gear_group.command(description="Applies a random Weapon Skin")
-async def skin(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of weapon skins to produce (allows duplicates)", required=False, default=1)):
+async def skin(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of weapon skins to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)):
 	#log(f"/matrix gear skin {count}")
-	max = 50
-	if count < 1:
-		count = 1
-	elif count > max:
-		await ctx.respond(f"You may only generate a maximum of {max} weapon skins.",ephemeral=True)
-		return
 	results = {}
 	for i in range(count):
 		item = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
@@ -3763,16 +3672,12 @@ file.close()
 
 @cyclops_group.command(description="Grants a random CYCLOPS Gadget")
 async def gadget(ctx, 
-	count: discord.Option(discord.SlashCommandOptionType.integer, "The number of CYCLOPS Gadgets to produce", required=False, default=1),
+	count: discord.Option(discord.SlashCommandOptionType.integer, "The number of CYCLOPS Gadgets to produce", required=False, default=1, min_value=1, max_value=250),
 	duplicates: discord.Option(bool, "Mark FALSE to prevent duplicate items being rolled if count > 1", required=False, default=True)
 	):
 	#log(f"/matrix cyclops gadget {count}{' no_duplicates' if not duplicates else ''}")
 	message = ""
-	limit = 250
-	if count > limit:
-		await ctx.respond(f"Please do not produce more than {limit} gadgets.",ephemeral=True)
-		return
-	elif count <= 1:
+	if count <= 1:
 		result = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
 		message = f"**{result['Name']}**: {result['Effect']}"
 	else:
@@ -4535,11 +4440,8 @@ async def animal(ctx):
 	await ctx.respond(result)
 
 @hzfc_group.command(description="Spawn a chamber's encounter")
-async def encounter(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
+async def encounter(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True, min_value=0)):
 	#log(f"/hazfunction encounter {rooms_cleared}")
-	if rooms_cleared < 0:
-		await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
-		return
 	options = intelligence["hazfunction"][2]["Values"]
 	roll = d6() + rooms_cleared
 	if roll > 16:
@@ -4548,11 +4450,8 @@ async def encounter(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptio
 	await ctx.respond(result)
 
 @hzfc_group.command(description="Spawn a chamber's item")
-async def item(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
+async def item(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True, min_value=0)):
 	#log(f"/hazfunction item {rooms_cleared}")
-	if rooms_cleared < 0:
-		await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
-		return
 	options = intelligence["hazfunction"][3]["Values"]
 	roll = d6() + rooms_cleared
 	if roll > 16:
@@ -4561,11 +4460,8 @@ async def item(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType
 	await ctx.respond(result)
 
 @hzfc_group.command(description="Enter a new chamber, and outfit it with an encounter, hazard, and item")
-async def full_room(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True)):
+async def full_room(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True, min_value=0)):
 	#log(f"/hazfunction full_room {rooms_cleared}")
-	if rooms_cleared < 0:
-		await ctx.respond("Rooms cleared must be non-negative.",ephemeral=True)
-		return
 	room = roll_intelligence_matrix(intelligence["hazfunction"][0])
 	haz = roll_intelligence_matrix(intelligence["hazfunction"][1])
 	encounter_options = intelligence["hazfunction"][2]["Values"]
@@ -4662,13 +4558,9 @@ def strain():
 	return f"{symptom} {area}"
 
 @ctsh_group.command(description="Provide a new Bacteria Canister from Colony's shop")
-async def canister(ctx, amount: discord.Option(discord.SlashCommandOptionType.integer, "The number of canisters to provide", required=False, default=1)):
+async def canister(ctx, amount: discord.Option(discord.SlashCommandOptionType.integer, "The number of canisters to provide", required=False, default=1, min_value=1, max_value=15)):
 	#log(f"/colony canister {amount}")
-	if amount < 1:
-		await ctx.respond("Canisters provided must be 1 or more.",ephemeral=True)
-	elif amount > 15:
-		await ctx.respond("Canisters provided must be 15 or less.",ephemeral=True)
-	elif amount == 1:
+	if amount == 1:
 		await ctx.respond(f"Colony offers you a Bacteria Canister that's labelled... **{strain()}**. Whatever that means.")
 	else:
 		msg = "Colony offers you several Bacteria Canisters:"
