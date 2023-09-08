@@ -749,7 +749,7 @@ async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
 						message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
 					else:
 						message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
-					message += f"\n> *- A reroll was performed via HYPNOSIS: {old_lowest} -> {new_lowest}*"
+					message += f"\n> - *A reroll was performed via HYPNOSIS: {old_lowest} -> {new_lowest}*"
 					await interaction.response.edit_message(content=message,view=self)
 				else:
 					log("Denying invalid Hypnosis reroll response")
@@ -3262,7 +3262,7 @@ async def roll(ctx,
 						message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
 					else:
 						message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
-					message += f"\n> *- A reroll was performed via HYPNOSIS: {old_lowest} -> {new_lowest}*"
+					message += f"\n- *A reroll was performed via HYPNOSIS: {old_lowest} -> {new_lowest}*"
 					await interaction.response.edit_message(content=message,view=self)
 				else:
 					log("Denying invalid Hypnosis reroll response")
