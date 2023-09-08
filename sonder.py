@@ -2736,32 +2736,25 @@ async def attack(ctx,
 	multiplier: discord.Option(int, "Amount to multiply the final damage by.", required=False, default=1)
 	):
 	#log(f"/attack {bonus_damage} {multiplier}")
-	try:
-		character = get_active_char_object(ctx)
-		if character == None:
-			await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
-			return
-		codename = get_active_codename(ctx)
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+
+	base_damage = character['damage']
+	base_damage = rolldice.roll_dice(base_damage)
 	
-		if character['premium'] and not await ext_character_management(ctx.author.id):
-			await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
-			return
-		
-		base_damage = character['damage']
-		base_damage = rolldice.roll_dice(base_damage)
-		
-		bonus_damage_result = rolldice.roll_dice(bonus_damage)
-		
-		final_damage = (base_damage[0] + bonus_damage_result[0]) * multiplier
-		
-		message = f"**{codename.upper()}** has dealt **{final_damage} damage** using **{character['weapon_name']}**!\n\nBase damage: `{character['damage']}` -> `{base_damage[1]}`"
-		if bonus_damage != "0":
-			message += f"\nBonus damage: `{bonus_damage}` -> `{bonus_damage_result[1]}`"
-		if multiplier != 1:
-			message += f"\nFinal damage multiplier: `{multiplier}`"
-		await ctx.respond(message)
-	except Exception as e:
-		await ctx.respond(f"There was an error performing this command.\n```{e}```",ephemeral=True)
+	bonus_damage_result = rolldice.roll_dice(bonus_damage)
+	
+	final_damage = (base_damage[0] + bonus_damage_result[0]) * multiplier
+	
+	message = f"**{codename.upper()}** has dealt **{final_damage} damage** using **{character['weapon_name']}**!\n\nBase damage: `{character['damage']}` -> `{base_damage[1]}`"
+	if bonus_damage != "0":
+		message += f"\nBonus damage: `{bonus_damage}` -> `{bonus_damage_result[1]}`"
+	if multiplier != 1:
+		message += f"\nFinal damage multiplier: `{multiplier}`"
+	await ctx.respond(message)
 
 async def held_items_autocomplete(ctx):
 	uid = str(ctx.interaction.user.id)
