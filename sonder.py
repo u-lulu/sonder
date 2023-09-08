@@ -807,7 +807,7 @@ async def add_trait(ctx,
 	
 	bonus = my_new_trait["Stat"].split(" ")
 	num = 0
-	if bonus[1] in stats:
+	if bonus[1] in stats and my_new_trait['Number'] != 356: #356 is ignored so LYCANTHROPE doesn't add unnecessary MAX HP
 		translated_stat_bonus = stats_translator[bonus[1]]
 		try: 
 			num = rolldice.roll_dice(bonus[0])[0]
