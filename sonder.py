@@ -754,7 +754,7 @@ async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
 				else:
 					log("Denying invalid Hypnosis reroll response")
 					await interaction.response.send_message("This is not your HYPNOSIS prompt.",ephemeral=True)
-		buttons = HypnosisReroll(original_results)
+		buttons = HypnosisReroll(original_results,timeout=5*60,disable_on_timeout=True)
 	
 	await ctx.respond(message,view=buttons)
 
@@ -1274,7 +1274,7 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 					log("Denying invalid deletion response")
 					await interaction.response.send_message("This is not your character deletion prompt.",ephemeral=True)
 		
-		await ctx.respond(f"⚠️ **This action will permanently delete your character {codename.upper()}, and all data associated with them.\nIt cannot be undone.\nContinue?**",view=DeleteConfirm())
+		await ctx.respond(f"⚠️ **This action will permanently delete your character {codename.upper()}, and all data associated with them.\nIt cannot be undone.\nContinue?**",view=DeleteConfirm(timeout=30,disable_on_timeout=True))
 
 @bot.command(description="List all characters you've created")
 async def my_characters(ctx):
@@ -2371,7 +2371,7 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 							else:
 								log("Denying invalid safe response")
 								await interaction.response.send_message("This is not your War Die roll.",ephemeral=True)
-					await ctx.respond(f"**{codename.upper()}** spends a **Fated** War Die. **They must choose:**\n- **{num_to_die[6]} (6💥)**\n- **{num_to_die[nonsix]} ({nonsix})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.",view=DiePicker())
+					await ctx.respond(f"**{codename.upper()}** spends a **Fated** War Die. **They must choose:**\n- **{num_to_die[6]} (6💥)**\n- **{num_to_die[nonsix]} ({nonsix})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.",view=DiePicker(timeout=5*60,disable_on_timeout=True))
 				else:
 					results = [first[0],second[0]]
 					winner = max(results)
@@ -3017,7 +3017,7 @@ async def sunder(ctx):
 				log("Denying invalid Sunder response")
 				await interaction.response.send_message("This is not your SUNDER prompt.",ephemeral=True)
 	
-	await ctx.respond(f"{codename.upper()} activates SUNDER...\n> - The target will take {sunder_tracker[ctx.interaction.id]} damage.\n> - {codename.upper()} will take {math.floor(sunder_tracker[ctx.interaction.id]/2)} damage.", view=SunderStacking())
+	await ctx.respond(f"{codename.upper()} activates SUNDER...\n> - The target will take {sunder_tracker[ctx.interaction.id]} damage.\n> - {codename.upper()} will take {math.floor(sunder_tracker[ctx.interaction.id]/2)} damage.", view=SunderStacking(timeout=5*60,disable_on_timeout=True))
 
 bot.add_application_command(trait_group)
 
@@ -3267,7 +3267,7 @@ async def roll(ctx,
 				else:
 					log("Denying invalid Hypnosis reroll response")
 					await interaction.response.send_message("This is not your HYPNOSIS prompt.",ephemeral=True)
-		buttons = HypnosisReroll(original_results)
+		buttons = HypnosisReroll(original_results,timeout=5*60,disable_on_timeout=True)
 	
 	await ctx.respond(message,view=buttons)
 
