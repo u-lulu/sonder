@@ -741,7 +741,7 @@ async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
 					else:
 						message += f"({dice_string}) {'+' if character[stat.lower()] >= 0 else '-'} {abs(character[stat.lower()])} ({stat.upper()}) = **{total}**: "
 					
-					if results == [6,6]:
+					if self.orig_results == [6,6]:
 						message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
 					elif total <= 6:
 						message += "Your roll is a **failure.** You don’t do what you wanted to do, and things go wrong somehow."
