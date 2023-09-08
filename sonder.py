@@ -176,6 +176,12 @@ def roll_extra_possibility(input_string):
 	else:
 		return input_string
 
+def character_has_trait(character, number):
+	for trait in character['traits']:
+		if trait['Number'] == number:
+			return True
+	return False
+
 subscription_cache = {}
 sub_cache_timeout = 60 * 60 # 1 hour
 
@@ -2913,12 +2919,7 @@ async def sunder(ctx):
 		return
 	codename = get_active_codename(ctx)
 	
-	sunder_present = False
-	for trait in character['traits']:
-		if trait['Number'] == 611:
-			sunder_present = True
-			break
-	if not sunder_present:
+	if not character_has_trait(character, 611):
 		await ctx.respond(f"{codename.upper()} does not have the SUNDER trait.",ephemeral=True)
 		return
 	
