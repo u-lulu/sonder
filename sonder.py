@@ -177,6 +177,9 @@ def roll_extra_possibility(input_string):
 		return input_string
 
 def character_has_trait(character, number):
+	if type(number) is not int:
+		raise ValueError(f"character_has_trait received argument of type {type(number)} for number, expected {int}")
+		return
 	for trait in character['traits']:
 		if trait['Number'] == number:
 			return True
@@ -382,8 +385,8 @@ async def on_application_command(ctx):
 
 @bot.event
 async def on_application_command_error(ctx, e):
-	log(f"Command threw an error: {e}")
 	await ctx.respond(f"This command could not be fulfilled due to the following error:\n`{e}`\nIf this continues, please submit a bug report on the [Support Server]( https://discord.gg/VeedQmQc7k ).")
+	raise e
 
 @bot.command(description="Checks how long the bot has been online")
 async def uptime(ctx):
@@ -668,6 +671,8 @@ async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
 	if superior_dice ^ inferior_dice:
 		results.append(d6())
 	
+	original_results = deepcopy(results)
+	
 	dice_string = ""
 	for d in results:
 		dice_string += " " + num_to_die[d]
@@ -696,7 +701,62 @@ async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
 		message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
 	else:
 		message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
-	await ctx.respond(message)
+
+	buttons = None
+	if character_has_trait(character, 331): #hypnosis check
+		class HypnosisReroll(discord.ui.View):
+			orig_results = []
+			def __init__(self,original_results):
+				super().__init__()
+				self.orig_results = original_results
+			@discord.ui.button(label="Reroll Lowest (Hypnosis)",emoji="🌀")
+			async def hypnosis_reroll_callback(self,button,interaction):
+				if interaction.user.id == ctx.author.id:
+					log("Hypnosis reroll callback")
+					self.disable_all_items()
+					character = get_active_char_object(ctx)
+					modifier = character[stat.lower()] + extra_mod
+					old_lowest = min(self.orig_results)
+					new_lowest = d6()
+					oldlowindex = self.orig_results.index(old_lowest)
+					self.orig_results[oldlowindex] = new_lowest
+					
+					dice_string = ""
+					for d in self.orig_results:
+						dice_string += " " + num_to_die[d]
+					dice_string = dice_string.strip()
+					
+					full_results = sorted(self.orig_results)
+					if superior_dice and not inferior_dice:
+						self.orig_results = full_results[-2:]
+					elif inferior_dice and not superior_dice:
+						self.orig_results = full_results[:2]
+					
+					total = sum(self.orig_results) + modifier
+					
+					message = f"**{codename.upper()}** rolling +{stat.upper()}:\n> "
+					
+					if extra_mod != 0:
+						message += f"({dice_string}) {'+' if character[stat.lower()] >= 0 else '-'} {abs(character[stat.lower()])} ({stat.upper()}) {'+' if extra_mod >= 0 else '-'} {abs(extra_mod)} ({'bonus' if extra_mod >= 0 else 'penalty'}) = **{total}**: "
+					else:
+						message += f"({dice_string}) {'+' if character[stat.lower()] >= 0 else '-'} {abs(character[stat.lower()])} ({stat.upper()}) = **{total}**: "
+					
+					if results == [6,6]:
+						message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
+					elif total <= 6:
+						message += "Your roll is a **failure.** You don’t do what you wanted to do, and things go wrong somehow."
+					elif total <= 9:
+						message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
+					else:
+						message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
+					message += f"\n> *- A reroll was performed via HYPNOSIS: {old_lowest} -> {new_lowest}*"
+					await interaction.response.edit_message(content=message,view=self)
+				else:
+					log("Denying invalid Hypnosis reroll response")
+					await interaction.response.send_message("This is not your HYPNOSIS prompt.",ephemeral=True)
+		buttons = HypnosisReroll(original_results)
+	
+	await ctx.respond(message,view=buttons)
 
 async def character_names_autocomplete(ctx: discord.AutocompleteContext):
 	uid = str(ctx.interaction.user.id)
@@ -1158,7 +1218,7 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 		return
 	else:
 		class DeleteConfirm(discord.ui.View):
-			@discord.ui.button(label=f"Cancel deletion", style=discord.ButtonStyle.green, emoji="🔙")
+			@discord.ui.button(label="Cancel deletion", style=discord.ButtonStyle.green, emoji="🔙")
 			async def stop_deletion_callback(self, button, interaction):
 				if interaction.user.id == ctx.author.id:
 					self.disable_all_items()
@@ -2926,7 +2986,7 @@ async def sunder(ctx):
 	sunder_tracker[ctx.interaction.id] = d6()
 	
 	class SunderStacking(discord.ui.View):
-		@discord.ui.button(label=f"+1D6",style=discord.ButtonStyle.blurple,emoji="🎲")
+		@discord.ui.button(label="+1D6",style=discord.ButtonStyle.blurple,emoji="🎲")
 		async def sunder_stack_callback(self, button, interaction):
 			if interaction.user.id == ctx.author.id:
 				log("Sunder +1D6 callback")
@@ -2935,7 +2995,7 @@ async def sunder(ctx):
 			else:
 				log("Denying invalid Sunder response")
 				await interaction.response.send_message("This is not your SUNDER prompt.",ephemeral=True)
-		@discord.ui.button(label=f"Finish & take self-damage",style=discord.ButtonStyle.red,emoji="💥")
+		@discord.ui.button(label="Finish & take self-damage",style=discord.ButtonStyle.red,emoji="💥")
 		async def sunder_finish_callback(self, button, interaction):
 			if interaction.user.id == ctx.author.id:
 				log("Sunder damage callback")
@@ -2946,7 +3006,7 @@ async def sunder(ctx):
 			else:
 				log("Denying invalid Sunder response")
 				await interaction.response.send_message("This is not your SUNDER prompt.",ephemeral=True)
-		@discord.ui.button(label=f"Cancel",emoji="🚫")
+		@discord.ui.button(label="Cancel",emoji="🚫")
 		async def sunder_cancel_callback(self, button, interaction):
 			if interaction.user.id == ctx.author.id:
 				log("Sunder cancel callback")
@@ -3124,17 +3184,19 @@ async def roll(ctx,
 	results = [d6(), d6()]
 	if superior_dice ^ inferior_dice:
 		results.append(d6())
+		
+	original_results = deepcopy(results)
 	
 	dice_string = ""
 	for d in results:
 		dice_string += " " + num_to_die[d]
 	dice_string = dice_string.strip()
 	
-	sorted_results = sorted(results)
+	full_results = sorted(results)
 	if superior_dice and not inferior_dice:
-		results = sorted_results[-2:]
+		results = full_results[-2:]
 	elif inferior_dice and not superior_dice:
-		results = sorted_results[:2]
+		results = full_results[:2]
 	
 	total = sum(results) + modifier
 	
@@ -3153,7 +3215,61 @@ async def roll(ctx,
 		message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
 	else:
 		message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
-	await ctx.respond(message)
+	
+	buttons = None
+	character = get_active_char_object(ctx)
+	if character is not None and character_has_trait(character, 331): #hypnosis check
+		class HypnosisReroll(discord.ui.View):
+			orig_results = []
+			def __init__(self,original_results):
+				super().__init__()
+				self.orig_results = original_results
+			@discord.ui.button(label="Reroll Lowest (Hypnosis)",emoji="🌀")
+			async def hypnosis_reroll_callback(self,button,interaction):
+				if interaction.user.id == ctx.author.id:
+					log("Hypnosis reroll callback")
+					self.disable_all_items()
+					old_lowest = min(self.orig_results)
+					new_lowest = d6()
+					oldlowindex = self.orig_results.index(old_lowest)
+					self.orig_results[oldlowindex] = new_lowest
+					
+					dice_string = ""
+					for d in self.orig_results:
+						dice_string += " " + num_to_die[d]
+					dice_string = dice_string.strip()
+					
+					full_results = sorted(self.orig_results)
+					if superior_dice and not inferior_dice:
+						self.orig_results = full_results[-2:]
+					elif inferior_dice and not superior_dice:
+						self.orig_results = full_results[:2]
+					
+					total = sum(self.orig_results) + modifier
+					
+					message = ""
+					
+					if modifier != 0:
+						message = f"({dice_string}) + {modifier} = **{total}**: "
+					else:
+						message = f"{dice_string} = **{total}**: "
+					
+					if self.orig_results == [6,6]:
+						message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
+					elif total <= 6:
+						message += "Your roll is a **failure.** You don’t do what you wanted to do, and things go wrong somehow."
+					elif total <= 9:
+						message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
+					else:
+						message += "Your roll is a **success.** You do exactly what you wanted to do, without any additional headaches."
+					message += f"\n> *- A reroll was performed via HYPNOSIS: {old_lowest} -> {new_lowest}*"
+					await interaction.response.edit_message(content=message,view=self)
+				else:
+					log("Denying invalid Hypnosis reroll response")
+					await interaction.response.send_message("This is not your HYPNOSIS prompt.",ephemeral=True)
+		buttons = HypnosisReroll(original_results)
+	
+	await ctx.respond(message,view=buttons)
 
 def roll_multiple_dice(syntax, amount):
 	out = []
