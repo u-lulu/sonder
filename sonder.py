@@ -203,22 +203,23 @@ def commands_view_constructor(ctx, cmds):
 	V = discord.ui.View(disable_on_timeout=True)
 	used_ids = []
 	for command in cmds:
-		id = command
-		while id in used_ids:
-			id += "+"
-		used_ids.append(id)
-		button = discord.ui.Button(label=f"/{command}",custom_id=id)
-		async def slash_command_activate_callback(interaction):
-			command_to_activate = interaction.custom_id.replace("+","")
-			log(f"Callback: /{command_to_activate}")
-			this_button = V.get_item(interaction.custom_id)
-			this_button.disabled = True
-			slash_command = bot.get_application_command(command_to_activate)
-			the_callback = slash_command.callback
-			await the_callback(ctx)
-			await interaction.response.edit_message(view=V)
-		button.callback = slash_command_activate_callback
-		V.add_item(button)
+		if type(bot.get_application_command(command)) is discord.SlashCommand:
+			id = str(ctx.interaction.id) + command
+			while id in used_ids:
+				id += "+"
+			used_ids.append(id)
+			button = discord.ui.Button(label=f"/{command}",custom_id=id)
+			async def slash_command_activate_callback(interaction):
+				command_to_activate = interaction.custom_id.replace("+","").replace(str(ctx.interaction.id),"")
+				log(f"Callback: /{command_to_activate}")
+				this_button = V.get_item(interaction.custom_id)
+				this_button.disabled = True
+				slash_command = bot.get_application_command(command_to_activate)
+				the_callback = slash_command.callback
+				await the_callback(ctx)
+				await interaction.response.edit_message(view=V)
+			button.callback = slash_command_activate_callback
+			V.add_item(button)
 	return V
 
 subscription_cache = {}
