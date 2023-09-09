@@ -203,7 +203,7 @@ async def ext_character_management(id):
 	user = None
 	try:
 		user = await support_server_obj.fetch_member(id)
-	except Exception as e:
+	except discord.HTTPException as e:
 		log(f"User is not present on server (threw error), membership check fails")
 		if id in subscription_cache:
 			del subscription_cache[id]
@@ -437,7 +437,7 @@ async def membership(ctx):
 		return
 	try:
 		user = await support_server_obj.fetch_member(id)
-	except Exception as e:
+	except discord.HTTPException as e:
 		log("Result is NO; not present on support server (threw exception)")
 		await ctx.respond(f"You do not have an active subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).\nYou are able to manage {standard_character_limit} characters and {standard_custrait_limit} custom traits.\nIf you have paid for a subscription but are seeing this message, you must join the [Support Server]( https://discord.gg/VeedQmQc7k ) and link your Ko-fi account to Discord before you can receive benefits.",ephemeral=True)
 		if id in subscription_cache:
