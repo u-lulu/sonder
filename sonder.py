@@ -3010,7 +3010,7 @@ file.close()
 async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionType.integer, "The number of traits this character should have. Defaults to 2.", required=False, default=2, min_value=1, max_value=40)):
 	#log(f"/player character {traitcount}")
 	
-	message = f"# {rnd.choice(merc_codenames)}"
+	message = f"# {rnd.choice(merc_codenames)}\n"
 	traits = rnd.sample(trait_data, traitcount)
 	role = rnd.choice(role_data)
 	
