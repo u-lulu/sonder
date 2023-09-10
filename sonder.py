@@ -3687,13 +3687,18 @@ async def skin(ctx, count: discord.Option(discord.SlashCommandOptionType.integer
 
 @gear_group.command(description="Generates a fully unique Weapon")
 async def weaponsmith(ctx):
-	#log("/matrix gear weaponsmith")
 	model = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][1])
-	tag = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][2])
-	tag = f"**{tag['Name']}**: {tag['Effect']}"
+	
+	tags = []
+	amount = d6() if d6() <= 1 else 1
+	tags = rnd.sample(list(intelligence["gear_weapons_and_armor"][2]["Values"].values()),amount)
+	
 	skin = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
-	message = f"**{model}** (adorned with **{skin}**)\n- {tag}"
-	await ctx.respond(message)
+	message = f"**{model}** (adorned with **{skin}**)"
+	for tag in tags:
+		message += f"\n- **{tag['Name']}**: {tag['Effect']}"
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 @gear_group.command(description="Generates a fully unique Vehicle")
 async def hangar(ctx):
