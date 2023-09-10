@@ -185,6 +185,45 @@ def character_has_trait(character, number):
 			return True
 	return False
 
+def get_commands_from_string(working_string):
+	commands = []
+	while len(working_string) > 0 and '`' in working_string:
+		start_of_command = working_string.index('`/') + 2
+		working_string = working_string[start_of_command:]
+		end_of_command = working_string.index('`')
+		command_name = working_string[:end_of_command]
+		commands.append(command_name)
+		working_string = working_string[end_of_command+1:]
+	return commands
+
+def commands_view_constructor(ctx, cmds):
+	added = 0
+	V = discord.ui.View(disable_on_timeout=True)
+	used_ids = []
+	for command in cmds:
+		if type(bot.get_application_command(command)) is discord.SlashCommand:
+			id = str(ctx.interaction.id) + command
+			while id in used_ids:
+				id += "+"
+			used_ids.append(id)
+			button = discord.ui.Button(label=f"/{command}",custom_id=id)
+			async def slash_command_activate_callback(interaction):
+				command_to_activate = interaction.custom_id.replace("+","").replace(str(ctx.interaction.id),"")
+				log(f"Callback: /{command_to_activate}")
+				this_button = V.get_item(interaction.custom_id)
+				this_button.disabled = True
+				slash_command = bot.get_application_command(command_to_activate)
+				the_callback = slash_command.callback
+				await interaction.response.edit_message(view=V)
+				try:
+					await the_callback(ctx)
+				except Exception as e:
+					log(f"Caught callback exception: {e}")
+			button.callback = slash_command_activate_callback
+			V.add_item(button)
+			added += 1
+	return V if added > 0 else None
+
 subscription_cache = {}
 sub_cache_timeout = 60 * 60 # 1 hour
 
@@ -3295,7 +3334,8 @@ async def mission(ctx):
 	twist = decap_first(results[3])
 	reward = results[4]
 	message = f"The dossier says that **{instigator}** is trying to **{activity}**, which will **{effect}**. However, **{twist}**.\n- Reward: **{reward}**"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/mission_prompts.json')
 intelligence["prompt"] = json.load(file)
@@ -3304,15 +3344,16 @@ file.close()
 @matrix_group.command(description="Provides a random Mission Prompt")
 async def prompt(ctx):
 	#log("/matrix prompt")
-	result = roll_intelligence_matrix(intelligence["prompt"][0])
-	await ctx.respond(result)
+	message = roll_intelligence_matrix(intelligence["prompt"][0])
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/misc.json')
 intelligence["misc"] = json.load(file)
 file.close()
 
 @matrix_group.command(description="Incants a Magical Word")
-async def syllables(ctx, amount: discord.Option(int, "The amount of syllables the word will have.", required=False, default=None, min_value=1, max_value=100)):
+async def syllables(ctx, amount: discord.Option(int, "The amount of syllables the word will have.", required=False, default=None, min_value=1, max_value=100)=None):
 	#log("/matrix syllables")
 	result = ""
 	count = d6() if amount is None else amount
@@ -3380,7 +3421,7 @@ async def part_success_autocomplete(ctx: discord.AutocompleteContext):
 	return ["COMBAT","GENERAL","MENTAL","MOVEMENT","SOCIAL","WEIRD"]
 
 @matrix_group.command(description="Causes random consequences for a Partial Success")
-async def partial(ctx, type: discord.Option(str,"The type of consequence that should be inflicted",autocomplete=discord.utils.basic_autocomplete(part_success_autocomplete),required=False,default=None)):
+async def partial(ctx, type: discord.Option(str,"The type of consequence that should be inflicted",autocomplete=discord.utils.basic_autocomplete(part_success_autocomplete),required=False,default=None)=None):
 	#log(f"/matrix partial {type}")
 	if type is not None:
 		type = type.upper()
@@ -3465,10 +3506,10 @@ async def bupgrade_autocomp(ctx):
 	return bupgrade_names
 
 @gear_group.command(description="Applies a random Base Upgrade")
-async def baseupgrade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Base Upgrade instead",autocomplete=discord.utils.basic_autocomplete(bupgrade_autocomp),required=False,default="")):
+async def baseupgrade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Base Upgrade instead",autocomplete=discord.utils.basic_autocomplete(bupgrade_autocomp),required=False,default=None)=None):
 	#log("/matrix gear baseupgrade")
 	message = ""
-	if len(lookup) < 1:
+	if lookup is None:
 		result = rnd.choice(intelligence["gear_bupgrades"])
 		message = f"**{result['Name']}:** {result['Effect']}"
 	else:
@@ -3480,7 +3521,8 @@ async def baseupgrade(ctx, lookup: discord.Option(str,"Including this argument s
 					goodbup = bup
 					break
 			message = f"**{goodbup['Name']}:** {goodbup['Effect']}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 @gear_group.command(description="Divulges the contents of a random Crate")
 async def crate(ctx):
@@ -3490,7 +3532,7 @@ async def crate(ctx):
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random Common Item")
-async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of items to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)):
+async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of items to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)=1):
 	#log(f"/matrix gear item {count}")
 	results = {}
 	for i in range(count):
@@ -3506,10 +3548,11 @@ async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer
 		else:
 			joinlist.append(key)
 	message = "\n".join(joinlist)
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 @gear_group.command(description="Grants a random piece of Armor")
-async def armor(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of armor pieces to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)):
+async def armor(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of armor pieces to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)=1):
 	#log("/matrix gear armor")
 	results = {}
 	for i in range(count):
@@ -3528,7 +3571,7 @@ async def armor(ctx, count: discord.Option(discord.SlashCommandOptionType.intege
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random Weapon")
-async def weapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of weapons to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)):
+async def weapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of weapons to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)=1):
 	#log(f"/matrix gear weapon {count}")
 	results = {}
 	for i in range(count):
@@ -3554,12 +3597,12 @@ async def tag_lookup_autocomp(ctx):
 	return wep_tag_names
 
 @gear_group.command(description="Applies a random Weapon Tag")
-async def tag(ctx, lookup: discord.Option(str,"Including this argument searches for a specific tag instead",autocomplete=discord.utils.basic_autocomplete(tag_lookup_autocomp),required=False,default="")):
+async def tag(ctx, lookup: discord.Option(str,"Including this argument searches for a specific tag instead",autocomplete=discord.utils.basic_autocomplete(tag_lookup_autocomp),required=False,default=None)=None):
 	#log("/matrix gear tag")
 	tags = intelligence["gear_weapons_and_armor"][2]["Values"]
 	message = ""
 	hidden = False
-	if lookup == "":
+	if lookup is None:
 		result = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][2])
 		message = f"**{result['Name']}**: {result['Effect']}"
 	else:
@@ -3582,10 +3625,11 @@ async def tag(ctx, lookup: discord.Option(str,"Including this argument searches 
 			else:
 				message = "Could not find a tag with an approximately similar name."
 				hidden = True
-	await ctx.respond(message,ephemeral=hidden)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons,ephemeral=hidden)
 
 @gear_group.command(description="Grants a random Vehicle")
-async def vehicle(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of vehicles to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)):
+async def vehicle(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of vehicles to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)=1):
 	#log(f"/matrix gear vehicle {count}")
 	results = {}
 	for i in range(count):
@@ -3604,7 +3648,7 @@ async def vehicle(ctx, count: discord.Option(discord.SlashCommandOptionType.inte
 	await ctx.respond(message)
 
 @gear_group.command(description="Grants a random Vehicle Weapon")
-async def vehicleweapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of vehicle weapons to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)):
+async def vehicleweapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of vehicle weapons to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)=1):
 	#log(f"/matrix gear vehicleweapon {count}")
 	results = {}
 	for i in range(count):
@@ -3623,7 +3667,7 @@ async def vehicleweapon(ctx, count: discord.Option(discord.SlashCommandOptionTyp
 	await ctx.respond(message)
 
 @gear_group.command(description="Applies a random Weapon Skin")
-async def skin(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of weapon skins to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)):
+async def skin(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of weapon skins to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)=1):
 	#log(f"/matrix gear skin {count}")
 	results = {}
 	for i in range(count):
@@ -3643,13 +3687,18 @@ async def skin(ctx, count: discord.Option(discord.SlashCommandOptionType.integer
 
 @gear_group.command(description="Generates a fully unique Weapon")
 async def weaponsmith(ctx):
-	#log("/matrix gear weaponsmith")
 	model = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][1])
-	tag = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][2])
-	tag = f"**{tag['Name']}**: {tag['Effect']}"
+	
+	tags = []
+	amount = d6() if d6() <= 1 else 1
+	tags = rnd.sample(list(intelligence["gear_weapons_and_armor"][2]["Values"].values()),amount)
+	
 	skin = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
-	message = f"**{model}** (adorned with **{skin}**)\n- {tag}"
-	await ctx.respond(message)
+	message = f"**{model}** (adorned with **{skin}**)"
+	for tag in tags:
+		message += f"\n- **{tag['Name']}**: {tag['Effect']}"
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 @gear_group.command(description="Generates a fully unique Vehicle")
 async def hangar(ctx):
@@ -3672,8 +3721,8 @@ file.close()
 
 @cyclops_group.command(description="Grants a random CYCLOPS Gadget")
 async def gadget(ctx, 
-	count: discord.Option(discord.SlashCommandOptionType.integer, "The number of CYCLOPS Gadgets to produce", required=False, default=1, min_value=1, max_value=250),
-	duplicates: discord.Option(bool, "Mark FALSE to prevent duplicate items being rolled if count > 1", required=False, default=True)
+	count: discord.Option(discord.SlashCommandOptionType.integer, "The number of CYCLOPS Gadgets to produce", required=False, default=1, min_value=1, max_value=250)=1,
+	duplicates: discord.Option(bool, "Mark FALSE to prevent duplicate items being rolled if count > 1", required=False, default=True)=True
 	):
 	#log(f"/matrix cyclops gadget {count}{' no_duplicates' if not duplicates else ''}")
 	message = ""
@@ -3779,10 +3828,10 @@ async def npc_lookup_autocomp(ctx):
 	return premade_npc_names
 
 @chars_group.command(description="Spawns a random pre-made NPC")
-async def premade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific NPC instead",autocomplete=discord.utils.basic_autocomplete(npc_lookup_autocomp),required=False,default="")):
+async def premade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific NPC instead",autocomplete=discord.utils.basic_autocomplete(npc_lookup_autocomp),required=False,default=None)=None):
 	#log(f"/matrix character premade {lookup}")
 	message = ""
-	if len(lookup) < 1:
+	if lookup is None:
 		result = rnd.choice(intelligence["chars_premade"])
 		message = format_premade(result)
 	else:
@@ -3794,7 +3843,8 @@ async def premade(ctx, lookup: discord.Option(str,"Including this argument searc
 					goodchar = char
 					break
 			message = format_premade(goodchar)
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/characters/celebrities.json')
 intelligence["chars_celebs"] = json.load(file)
@@ -3815,7 +3865,8 @@ async def celebrity(ctx):
 	feature = result[2]
 	story = result[3]
 	message = f"Name: {name}\nProfession: {profession}\nFeature: {feature}\nStory: {story}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/characters/civilians.json')
 intelligence["chars_civvies"] = json.load(file)
@@ -3846,7 +3897,8 @@ async def politician(ctx):
 	feature = result[3]
 	secret = result[4]
 	message = f"Name: {name}\nPosition: {position}\nVice: {vice}\nFeature: {feature}\nSecret: {secret}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/characters/scientists.json')
 intelligence["chars_scientists"] = json.load(file)
@@ -3862,7 +3914,8 @@ async def scientist(ctx):
 	feature = result[3]
 	discovery = roll_extra_possibility(result[4])
 	message = f"Name: {name}\nAllegiance: {alleg}\nCareer: {career}\nFeature: {feature}\nDiscovery: {discovery}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/characters/soldiers.json')
 intelligence["chars_soldiers"] = json.load(file)
@@ -3877,7 +3930,8 @@ async def soldier(ctx):
 	feature = result[2]
 	anecdote = result[3]
 	message = f"Name: {name}\nRank: {rank}\nFeature: {feature}\nAnecdote: {anecdote}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 	
 file = open('matrices/characters/spies.json')
 intelligence["chars_spies"] = json.load(file)
@@ -3913,10 +3967,10 @@ async def enemy_lookup_autocomp(ctx):
 	return premade_enemy_names
 
 @enemy_group.command(description="Spawns a random pre-made Enemy")
-async def premade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Enemy instead",autocomplete=discord.utils.basic_autocomplete(enemy_lookup_autocomp),required=False,default="")):
+async def premade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Enemy instead",autocomplete=discord.utils.basic_autocomplete(enemy_lookup_autocomp),required=False,default=None)=None):
 	#log(f"/matrix enemy premade {lookup}")
 	message = ""
-	if len(lookup) < 1:
+	if lookup is None:
 		result = rnd.choice(intelligence["chars_enemy_premade"])
 		message = format_premade(result)
 	else:
@@ -3928,7 +3982,8 @@ async def premade(ctx, lookup: discord.Option(str,"Including this argument searc
 					goodchar = char
 					break
 			message = format_premade(goodchar)
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/characters/animals.json')
 intelligence["chars_animals"] = json.load(file)
@@ -3943,7 +3998,8 @@ async def animal(ctx):
 	feature = result[2]
 	mal = result[3]
 	message = f"Description: {desc}\nAmount: {amount}\nFeature: {feature}\nMalady: {mal}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/characters/anomalies.json')
 intelligence["chars_anomalies"] = json.load(file)
@@ -3985,7 +4041,8 @@ async def experiment(ctx):
 			mistake.append(roll_intelligence_matrix(intelligence["chars_experiments"][3]))
 		mistake = ", ".join(mistake)
 	message = f"Description: {desc}\nCreation: {creation}\nFeature: {feature}\nMistake: {mistake}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/characters/monsters.json')
 intelligence["chars_monsters"] = json.load(file)
@@ -4002,7 +4059,8 @@ async def monster(ctx):
 	if amount == "Dire (3-6 ARMOR, 6D6-10D6 HP, roll another horror)":
 		horror += " __*and*__ " + roll_intelligence_matrix(intelligence["chars_monsters"][3])
 	message = f"Description: {desc}\nAmount: {amount}\nFeature: {feature}\nHorror: {horror}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/characters/robots.json')
 intelligence["chars_robots"] = json.load(file)
@@ -4050,7 +4108,8 @@ async def squad(ctx):
 		feature = f"{feature} __*and*__ {roll_intelligence_matrix(intelligence['chars_squads'][3])}"
 	theme = result[4]
 	message = f"Name: {name}\nReputation: {rep}\nFeature: {feature}\nTheme: {theme}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 fact_group = matrix_group.create_subgroup("faction", "Faction Intelligence Matrices")
 
@@ -4068,7 +4127,8 @@ async def aliens(ctx):
 	feature = result[3]
 	truth = roll_extra_possibility(result[4])
 	message = f"Description: {desc}\nFeature: {feature}\nMission: {mission}\nOrigin: {origin}\nTruth: {truth}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/factions/agencies.json')
 intelligence["facs_agencies"] = json.load(file)
@@ -4103,7 +4163,8 @@ async def corporation(ctx):
 	feature = result[2]
 	scheme = result[3]
 	message = f"Name: {name}\nSector: {sector}\nFeature: {feature}\nScheme: {scheme}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/factions/criminals.json')
 intelligence["facs_criminals"] = json.load(file)
@@ -4118,7 +4179,8 @@ async def criminals(ctx):
 	feature = result[2]
 	racket = result[3]
 	message = f"Name: {name}\nFeature: {feature}\nRacket: {racket}\nHonor: {honor}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/factions/cults.json')
 intelligence["facs_cults"] = json.load(file)
@@ -4154,7 +4216,8 @@ async def insurgents(ctx):
 			desc2 = roll_intelligence_matrix(intelligence['facs_insurgents'][1])
 		desc = f"{desc} (being spun as {desc2})"
 	message = f"Description: {desc}\nFeature: {feature}\nFoothold: {foothold}\nStrategy: {strategy}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 loc_group = matrix_group.create_subgroup("location", "Location Intelligence Matrices")
 
@@ -4171,7 +4234,8 @@ async def battlefield(ctx):
 	feature = result[2]
 	grave = roll_extra_possibility(result[3])
 	message = f"Layout: {layout}\nDescription: {desc}\nFeature: {feature}\nGrave: {grave}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/locations/cities.json')
 intelligence["locs_cities"] = json.load(file)
@@ -4186,7 +4250,8 @@ async def city(ctx):
 	feature = result[2]
 	headline = result[3]
 	message = f"Name: {name}\nFeature: {feature}\nCyclops Surveillance Level: {cyclops}\nHeadline: *{headline}*"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/locations/nature.json')
 intelligence["locs_nature"] = json.load(file)
@@ -4207,7 +4272,8 @@ async def nature(ctx):
 		subclaims = rnd.sample(possible_claims, d6())
 		claim = '\n- ' + '\n- '.join(subclaims)
 	message = f"Description: {desc}\nFeature: {feature}\nSituation: {situation}\nClaim: {claim}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/locations/rooms.json')
 intelligence["locs_rooms"] = json.load(file)
@@ -4223,7 +4289,8 @@ async def room(ctx):
 	feature = result[3]
 	event = result[4]
 	message = f"Description: {desc}\nFeature: {feature}\nDoors: {doors}\nExits: {exits}\nEvent: {event}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/locations/structures.json')
 intelligence["locs_structures"] = json.load(file)
@@ -4231,7 +4298,6 @@ file.close()
 
 @loc_group.command(description="Locates a random Structure")
 async def structure(ctx):
-	#log("/matrix location structure")
 	result = roll_all_matrices(intelligence["locs_structures"])
 	owner = result[0]
 	security = result[1]
@@ -4239,8 +4305,8 @@ async def structure(ctx):
 	feature = result[3]
 	history = result[4]
 	message = f"Description: {desc}\nFeature: {feature}\nOwner: {owner}\nSecurity: {security}\nHistory: {history}"
-	await ctx.respond(message)
-
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/locations/zones.json')
 intelligence["locs_zones"] = json.load(file)
@@ -4256,7 +4322,8 @@ async def zone(ctx):
 	feature = result[3]
 	center = result[4]
 	message = f"Size: {size}\nDescription: {desc}\nFeature: {feature}\nIntegrity: {integrity}\nCenter: {center}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 lore_group = matrix_group.create_subgroup("lore", "Lore Intelligence Matrices")
 
@@ -4296,7 +4363,8 @@ async def artifact(ctx):
 			second_interest = roll_intelligence_matrix(intelligence["lore_artifacts"][0])
 		interest = f"{interest} *(but more recently, it's {second_interest})*"
 	message = f"Description: {desc}\nFeature: {feature}\nRumor: {rumor}\nInterest: {interest}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/lore/coverups.json')
 intelligence["lore_coverups"] = json.load(file)
@@ -4314,7 +4382,8 @@ async def coverup(ctx):
 	feature = result[3]
 	hook = result[4]
 	message = f"Suppression: {suppression}\nWitness: {witness}\nDescription: {desc}\nFeature: {feature}\nHook: {hook}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/lore/diplomacy.json')
 intelligence["lore_diplomacy"] = json.load(file)
@@ -4329,7 +4398,8 @@ async def diplomacy(ctx):
 	feature = result[2]
 	drama = result[3]
 	message = f"Description: {desc}\nFeature: {feature}\nCoverage: {coverage}\nDrama: {drama}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/lore/disasters.json')
 intelligence["lore_disasters"] = json.load(file)
@@ -4345,7 +4415,8 @@ async def disaster(ctx):
 	feature = result[3]
 	impact = result[4]
 	message = f"Description: {desc}\nFeature: {feature}\nScale: {scale}\nResponse: {response}\nImpact: {impact}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/lore/legends.json')
 intelligence["lore_legends"] = json.load(file)
@@ -4368,7 +4439,8 @@ async def legend(ctx):
 		possible_achieves = list(intelligence["lore_legends"][3]["Values"].values())
 		achieve += f" (or maybe {rnd.choice(possible_achieves)})"
 	message = f"Description: {desc}\nFeature: {feature}\nAchievement: {achieve}\nUltimate Fate: {fate}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 file = open('matrices/lore/spells.json')
 intelligence["lore_spells"] = json.load(file)
@@ -4389,7 +4461,8 @@ async def spell(ctx):
 	feature = result[3]
 	effect = result[4]
 	message = f"Name: {name}\nEffect: {effect}\nFeature: {feature}\nLevel: {level}\nObscurity: {obscurity}"
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 bot.add_application_command(matrix_group)
 
