@@ -3529,7 +3529,8 @@ async def crate(ctx):
 	#log("/matrix gear crate")
 	result = roll_intelligence_matrix(intelligence["gear_items"][1])
 	message = f"You crack open a crate, revealing **{result}** inside."
-	await ctx.respond(message)
+	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
+	await ctx.respond(message,view=buttons)
 
 @gear_group.command(description="Grants a random Common Item")
 async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of items to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)=1):
