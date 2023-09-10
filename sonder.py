@@ -13,7 +13,6 @@ from func_timeout import func_timeout, FunctionTimedOut # pip install func-timeo
 import qrcode # pip install qrcode
 from copy import deepcopy
 import asyncio
-from inspect import signature
 
 standard_character_limit = 10
 premium_character_limit = 50
@@ -198,8 +197,7 @@ def get_commands_from_string(working_string):
 	return commands
 
 def commands_view_constructor(ctx, cmds):
-	if len(cmds) <= 0:
-		return None
+	added = 0
 	V = discord.ui.View(disable_on_timeout=True)
 	used_ids = []
 	for command in cmds:
@@ -216,11 +214,15 @@ def commands_view_constructor(ctx, cmds):
 				this_button.disabled = True
 				slash_command = bot.get_application_command(command_to_activate)
 				the_callback = slash_command.callback
-				await the_callback(ctx)
 				await interaction.response.edit_message(view=V)
+				try:
+					await the_callback(ctx)
+				except Exception as e:
+					log(f"Caught callback exception: {e}")
 			button.callback = slash_command_activate_callback
 			V.add_item(button)
-	return V
+			added += 1
+	return V if added > 0 else None
 
 subscription_cache = {}
 sub_cache_timeout = 60 * 60 # 1 hour
