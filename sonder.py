@@ -1786,6 +1786,10 @@ async def orig_item_effect_autocomp(ctx):
 				current_char = character_data[uid]['chars'][current_active]
 				# get item here
 				item = ctx.options['original_item']
+				for inv_item in current_char['items']:
+					if inv_item.split(" (")[0] == item:
+						item = inv_item
+						break
 				item = item.split(" (")
 				return [item[1][:-1],"REMOVE_EFFECT"] if len(item) > 1 else ["REMOVE_EFFECT"]
 			else:
