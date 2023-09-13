@@ -669,11 +669,18 @@ def output_character_short(codename, data):
 	return out
 
 def get_active_codename(ctx):
-	uid = str(ctx.author.id)
+	uid = None
+	cid = None
+	try:
+		uid = str(ctx.author.id)
+		cid = str(ctx.channel_id)
+	except:
+		uid = str(ctx.interaction.user.id)
+		cid = str(ctx.interaction.channel.id)
 	if uid in character_data:
 		your_actives = character_data[uid]['active']
-		if str(ctx.channel_id) in your_actives:
-			return your_actives[str(ctx.channel_id)]
+		if cid in your_actives:
+			return your_actives[cid]
 	return None
 
 def get_active_char_object(ctx):
@@ -681,7 +688,12 @@ def get_active_char_object(ctx):
 	if codename == None:
 		return None
 	else:
-		return character_data[str(ctx.author.id)]['chars'][codename]
+		uid = None
+		try:
+			uid = str(ctx.author.id)
+		except:
+			uid = str(ctx.interaction.user.id)
+		return character_data[uid]['chars'][codename]
 
 async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
 	#log(f"/{stat.lower()} {extra_mod}{' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
@@ -1729,25 +1741,14 @@ async def add_item(ctx,
 		await save_character_data(str(ctx.author.id))
 
 async def item_name_autocomplete(ctx):
-	uid = str(ctx.interaction.user.id)
-	if uid in character_data:
-		# gotta get active character manually cus this is a different kind of ctx. ugh
-		your_actives = character_data[uid]['active']
-		if str(ctx.interaction.channel_id) in your_actives:
-			current_active = your_actives[str(ctx.interaction.channel_id)]
-			if current_active in character_data[uid]['chars']:
-				current_char = character_data[uid]['chars'][current_active]
-				output = []
-				for item in current_char['items']:
-					item_name = item.split(" (")[0]
-					output.append(item_name)
-				return output
-			else:
-				return []
-		else:
-			return []
-	else:
+	current_char = get_active_char_object(ctx)
+	if current_char is None:
 		return []
+	output = []
+	for item in current_char['items']:
+		item_name = item.split(" (")[0]
+		output.append(item_name)
+	return output
 
 def get_full_item_from_name(item_name, character):
 	for full_item in character['items']:
@@ -1756,24 +1757,7 @@ def get_full_item_from_name(item_name, character):
 	return None
 
 async def orig_item_name_autocomp(ctx):
-	uid = str(ctx.interaction.user.id)
-	if uid in character_data:
-		# gotta get active character manually cus this is a different kind of ctx. ugh
-		your_actives = character_data[uid]['active']
-		if str(ctx.interaction.channel_id) in your_actives:
-			current_active = your_actives[str(ctx.interaction.channel_id)]
-			if current_active in character_data[uid]['chars']:
-				current_char = character_data[uid]['chars'][current_active]
-				# get item here
-				item = ctx.options['original_item']
-				item = item.split(" (")
-				return [item[0]]
-			else:
-				return []
-		else:
-			return []
-	else:
-		return []
+	return [ctx.options['original_item']]
 
 async def orig_item_effect_autocomp(ctx):
 	uid = str(ctx.interaction.user.id)
