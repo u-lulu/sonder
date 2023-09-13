@@ -826,8 +826,8 @@ trait_tips = {
 @bot.command(description="Add a core book trait to your active character")
 async def add_trait(ctx, 
 	trait: discord.Option(str, "The core book name or number of the trait to add.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=True),
-	rename_item: discord.Option(str, "Renames the item this trait provides. Autocomplete displays the item's default name.",autocomplete=discord.utils.basic_autocomplete(current_trait_item_autocomp), required=False, default=None, max_length=100)):
-	#log(f"/add_trait {trait} {rename_item if rename_item is not None else ''}")
+	rename_item: discord.Option(str, "Renames the item this trait provides. Autocomplete displays the item's default name.",autocomplete=discord.utils.basic_autocomplete(current_trait_item_autocomp), required=False, default=None, max_length=100),
+	save:bool=True):
 	trait = trait.strip()
 	if rename_item is not None:
 		rename_item = rename_item.strip()
@@ -924,7 +924,8 @@ async def add_trait(ctx,
 		out += f"\n💡 {trait_tips[my_new_trait['Number']]}"
 	out += f"\n>>> {trait_message_format(my_new_trait)}"
 	await ctx.respond(out)
-	await save_character_data(str(ctx.author.id))
+	if save:
+		await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Activate (or set) your active character's HENSHIN trait")
 async def henshin(ctx, set_trait: discord.Option(str, "The core book name or number of the trait to set.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None)):
@@ -1118,16 +1119,16 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	if starter_bonus is not None and starter_bonus not in valid_bonuses:
 		msg += "\n*The provided `starter_bonus` is invalid. No starter bonus has been applied.*"
 	await ctx.respond(msg)
-	await switch_character(ctx, codename)
+	await switch_character(ctx, codename, False)
 	if starter_trait_1 is not None:
-		await add_trait(ctx, starter_trait_1, None)
+		await add_trait(ctx, starter_trait_1, None, False)
 	if starter_trait_2 is not None:
-		await add_trait(ctx, starter_trait_2, None)
+		await add_trait(ctx, starter_trait_2, None, False)
 	if starter_bonus is not None:
 		if starter_bonus == "+1D6 Max Hp":
-			await adjust(ctx,"MAX HP","1D6")
+			await adjust(ctx,"MAX HP","1D6",False)
 		elif starter_bonus == "+1D6 War Dice":
-			await adjust(ctx,"WAR DICE","1D6")
+			await adjust(ctx,"WAR DICE","1D6",False)
 		else:
 			standard_issue_items = ["Balaclava (hides identity)","Flashlight (can be used as a weapon attachment)","Knife (1D6 DAMAGE)","MRE field rations (+1D6 HP, one use)","Pistol (1D6 DAMAGE)","Riot shield (1 ARMOR, equip as weapon)"]
 			if starter_bonus == "Random Standard Issue Item":
@@ -1136,9 +1137,8 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 				split_bonus = starter_bonus.split(" (")
 				starting_item_name = split_bonus[0]
 				starting_item_effect = split_bonus[1][:-1]
-				await add_item(ctx,starting_item_name,starting_item_effect)
-	if not starter_trait_1 and not starter_trait_2:
-		await save_character_data(str(ctx.author.id))
+				await add_item(ctx,starting_item_name,starting_item_effect,False)
+	await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Rename an existing character")
 async def rename(ctx,
@@ -1441,8 +1441,7 @@ async def edit_notes(ctx):
 	await ctx.send_modal(modal)
 
 @bot.command(description="Switch which character is active in this channel")
-async def switch_character(ctx, codename: discord.Option(str, "The codename of the character to switch to.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
-	#log(f"/switch {codename}")
+async def switch_character(ctx, codename: discord.Option(str, "The codename of the character to switch to.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True),save:bool=True):
 	codename = codename.strip()
 	userid = str(ctx.author.id)
 	if userid not in character_data or len(character_data[userid]['chars']) <= 0:
@@ -1456,7 +1455,8 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 	else:
 		character_data[userid]['active'][str(ctx.channel_id)] = codename
 		await ctx.respond(f"Your active character in this channel is now **{codename.upper()}**.")
-		await save_character_data(str(ctx.author.id))
+		if save:
+			await save_character_data(str(ctx.author.id))
 	return
 
 @bot.command(description="Check your current active character")
@@ -1689,9 +1689,8 @@ async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait
 @bot.command(description="Add an item your active character")
 async def add_item(ctx,
 	name: discord.Option(str, "The name of the item", required=True,max_length=100), 
-	effect: discord.Option(str, "The effect of the item",autocomplete=discord.utils.basic_autocomplete(no_effect_autocomp), required=True)):
-	
-	#log(f"/add_item {name} {effect}")
+	effect: discord.Option(str, "The effect of the item",autocomplete=discord.utils.basic_autocomplete(no_effect_autocomp), required=True),
+	save:bool=True):
 	name = name.strip()
 	effect = effect.strip()
 	character = get_active_char_object(ctx)
@@ -1726,7 +1725,8 @@ async def add_item(ctx,
 	character['items'].append(item_to_add)
 	
 	await ctx.respond(f"**{codename.upper()}** has added **{item_to_add}** to their inventory.")
-	await save_character_data(str(ctx.author.id))
+	if save:
+		await save_character_data(str(ctx.author.id))
 
 async def item_name_autocomplete(ctx):
 	uid = str(ctx.interaction.user.id)
@@ -2419,7 +2419,8 @@ async def stats_autocomplete(ctx):
 @bot.command(description="Adjust one of your character's stats")
 async def adjust(ctx,
 	stat: discord.Option(str, "The stat to change.", autocomplete=discord.utils.basic_autocomplete(stats_autocomplete), required=True),
-	amount: discord.Option(str, "Amount to increase the stat by. Supports dice syntax. Negative values will decrease.", required=True)):
+	amount: discord.Option(str, "Amount to increase the stat by. Supports dice syntax. Negative values will decrease.", required=True),
+	save:bool=True):
 	#log(f"/adjust {stat} {amount}")
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -2489,7 +2490,8 @@ async def adjust(ctx,
 		message += f"\n\nDice results: `{output[1]}`"
 	
 	await ctx.respond(message)
-	await save_character_data(str(ctx.author.id))
+	if save:
+		await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Reset your active character's stats and items to the trait defaults")
 async def refresh(ctx, 
