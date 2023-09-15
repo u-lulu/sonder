@@ -1760,28 +1760,17 @@ async def orig_item_name_autocomp(ctx):
 	return [ctx.options['original_item']]
 
 async def orig_item_effect_autocomp(ctx):
-	uid = str(ctx.interaction.user.id)
-	if uid in character_data:
-		# gotta get active character manually cus this is a different kind of ctx. ugh
-		your_actives = character_data[uid]['active']
-		if str(ctx.interaction.channel_id) in your_actives:
-			current_active = your_actives[str(ctx.interaction.channel_id)]
-			if current_active in character_data[uid]['chars']:
-				current_char = character_data[uid]['chars'][current_active]
-				# get item here
-				item = ctx.options['original_item']
-				for inv_item in current_char['items']:
-					if inv_item.split(" (")[0] == item:
-						item = inv_item
-						break
-				item = item.split(" (")
-				return [item[1][:-1],"REMOVE_EFFECT"] if len(item) > 1 else ["REMOVE_EFFECT"]
-			else:
-				return []
-		else:
-			return []
-	else:
+	current_char = get_active_char_object(ctx)
+	if current_char is None:
 		return []
+	# get item here
+	item = ctx.options['original_item']
+	for inv_item in current_char['items']:
+		if inv_item.split(" (")[0] == item:
+			item = inv_item
+			break
+	item = item.split(" (")
+	return [item[1][:-1],"REMOVE_EFFECT"] if len(item) > 1 else ["REMOVE_EFFECT"]
 
 @bot.command(description="Edit an item in your inventory")
 async def edit_item(ctx,
@@ -1837,34 +1826,12 @@ async def edit_item(ctx,
 	await ctx.respond(message)
 	await save_character_data(str(ctx.author.id))
 	
-async def item_counters_autocomp(ctx):
-	uid = str(ctx.interaction.user.id)
-	if uid in character_data:
-		# gotta get active character manually cus this is a different kind of ctx. ugh
-		your_actives = character_data[uid]['active']
-		if str(ctx.interaction.channel_id) in your_actives:
-			current_active = your_actives[str(ctx.interaction.channel_id)]
-			if current_active in character_data[uid]['chars']:
-				current_char = character_data[uid]['chars'][current_active]
-				item_list = current_char['items']
-				output = []
-				for item in item_list:
-					item_name = item.split(" (")[0]
-					output.append(item_name)
-				return output
-			else:
-				return []
-		else:
-			return []
-	else:
-		return []
-
 async def example_counter_names(ctx):
 	return ["Amount","Ammo","Uses remaining","Charges","Counter"]
 
 @bot.command(description="Add a counter to an item on your character")
 async def add_item_counter(ctx,
-	item_name: discord.Option(str, "The item to attach a counter to",autocomplete=discord.utils.basic_autocomplete(item_counters_autocomp), required=True),
+	item_name: discord.Option(str, "The item to attach a counter to",autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True),
 	counter_name: discord.Option(str, "The name of the counter",autocomplete=discord.utils.basic_autocomplete(example_counter_names), required=True, max_length=20),
 	starting_value: discord.Option(int, "The value the counter should start at", required=True)
 	):
@@ -1905,41 +1872,22 @@ async def add_item_counter(ctx,
 	await save_character_data(str(ctx.author.id))
 
 async def items_with_counters_autocomp(ctx):
-	uid = str(ctx.interaction.user.id)
-	if uid in character_data:
-		# gotta get active character manually cus this is a different kind of ctx. ugh
-		your_actives = character_data[uid]['active']
-		if str(ctx.interaction.channel_id) in your_actives:
-			current_active = your_actives[str(ctx.interaction.channel_id)]
-			if current_active in character_data[uid]['chars']:
-				current_char = character_data[uid]['chars'][current_active]
-				return current_char['counters'].keys()
-			else:
-				return []
-		else:
-			return []
-	else:
+	current_char = get_active_char_object(ctx)
+	if current_char is None:
 		return []
+	out = []
+	for i in current_char['counters'].keys():
+		out.append(i.split(" (")[0])
+	return out
 
 async def counters_on_the_item_autocomp(ctx):
-	uid = str(ctx.interaction.user.id)
-	if uid in character_data:
-		# gotta get active character manually cus this is a different kind of ctx. ugh
-		your_actives = character_data[uid]['active']
-		if str(ctx.interaction.channel_id) in your_actives:
-			current_active = your_actives[str(ctx.interaction.channel_id)]
-			if current_active in character_data[uid]['chars']:
-				current_char = character_data[uid]['chars'][current_active]
-				# get item here
-				item = ctx.options['item']
-				if item in current_char['counters']:
-					return current_char['counters'][item].keys()
-			else:
-				return []
-		else:
-			return []
-	else:
+	current_char = get_active_char_object(ctx)
+	if current_char is None:
 		return []
+	item = ctx.options['item']
+	item = get_full_item_from_name(item,current_char)
+	if item in current_char['counters']:
+		return current_char['counters'][item].keys()
 
 @bot.command(description="Adjust an item counter on your character")
 async def adjust_item_counter(ctx,
@@ -1948,7 +1896,6 @@ async def adjust_item_counter(ctx,
 	amount: discord.Option(str, "The value to change the counter by; supports dice syntax.", required=True)
 	):
 	
-	#log(f"/adjust_item_counter {item} {amount} {counter_name}")
 	item = item.strip()
 	counter_name = counter_name.strip()
 	amount = amount.strip()
@@ -1957,6 +1904,7 @@ async def adjust_item_counter(ctx,
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
+	item = get_full_item_from_name(item,character)
 
 	
 	if character['premium'] and not await ext_character_management(ctx.author.id):
@@ -2057,7 +2005,6 @@ async def set_item_counter(ctx,
 	amount: discord.Option(str, "The value to set the counter to; supports dice syntax.", required=True)
 	):
 	
-	#log(f"/set_item_counter {item} {amount} {counter_name}")
 	item = item.strip()
 	counter_name = counter_name.strip()
 	amount = amount.strip()
@@ -2140,25 +2087,14 @@ async def remove_item_counter(ctx,
 	await save_character_data(str(ctx.author.id))
 	
 async def active_character_traits_autocomp(ctx):
-	uid = str(ctx.interaction.user.id)
-	if uid in character_data:
-		# gotta get active character manually cus this is a different kind of ctx. ugh
-		your_actives = character_data[uid]['active']
-		if str(ctx.interaction.channel_id) in your_actives:
-			current_active = your_actives[str(ctx.interaction.channel_id)]
-			if current_active in character_data[uid]['chars']:
-				current_char = character_data[uid]['chars'][current_active]
-				trait_list = current_char['traits']
-				output = []
-				for trait in trait_list:
-					output.append(trait['Name'])
-				return output
-			else:
-				return []
-		else:
-			return []
-	else:
+	current_char = get_active_char_object(ctx)
+	if current_char is None:
 		return []
+	trait_list = current_char['traits']
+	output = []
+	for trait in trait_list:
+		output.append(trait['Name'])
+	return output
 
 @bot.command(description="Remove a trait from your active character")
 async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to remove.",autocomplete=discord.utils.basic_autocomplete(active_character_traits_autocomp), required=True),
@@ -2747,105 +2683,61 @@ async def attack(ctx,
 		message += f"\nFinal damage multiplier: `{multiplier}`"
 	await ctx.respond(message)
 
-async def held_items_autocomplete(ctx):
-	uid = str(ctx.interaction.user.id)
-	if uid in character_data:
-		# gotta get active character manually cus this is a different kind of ctx. ugh
-		your_actives = character_data[uid]['active']
-		if str(ctx.interaction.channel_id) in your_actives:
-			current_active = your_actives[str(ctx.interaction.channel_id)]
-			if current_active in character_data[uid]['chars']:
-				current_char = character_data[uid]['chars'][current_active]
-				item_list = current_char['items']
-				output = []
-				for item in item_list:
-					cut = item.split(" (")
-					output.append(cut[0])
-				return output
-			else:
-				return []
-		else:
-			return []
-	else:
-		return []
-
 async def held_dice_autocomplete(ctx):
-	uid = str(ctx.interaction.user.id)
-	if uid in character_data:
-		# gotta get active character manually cus this is a different kind of ctx. ugh
-		your_actives = character_data[uid]['active']
-		if str(ctx.interaction.channel_id) in your_actives:
-			current_active = your_actives[str(ctx.interaction.channel_id)]
-			if current_active in character_data[uid]['chars']:
-				current_char = character_data[uid]['chars'][current_active]
-				item_list = current_char['items']
-				dice_outs = set()
-				num_outs = set()
-				current_item_selected = ctx.options["name"]
-				dice_pattern = r'(\d*)[dD](\d+)([+-]\d+)?'
-				number_pattern = r'(\d+)'
-				for item in item_list:
-					cut = item.split(" (")
-					effect = cut[1] if len(cut) > 1 else ""
-					dice_matches = re.findall(dice_pattern, effect)
-					number_matches = re.findall(number_pattern, effect)
-					if current_item_selected != None and item.startswith(current_item_selected):
-						dice_outs = set()
-						num_outs = set()
-						for match in dice_matches:
-							dice_outs.add(f"{match[0]}D{match[1]}{match[2]}")
-						for match in number_matches:
-							num_outs.add(match)
-						break
-					else:
-						for match in dice_matches:
-							dice_outs.add(f"{match[0]}D{match[1]}{match[2]}")
-						for match in number_matches:
-							num_outs.add(match)
-				return list(dice_outs) + list(num_outs)
-			else:
-				return []
-		else:
-			return []
-	else:
+	current_char = get_active_char_object(ctx)
+	if current_char is None:
 		return []
+	item_list = current_char['items']
+	dice_outs = set()
+	num_outs = set()
+	current_item_selected = ctx.options["name"]
+	dice_pattern = r'(\d*)[dD](\d+)([+-]\d+)?'
+	number_pattern = r'(\d+)'
+	for item in item_list:
+		cut = item.split(" (")
+		effect = cut[1] if len(cut) > 1 else ""
+		dice_matches = re.findall(dice_pattern, effect)
+		number_matches = re.findall(number_pattern, effect)
+		if current_item_selected != None and item.startswith(current_item_selected):
+			dice_outs = set()
+			num_outs = set()
+			for match in dice_matches:
+				dice_outs.add(f"{match[0]}D{match[1]}{match[2]}")
+			for match in number_matches:
+				num_outs.add(match)
+			break
+		else:
+			for match in dice_matches:
+				dice_outs.add(f"{match[0]}D{match[1]}{match[2]}")
+			for match in number_matches:
+				num_outs.add(match)
+	return list(dice_outs) + list(num_outs)
 
 async def held_numbers_autocomplete(ctx):
-	uid = str(ctx.interaction.user.id)
-	if uid in character_data:
-		# gotta get active character manually cus this is a different kind of ctx. ugh
-		your_actives = character_data[uid]['active']
-		if str(ctx.interaction.channel_id) in your_actives:
-			current_active = your_actives[str(ctx.interaction.channel_id)]
-			if current_active in character_data[uid]['chars']:
-				current_char = character_data[uid]['chars'][current_active]
-				item_list = current_char['items']
-				num_outs = set()
-				current_item_selected = ctx.options["name"]
-				number_pattern = r'(\d+)'
-				for item in item_list:
-					cut = item.split(" (")
-					effect = cut[1] if len(cut) > 1 else ""
-					number_matches = re.findall(number_pattern, effect)
-					if current_item_selected != None and item.startswith(current_item_selected):
-						num_outs = set()
-						for match in number_matches:
-							num_outs.add(int(match))
-						break
-					else:
-						for match in number_matches:
-							num_outs.add(int(match))
-				return list(num_outs)
-			else:
-				return []
-		else:
-			return []
-	else:
+	current_char = get_active_char_object(ctx)
+	if current_char is None:
 		return []
+	item_list = current_char['items']
+	num_outs = set()
+	current_item_selected = ctx.options["name"]
+	number_pattern = r'(\d+)'
+	for item in item_list:
+		cut = item.split(" (")
+		effect = cut[1] if len(cut) > 1 else ""
+		number_matches = re.findall(number_pattern, effect)
+		if current_item_selected != None and item.startswith(current_item_selected):
+			num_outs = set()
+			for match in number_matches:
+				num_outs.add(int(match))
+			break
+		else:
+			for match in number_matches:
+				num_outs.add(int(match))
+	return list(num_outs)
 	
 @bot.command(description="Set your equipped weapon")
 async def equip_weapon(ctx, 
-	name: discord.Option(str, "The weapon's name.", autocomplete=discord.utils.basic_autocomplete(held_items_autocomplete), required=True,max_length=100),
+	name: discord.Option(str, "The weapon's name.", autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True,max_length=100),
 	damage: discord.Option(str, "Amount of damage to deal; supports dice syntax.", autocomplete=discord.utils.basic_autocomplete(held_dice_autocomplete), required=True)):
 	
 	character = get_active_char_object(ctx)
@@ -2881,7 +2773,7 @@ async def equip_weapon(ctx,
 
 @bot.command(description="Set your equipped armor")
 async def equip_armor(ctx, 
-	name: discord.Option(str, "The armor's name.", autocomplete=discord.utils.basic_autocomplete(held_items_autocomplete), required=True,max_length=100),
+	name: discord.Option(str, "The armor's name.", autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True,max_length=100),
 	damage: discord.Option(int, "Amount of damage it reduces.", autocomplete=discord.utils.basic_autocomplete(held_numbers_autocomplete), required=True)):
 	#log(f"/equip_armor {name} {damage}")
 	name = name.strip()
