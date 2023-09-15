@@ -2604,8 +2604,6 @@ async def damage(ctx,
 async def heal(ctx, 
 	amount: discord.Option(str, "Amount of healing to receive. Supports dice syntax.", required=True),
 	):
-	#log(f"/heal {amount}")
-	
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
@@ -2843,6 +2841,53 @@ async def monsters(ctx, barcode: discord.Option(str,"The barcode to input")):
 		armor = (barcode[lower_middle_index] + barcode[upper_middle_index]) // 2
 	
 	await ctx.respond(f"Your summoned MONSTER has:\n- 💥 1D6{'+'+str(damage_bonus) if damage_bonus > 0 else ''} DAMAGE\n- ❤️ {health} HP\n- 🛡️ {armor} ARMOR")
+
+@bot.command(description="Rolls a check for HARVEST")
+async def harvest(ctx):
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	if not character_has_trait(character, 311):
+		await ctx.respond(f"{codename.upper()} does not have the HARVEST trait.",ephemeral=True)
+		return
+	
+	if d6() <= 3: #failure
+		await ctx.respond(f"{codename.upper()}'s killing blow **fails to land!**")
+	else:
+		class HarvestChoice(discord.ui.View):
+			@discord.ui.button(label="+1 WAR DIE",style=discord.ButtonStyle.blurple,emoji="🎲")
+			async def harvest_wd_callback(self,button,interaction):
+				if interaction.user.id == ctx.author.id:
+					log("Harvest +1WD callback")
+					self.disable_all_items()
+					await interaction.response.edit_message(view=self)
+					await adjust(ctx,"WAR DICE","1")
+				else:
+					log("Denying invalid Harvest response")
+					await interaction.response.send_message("This is not your HARVEST prompt.",ephemeral=True)
+			@discord.ui.button(label="+1D6 HP",style=discord.ButtonStyle.green,emoji="🎲")
+			async def harvest_hp_callback(self,button,interaction):
+				if interaction.user.id == ctx.author.id:
+					log("Harvest +1D6 HP callback")
+					self.disable_all_items()
+					await interaction.response.edit_message(view=self)
+					await heal(ctx,"1D6")
+				else:
+					log("Denying invalid Harvest response")
+					await interaction.response.send_message("This is not your HARVEST prompt.",ephemeral=True)
+			@discord.ui.button(label="Cancel",emoji="🚫")
+			async def harvest_cancel_callback(self, button, interaction):
+				if interaction.user.id == ctx.author.id:
+					log("Harvest cancel callback")
+					self.disable_all_items()
+					await interaction.response.edit_message(content=f"~~{codename.upper()}'s killing blow **strikes true!**\nThey may choose one of the following options.~~\n*Activation cancelled.*",view=self)
+				else:
+					log("Denying invalid Harvest response")
+					await interaction.response.send_message("This is not your HARVEST prompt.",ephemeral=True)
+		await ctx.respond(f"{codename.upper()}'s killing blow **strikes true!**\nThey may choose one of the following options.",view=HarvestChoice())
 
 sunder_tracker = {}
 
