@@ -2858,7 +2858,7 @@ async def harvest(ctx):
 		await ctx.respond(f"{codename.upper()}'s killing blow **fails to land!**")
 	else:
 		class HarvestChoice(discord.ui.View):
-			@discord.ui.button(label="+1 WAR DIE",style=discord.ButtonStyle.blurple,emoji="🎲")
+			@discord.ui.button(label=f"+1 WAR DIE (Current: {character['wd']})",style=discord.ButtonStyle.blurple,emoji="🎲")
 			async def harvest_wd_callback(self,button,interaction):
 				if interaction.user.id == ctx.author.id:
 					log("Harvest +1WD callback")
@@ -2868,7 +2868,7 @@ async def harvest(ctx):
 				else:
 					log("Denying invalid Harvest response")
 					await interaction.response.send_message("This is not your HARVEST prompt.",ephemeral=True)
-			@discord.ui.button(label="+1D6 HP",style=discord.ButtonStyle.green,emoji="❤️‍🩹")
+			@discord.ui.button(label=f"+1D6 HP (Current: {character['hp']}/{character['maxhp']})",style=discord.ButtonStyle.green,emoji="❤️‍🩹")
 			async def harvest_hp_callback(self,button,interaction):
 				if interaction.user.id == ctx.author.id:
 					log("Harvest +1D6 HP callback")
@@ -2883,7 +2883,7 @@ async def harvest(ctx):
 				if interaction.user.id == ctx.author.id:
 					log("Harvest cancel callback")
 					self.disable_all_items()
-					await interaction.response.edit_message(content=f"~~{codename.upper()}'s killing blow **strikes true!**\nThey may choose one of the following options.~~\n*Activation cancelled.*",view=self)
+					await interaction.response.edit_message(content=f"*HARVEST activation cancelled.*",view=self)
 				else:
 					log("Denying invalid Harvest response")
 					await interaction.response.send_message("This is not your HARVEST prompt.",ephemeral=True)
