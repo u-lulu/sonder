@@ -297,7 +297,7 @@ async def save_character_data(userid=None):
 	except Exception as e:
 		log(f"PLAYER DATA SAVING FOR {userid} THREW AN ERROR: {e}")
 		await bot.wait_until_ready()
-		owner_object = await bot.fetch_user(ownerid)
+		owner_object = await bot.get_or_fetch_user(ownerid)
 		await owner_object.send(f"**An error occurred while saving `{userid}.json`!**\n```{e}```")
 
 if os.path.exists('playerdata'):
