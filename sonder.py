@@ -2868,7 +2868,7 @@ async def harvest(ctx):
 				else:
 					log("Denying invalid Harvest response")
 					await interaction.response.send_message("This is not your HARVEST prompt.",ephemeral=True)
-			@discord.ui.button(label="+1D6 HP",style=discord.ButtonStyle.green,emoji="🎲")
+			@discord.ui.button(label="+1D6 HP",style=discord.ButtonStyle.green,emoji="❤️‍🩹")
 			async def harvest_hp_callback(self,button,interaction):
 				if interaction.user.id == ctx.author.id:
 					log("Harvest +1D6 HP callback")
