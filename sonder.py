@@ -1069,7 +1069,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	starter_trait_1: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
 	starter_trait_2: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
 	starter_bonus: discord.Option(str, "The extra starting bonus for your character.",autocomplete=discord.utils.basic_autocomplete(starting_bonus_autocomp), required=False, default=None)):
-	#log(f"/create {codename} {starter_trait_1 if starter_trait_1 is not None else '[no first trait]'} {starter_trait_2 if starter_trait_2 is not None else '[no second trait]'}")
+	#log(f"/create_character {codename} {starter_trait_1 if starter_trait_1 is not None else '[no first trait]'} {starter_trait_2 if starter_trait_2 is not None else '[no second trait]'}")
 	
 	codename = codename.strip()
 	if starter_trait_1 is not None:
@@ -1163,7 +1163,7 @@ async def rename(ctx,
 
 	codename = codename.lower()
 	if userid not in character_data or codename not in character_data[userid]['chars']:
-		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create`.",ephemeral=True)
+		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create_character`.",ephemeral=True)
 		return
 	
 	if character_data[userid]['chars'][codename]['premium'] and not await ext_character_management(ctx.author.id):
@@ -1197,7 +1197,7 @@ async def clone(ctx,
 	
 	codename = codename.lower()
 	if userid not in character_data or codename not in character_data[userid]['chars']:
-		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create`.",ephemeral=True)
+		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create_character`.",ephemeral=True)
 		return
 	
 	premium_character = False
@@ -1357,7 +1357,7 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 		await ctx.respond("You have not set an active character in this channel. Either set your active character with `/switch_character`, or specify which character's sheet you want to view using the optional `codename` argument for this command.",ephemeral=True)
 		return
 	if yourid not in character_data or codename not in character_data[yourid]['chars']:
-		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create`.",ephemeral=True)
+		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create_character`.",ephemeral=True)
 		return
 	
 	ch = character_data[yourid]['chars'][codename]
@@ -1457,12 +1457,12 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 	codename = codename.strip()
 	userid = str(ctx.author.id)
 	if userid not in character_data or len(character_data[userid]['chars']) <= 0:
-		await ctx.respond("You have no characters available. Use `/create` to make one.",ephemeral=True)
+		await ctx.respond("You have no characters available. Use `/create_character` to make one.",ephemeral=True)
 		return
 		
 	codename = codename.lower()
 	if codename not in character_data[userid]["chars"]:
-		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create`.",ephemeral=True)
+		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create_character`.",ephemeral=True)
 		return
 	else:
 		character_data[userid]['active'][str(ctx.channel_id)] = codename
@@ -1566,7 +1566,7 @@ async def create_custom_trait(ctx,
 	stat_amount = stat_amount.strip()
 	item_name = item_name.strip()
 	item_effect = item_effect.strip()
-	#log(f"/create_custom_trait {title} {description} {stat_type} {stat_amount} {item_name} {item_effect}")
+	#log(f"/create_character_custom_trait {title} {description} {stat_type} {stat_amount} {item_name} {item_effect}")
 	
 	if userid in character_data and len(character_data[userid]['traits']) >= standard_custrait_limit:
 		premium_user = await ext_character_management(ctx.author.id)
