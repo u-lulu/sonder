@@ -2211,7 +2211,7 @@ async def remove_item(ctx,
 			os.remove('message.txt')
 			log("Sent inventory as file")
 		else:
-			await ctx.respond(message)
+			await ctx.respond(out)
 		return
 	
 	if item in character['counters']:
