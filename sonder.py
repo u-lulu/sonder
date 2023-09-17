@@ -4579,5 +4579,93 @@ async def spawn(ctx):
 
 bot.add_application_command(ctsh_group)
 
+log("Loading LFG data...")
+lfg_group = discord.SlashCommandGroup("lfg", "Looking For Game Comands")
+
+lfg_data = {}
+
+async def save_lfg_data():
+	with open(f"lfg.json", "w") as outfile:
+		outfile.write(json.dumps(lfg_data,indent=2))
+	log("LFG data saved.")
+
+if os.path.exists('lfg.json'):
+	lfg_file = open('lfg.json')
+	lfg_data = json.load(lfg_file)
+	lfg_file.close()
+	log(f"Got LFG file for {len(lfg_data)} guilds.")
+else:
+	log("No LFG data exists. Using empty data.")
+
+async def format_lfg_game(game, ping_author=False):
+	author_obj = await bot.get_or_fetch_user(game['creator'])
+	creator = author_obj.mention if ping_author else '@' + author_obj.name
+	title = game['title']
+	desc = game['desc']
+	total_slots = game['slots']
+	taken_slots = len(game['registered'])
+
+	return f"# {title}\nPosted by {creator}\n{taken_slots}/{total_slots} slots taken\n>>> {desc}"
+
+@lfg_group.command(description="Post a game for people to sign up for.")
+async def create_game(ctx, title: discord.Option(str, "The name of your game", required=True, max_length=100), description: discord.Option(str, "A description of your game.", required=True, max_length=1500), player_slots: discord.Option(int, "The maximum amount of players in your game", required=True, min_value=1)):
+	game_obj = {
+		'creator': ctx.author.id,
+		'title': title,
+		'desc': description,
+		'slots': player_slots,
+		'registered': [],
+		'pending': []
+	}
+
+	gid = str(ctx.guild_id)
+	server_lfg = lfg_data.get(gid,[])
+
+	for game in server_lfg:
+		if title.lower() == game['title'].lower():
+			await ctx.respond(f"There is already a game posted on this server under the name '{game['title']}'.",ephemeral=True)
+			return
+
+	ctx.defer()
+	server_lfg.append(game_obj)
+	if gid not in lfg_data:
+		lfg_data[gid] = server_lfg
+	
+	await save_lfg_data()
+	await ctx.respond("‼️ New game posting ‼️\n" + await format_lfg_game(game_obj,True))
+
+async def active_games_autocomp(ctx):
+	gid = str(ctx.interaction.guild.id)
+	server_lfg = lfg_data.get(gid,[])
+	out = []
+	for game in server_lfg:
+		out.append(game['title'])
+	return out
+
+@lfg_group.command(description="View a list of available LFG games.")
+async def view_games(ctx, lookup: discord.Option(str, "View details of a specific game", required=False, autocomplete=discord.utils.basic_autocomplete(active_games_autocomp), max_length=100, default=None)):
+	server_lfg = lfg_data.get(str(ctx.guild_id),[])
+	if lookup is None: #view full list
+		if len(server_lfg) > 0:
+			msg = f"## Available games in {ctx.guild.name}:"
+			for game in server_lfg:
+				creator = await bot.get_or_fetch_user(game['creator'])
+				creatorname = creator.name
+				total_slots = game['slots']
+				taken_slots = len(game['registered'])
+				msg += f"\n- **{game['title']}**, posted by @{creatorname} ({taken_slots}/{total_slots} slots taken)"
+				await ctx.respond(msg)
+		else:
+			await ctx.respond(f"No games have been posted to this server yet.",ephemeral=True)
+	else: #lookup specific game
+		for game in server_lfg:
+			if lookup.lower() == game['title'].lower():
+				await ctx.respond(await format_lfg_game(game,False),ephemeral=True)
+				return
+		await ctx.respond(f"Could not find a game on this server titled '{lookup}'.",ephemeral=True)
+		return
+
+bot.add_application_command(lfg_group)
+
 log("Starting bot session")
 bot.run(token)
