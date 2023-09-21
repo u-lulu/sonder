@@ -24,7 +24,7 @@ logging_channel_id = 1145165620082638928
 logging_channel = None
 
 def log(msg):
-	msg = msg.strip()
+	msg = str(msg).strip()
 	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
 	try:
 		if logging_channel is not None:
@@ -4578,6 +4578,52 @@ async def spawn(ctx):
 		await ctx.respond("Colony **will not** spawn in this region.")
 
 bot.add_application_command(ctsh_group)
+
+log("Loading THE BOARD data...")
+board_data = {}
+if os.path.exists('the_board.json'):
+	board_file = open('the_board.json')
+	board_data = json.load(board_file)
+	board_file.close()
+else:
+	board_data = {
+		'time': None,
+		'url': None
+	}
+
+@bot.command(description="Tracks THE BOARD.",guild_ids=[1101249440230154300,959600183186952232])
+async def the_board(ctx, message_id_of_new_record: discord.Option(str, "The ID of the message to pin.", required=False, default=None)):
+	if message_id_of_new_record is not None:
+		if ctx.author.guild_permissions.manage_messages:
+			channel = ctx.channel
+			message = None
+			try:
+				message = await channel.fetch_message(int(message_id_of_new_record))
+			except (discord.NotFound,ValueError) as e:
+				log(f"Caught: {e}")
+				await ctx.respond(f"There was an error processing this command:\n```{e}```\nYou must provide a valid message ID. Check [this article](<https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID->) for more details.",ephemeral=True)
+				return
+			
+			t = int(message.created_at.timestamp())
+			url = message.jump_url
+			
+			response = f"# THE BOARD HAS BEEN RESET\nTIME SINCE LAST INCIDENT: <t:{t}:R>"
+			if board_data['time'] is not None and board_data['url'] is not None:
+				response += f"\n## Previous Incident: <t:{board_data['time']}:R> ({board_data['url']})"
+			
+			board_data['time'] = t
+			board_data['url'] = url
+			with open('the_board.json','w') as outfile:
+				outfile.write(json.dumps(board_data))
+			
+			await message.reply(response)
+			await ctx.respond("Board updated.",ephemeral=True)
+		else:
+			await ctx.respond("You must have the MANAGE MESSAGES permission to use this command.",ephemeral=True)
+	elif board_data['time'] is None or board_data['url'] is None:
+		await ctx.respond("The board has not been set yet.",ephemeral=True)
+	else:
+		await ctx.respond(f"# TIME SINCE LAST INCIDENT: <t:{board_data['time']}:R>\nLast incident: {board_data['url']}")
 
 log("Starting bot session")
 bot.run(token)
