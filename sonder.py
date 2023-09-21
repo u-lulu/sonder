@@ -4594,7 +4594,7 @@ else:
 @bot.command(description="Tracks THE BOARD.",guild_ids=[1101249440230154300,959600183186952232])
 async def the_board(ctx, message_id_of_new_record: discord.Option(str, "The ID of the message to pin.", required=False, default=None)):
 	if message_id_of_new_record is not None:
-		if ctx.author.guild_permissions.manage_messages:
+		if ctx.author.guild_permissions.manage_messages or ctx.author.id == ownerid:
 			channel = ctx.channel
 			message = None
 			try:
