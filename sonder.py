@@ -2586,10 +2586,35 @@ async def damage(ctx,
 	message += f"\nHP: {character['hp']}/{character['maxhp']}"
 	
 	if character['hp'] <= 0 and 'henshin_stored_maxhp' in character['special'] and character['special']['henshin_stored_maxhp'] > 0:
+		stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
+		stats_translator = {
+			"MAX":"maxhp",
+			"WAR":"wd",
+			"FORCEFUL":"frc",
+			"TACTICAL":"tac",
+			"CREATIVE":"cre",
+			"REFLEXIVE":"rfx"
+		}
+
+		bonus = character['special']['henshin_trait']["Stat"].split(" ")
+		num = 0
+		if bonus[1] in stats:
+			translated_stat_bonus = stats_translator[bonus[1]]
+			try: 
+				num = rolldice.roll_dice(bonus[0])[0]
+			except Exception as e:
+				num = 0
+				log(f"Caught dice-rolling exception: {e}")
+			if translated_stat_bonus != 'wd':
+				character[translated_stat_bonus] -= num
+			if translated_stat_bonus == 'maxhp':
+				character['hp'] -= num
+	
 		character['hp'] = character['special']['henshin_stored_hp']
 		character['maxhp'] = character['special']['henshin_stored_maxhp']
 		character['special']['henshin_stored_hp'] = 0
 		character['special']['henshin_stored_maxhp'] = 0
+
 		message += f"\n- **This has deactivated HENSHIN.** HP has been reverted to **{character['hp']}/{character['maxhp']}**."
 	
 	if ('d' in amount or 'd' in amount):
