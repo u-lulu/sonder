@@ -2252,12 +2252,16 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 					for result in first:
 						if result == 6:
 							message += f" **{num_to_die[result]} ({result}💥)**"
+						elif len(first) > 1 and result == 1:
+							message += f" **{num_to_die[result]} ({result} - __collapse!__)**"
 						else:
 							message += f" **{num_to_die[result]} ({result})**"
 					message += f"\n-"
 					for result in second:
 						if result == 6:
 							message += f" **{num_to_die[result]} ({result}💥)**"
+						elif len(second) > 1 and result == 1:
+							message += f" **{num_to_die[result]} ({result} - __collapse!__)**"
 						else:
 							message += f" **{num_to_die[result]} ({result})**"
 					message += f"\n- Total: **{0 if (1 in first and len(first) > 1) or (1 in second and len(second) > 1) else sum(first) + sum(second)}**"
@@ -2279,6 +2283,8 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 								for result in results:
 									if result == 6:
 										message += f" **{num_to_die[result]} ({result}💥)**"
+									elif len(results) > 1 and result == 1:
+										message += f" **{num_to_die[result]} ({result} - __collapse!__)**"
 									else:
 										message += f" **{num_to_die[result]} ({result})**"
 								if len(results) > 1 or (1 in results and len(results) > 1):
@@ -2311,6 +2317,8 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 				for result in results:
 					if result == 6:
 						message += f" **{num_to_die[result]} ({result}💥)**"
+					elif len(results) > 1 and result == 1:
+						message += f" **{num_to_die[result]} ({result} - __collapse!__)**"
 					else:
 						message += f" **{num_to_die[result]} ({result})**"
 				if len(results) > 1 or (1 in results and len(results) > 1):
