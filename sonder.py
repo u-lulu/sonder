@@ -2341,7 +2341,6 @@ async def adjust(ctx,
 	stat: discord.Option(str, "The stat to change.", autocomplete=discord.utils.basic_autocomplete(stats_autocomplete), required=True),
 	amount: discord.Option(str, "Amount to increase the stat by. Supports dice syntax. Negative values will decrease.", required=True),
 	save:bool=True):
-	#log(f"/adjust {stat} {amount}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
@@ -2397,8 +2396,12 @@ async def adjust(ctx,
 			character['hp'] = character['maxhp']
 	
 	message = f"{codename.upper()} has **{'in' if output[0] >= 0 else 'de'}creased** their **{stat}** by {abs(int(output[0]))}!"
+	if 'hp' in translated_stat:
+		message += f"\n- Their HP is now **{character['hp']}/{character['maxhp']}**."
+	else:
+		message += f"\n- The new value is **{character[translated_stat]}**."
 	if output[0] - int(output[0]) != 0:
-		message += f"\nThe dice result or provided number was not an integer; it has been rounded down from {output[0]}"
+		message += f"\n- The dice result or provided number was not an integer; it has been rounded down from {output[0]}"
 	if character['hp'] <= 0 and 'henshin_stored_maxhp' in character['special'] and character['special']['henshin_stored_maxhp'] > 0:
 		character['hp'] = character['special']['henshin_stored_hp']
 		character['maxhp'] = character['special']['henshin_stored_maxhp']
