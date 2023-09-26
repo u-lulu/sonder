@@ -157,7 +157,7 @@
     "Number": 145,
     "Name": "BUM",
     "Effect": "Years of homelessness have been harsh on your bones, but you are skilled in the art of survival sans income and shelter. You may roll the dice +CREATIVE to panhandle in the presence of enemies\u2014on a success, at least one enemy will give you something they have, free of charge. Those who ignore poor and homeless people will never notice you, even if you're hiding in plain sight.",
-    "Item": "Shabby coat (new Item (`/matrix gear item`) in pocket each mission)",
+    "Item": "Shabby coat (new Item `/matrix gear item` in pocket each mission)",
     "Stat": "-1 FORCEFUL"
   },
   {
