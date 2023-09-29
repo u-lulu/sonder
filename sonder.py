@@ -1951,10 +1951,6 @@ async def ammo_check(ctx,
 	item: discord.Option(str, "The item with the associated counter",autocomplete=discord.utils.basic_autocomplete(items_with_counters_autocomp), required=True),
 	counter_name: discord.Option(str, "The name of the counter",autocomplete=discord.utils.basic_autocomplete(counters_on_the_item_autocomp), required=True)
 	):
-	
-	#log(f"/ammo_check {item} {counter_name}")
-	item = item.strip()
-	counter_name = counter_name.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
@@ -1965,6 +1961,7 @@ async def ammo_check(ctx,
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
+	item = get_full_item_from_name(item,character)
 	if item not in character['items']:
 		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'. The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
 		return
