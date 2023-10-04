@@ -501,7 +501,7 @@ async def membership(ctx):
 	return
 
 @bot.command(description="Pin (or unpin) a message inside a thread, if you own the thread")
-async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin.", required=True)):
+async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin.", required=True, min_length=18, max_length=19)):
 	#log(f"/threadpin {id}")
 	try:
 		channel = ctx.channel
@@ -4625,7 +4625,7 @@ else:
 	}
 
 @bot.command(description="Tracks THE BOARD.",guild_ids=[1101249440230154300,959600183186952232])
-async def the_board(ctx, message_id_of_new_record: discord.Option(str, "The ID of the message to pin.", required=False, default=None)):
+async def the_board(ctx, message_id_of_new_record: discord.Option(str, "The ID of the message to pin.", required=False, default=None, min_length=18, max_length=19)):
 	if message_id_of_new_record is not None:
 		if ctx.author.guild_permissions.manage_messages or ctx.author.id == ownerid:
 			channel = ctx.channel
