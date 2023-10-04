@@ -2682,9 +2682,7 @@ async def heal(ctx,
 @bot.command(description="Roll your active character's weapon damage")
 async def attack(ctx,
 	bonus_damage: discord.Option(str, "Amount of extra damage to deal; supports dice syntax.", required=False, default="0"),
-	multiplier: discord.Option(int, "Amount to multiply the final damage by.", required=False, default=1)
-	):
-	#log(f"/attack {bonus_damage} {multiplier}")
+	multiplier: discord.Option(int, "Amount to multiply the final damage by.", required=False, default=1)):
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
@@ -2713,6 +2711,8 @@ async def held_dice_autocomplete(ctx):
 	dice_outs = set()
 	num_outs = set()
 	current_item_selected = ctx.options["name"]
+	if current_item_selected == 'Unarmed':
+		dice_outs.add("2d6k1")
 	dice_pattern = r'(\d*)[dD](\d+)([+-]\d+)?'
 	number_pattern = r'(\d+)'
 	for item in item_list:
@@ -2742,6 +2742,8 @@ async def held_numbers_autocomplete(ctx):
 	item_list = current_char['items']
 	num_outs = set()
 	current_item_selected = ctx.options["name"]
+	if current_item_selected == 'Nothing':
+		num_outs.add(0)
 	number_pattern = r'(\d+)'
 	for item in item_list:
 		cut = item.split(" (")
@@ -2756,14 +2758,21 @@ async def held_numbers_autocomplete(ctx):
 			for match in number_matches:
 				num_outs.add(int(match))
 	return list(num_outs)
-	
+
+async def weapon_name_autocomplete(ctx):
+	items = await item_name_autocomplete(ctx)
+	if items is None:
+		return None
+	else:
+		return ["Unarmed"] + items
+
 @bot.command(description="Set your equipped weapon")
 async def equip_weapon(ctx, 
-	name: discord.Option(str, "The weapon's name.", autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True,max_length=100),
+	name: discord.Option(str, "The weapon's name.", autocomplete=discord.utils.basic_autocomplete(weapon_name_autocomplete), required=True,max_length=100),
 	damage: discord.Option(str, "Amount of damage to deal; supports dice syntax.", autocomplete=discord.utils.basic_autocomplete(held_dice_autocomplete), required=True)):
 	
 	character = get_active_char_object(ctx)
-	#log(f"/equip_weapon {name} {damage}")
+	
 	name = name.strip()
 	damage = damage.strip()
 	if character == None:
@@ -2793,11 +2802,18 @@ async def equip_weapon(ctx,
 	
 	await save_character_data(str(ctx.author.id))
 
+async def armor_name_autocomplete(ctx):
+	items = await item_name_autocomplete(ctx)
+	if items is None:
+		return None
+	else:
+		return ["Nothing"] + items
+
 @bot.command(description="Set your equipped armor")
 async def equip_armor(ctx, 
-	name: discord.Option(str, "The armor's name.", autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True,max_length=100),
+	name: discord.Option(str, "The armor's name.", autocomplete=discord.utils.basic_autocomplete(armor_name_autocomplete), required=True,max_length=100),
 	damage: discord.Option(int, "Amount of damage it reduces.", autocomplete=discord.utils.basic_autocomplete(held_numbers_autocomplete), required=True)):
-	#log(f"/equip_armor {name} {damage}")
+	
 	name = name.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
