@@ -1060,14 +1060,11 @@ async def henshin(ctx, set_trait: discord.Option(str, "The core book name or num
 	
 valid_bonuses = ["+1D6 Max Hp","+1D6 War Dice","Random Standard Issue Item","Balaclava (hides identity)","Flashlight (can be used as a weapon attachment)","Knife (1D6 DAMAGE)","MRE field rations (+1D6 HP, one use)","Pistol (1D6 DAMAGE)","Riot shield (1 ARMOR, equip as weapon)"]
 
-async def starting_bonus_autocomp(ctx):
-	return valid_bonuses
-
 @bot.command(description="Create a new character to manage")
 async def create_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.",required=True, max_length=50),
 	starter_trait_1: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
 	starter_trait_2: discord.Option(str, "The core book name or number of a trait to add to the character immediately.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None),
-	starter_bonus: discord.Option(str, "The extra starting bonus for your character.",autocomplete=discord.utils.basic_autocomplete(starting_bonus_autocomp), required=False, default=None)):
+	starter_bonus: discord.Option(str, "The extra starting bonus for your character.",choices=valid_bonuses, required=False, default=None)):
 	
 	codename = codename.strip()
 	if starter_trait_1 is not None:
@@ -1143,7 +1140,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 			standard_issue_items = ["Balaclava (hides identity)","Flashlight (can be used as a weapon attachment)","Knife (1D6 DAMAGE)","MRE field rations (+1D6 HP, one use)","Pistol (1D6 DAMAGE)","Riot shield (1 ARMOR, equip as weapon)"]
 			if starter_bonus == "Random Standard Issue Item":
 				starter_bonus = rnd.choice(standard_issue_items)
-			if starter_bonus in standard_issue_items:
+			elif starter_bonus in standard_issue_items:
 				split_bonus = starter_bonus.split(" (")
 				starting_item_name = split_bonus[0]
 				starting_item_effect = split_bonus[1][:-1]
@@ -2335,12 +2332,10 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 		await ctx.respond(f"{codename.upper()} has no War Dice to spend!",ephemeral=True)
 
 editable_stats = ["CURRENT HP","MAX HP","WAR DICE","FORCEFUL","TACTICAL","REFLEXIVE","CREATIVE","ARMOR"]
-async def stats_autocomplete(ctx):
-	return editable_stats
 
 @bot.command(description="Adjust one of your character's stats")
 async def adjust(ctx,
-	stat: discord.Option(str, "The stat to change.", autocomplete=discord.utils.basic_autocomplete(stats_autocomplete), required=True),
+	stat: discord.Option(str, "The stat to change.", choices=editable_stats, required=True),
 	amount: discord.Option(str, "Amount to increase the stat by. Supports dice syntax. Negative values will decrease.", required=True)):
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -3373,11 +3368,8 @@ async def choke(ctx):
 	result = roll_intelligence_matrix(intelligence["misc"][10])
 	await ctx.respond(result)
 
-async def part_success_autocomplete(ctx: discord.AutocompleteContext):
-	return ["COMBAT","GENERAL","MENTAL","MOVEMENT","SOCIAL","WEIRD"]
-
 @matrix_group.command(description="Causes random consequences for a Partial Success")
-async def partial(ctx, type: discord.Option(str,"The type of consequence that should be inflicted",autocomplete=discord.utils.basic_autocomplete(part_success_autocomplete),required=False,default=None)=None):
+async def partial(ctx, type: discord.Option(str,"The type of consequence that should be inflicted",choices=["COMBAT","GENERAL","MENTAL","MOVEMENT","SOCIAL","WEIRD"],required=False,default=None)=None):
 	#log(f"/matrix partial {type}")
 	if type is not None:
 		type = type.upper()
@@ -3462,7 +3454,7 @@ async def bupgrade_autocomp(ctx):
 	return bupgrade_names
 
 @gear_group.command(description="Applies a random Base Upgrade")
-async def baseupgrade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Base Upgrade instead",autocomplete=discord.utils.basic_autocomplete(bupgrade_autocomp),required=False,default=None)=None):
+async def baseupgrade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Base Upgrade instead",choices=bupgrade_names,required=False,default=None)=None):
 	#log("/matrix gear baseupgrade")
 	message = ""
 	if lookup is None:
