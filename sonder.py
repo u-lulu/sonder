@@ -471,7 +471,7 @@ async def server(ctx):
 
 @bot.command(description="Lists people responsible for this bot's creation")
 async def credits(ctx):
-	await ctx.respond(open('credits.md').read())
+	await ctx.respond(open('credits.md').read(),ephemeral=True)
 
 @bot.command(description="Check to see if you have an active membership")
 async def membership(ctx):
