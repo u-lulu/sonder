@@ -438,12 +438,10 @@ async def on_application_command_error(ctx, e):
 
 @bot.command(description="Checks how long the bot has been online")
 async def uptime(ctx):
-	#log("/uptime")
 	await ctx.respond(f"Online since <t:{boot_time}:D> at <t:{boot_time}:T> (<t:{boot_time}:R>)",ephemeral=True)
 
 @bot.command(description="Measures this bot's latency")
 async def ping(ctx):
-	#log("/ping")
 	await ctx.respond(f"Pong! Latency is {bot.latency}")
 
 @bot.command(description="Shuts down the bot. Will not work unless you own the bot.")
@@ -461,22 +459,18 @@ async def shutdown(ctx):
 
 @bot.command(description="Links to the Help document for this bot")
 async def help(ctx):
-	#log("/help")
 	await ctx.respond("[Full command documentation](https://docs.google.com/document/d/15pm5o5cJuQF_J3l-NMpziPEuxDkcWJVE3TNT7_IerbQ/edit?usp=sharing)",ephemeral=True)
 
 @bot.command(description="Links to the invite page for this bot")
 async def invite(ctx):
-	#log("/invite")
 	await ctx.respond("[Invite page](https://discord.com/api/oauth2/authorize?client_id=1096635021395251352&permissions=274877908992&scope=bot%20applications.commands)",ephemeral=True)
 
 @bot.command(description="Links to the support server for this bot")
 async def server(ctx):
-	#log("/server")
 	await ctx.respond("https://discord.gg/VeedQmQc7k",ephemeral=True)
 
 @bot.command(description="Check to see if you have an active membership")
 async def membership(ctx):
-	#log("/membership")
 	id = ctx.author.id
 	await ctx.defer(ephemeral=True)
 	if support_server_obj is None:
