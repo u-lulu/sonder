@@ -530,7 +530,6 @@ async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin."
 
 @bot.command(description="Roll 1d66")
 async def d66(ctx, instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1, min_value=1, max_value=1000)):
-	#log(f"/d66 {instances}")
 	outs = []
 	
 	for i in range(instances):
@@ -548,7 +547,6 @@ async def d66(ctx, instances: discord.Option(discord.SlashCommandOptionType.inte
 
 @bot.command(description="Roll 1d666")
 async def d666(ctx, instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1, min_value=1, max_value=1000)):
-	#log(f"/d666 {instances}")
 	outs = []
 
 	for i in range(instances):
