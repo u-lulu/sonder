@@ -13,6 +13,7 @@ from func_timeout import func_timeout, FunctionTimedOut # pip install func-timeo
 import qrcode # pip install qrcode
 from copy import deepcopy
 import asyncio
+import io
 
 standard_character_limit = 10
 premium_character_limit = 50
@@ -223,6 +224,14 @@ def commands_view_constructor(ctx, cmds):
 			V.add_item(button)
 			added += 1
 	return V if added > 0 else None
+
+async def response_with_file_fallback(ctx,message,eph=False):
+	if len(message) > 2000:
+		filedata = io.BytesIO(message.encode('utf-8'))
+		await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File(filedata,filename='response.md'),ephemeral=eph)
+		log(f"Sent response to /{ctx.command.qualified_name} as file")
+	else:
+		await ctx.respond(message,ephemeral=eph)
 
 subscription_cache = {}
 sub_cache_timeout = 60 * 60 # 1 hour
@@ -535,15 +544,7 @@ async def d66(ctx, instances: discord.Option(discord.SlashCommandOptionType.inte
 	for i in range(instances):
 		outs.append(str(d6()) + str(d6()))
 	message = ", ".join(outs)
-	if len(message) > 2000:
-		message = message.replace("*","").replace("# ","")
-		with open("message.txt","w") as file:
-			file.write(message)
-		await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
-		os.remove('message.txt')
-		log("Sent character sheet as file")
-	else:
-		await ctx.respond(message)
+	await response_with_file_fallback(ctx,message)
 
 @bot.command(description="Roll 1d666")
 async def d666(ctx, instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1, min_value=1, max_value=1000)):
@@ -552,15 +553,7 @@ async def d666(ctx, instances: discord.Option(discord.SlashCommandOptionType.int
 	for i in range(instances):
 		outs.append(str(d6()) + str(d6()) + str(d6()))
 	message = ", ".join(outs)
-	if len(message) > 2000:
-		message = message.replace("*","").replace("# ","")
-		with open("message.txt","w") as file:
-			file.write(message)
-		await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
-		os.remove('message.txt')
-		log("Sent character sheet as file")
-	else:
-		await ctx.respond(message)
+	await response_with_file_fallback(ctx,message)
 
 def output_character(codename, data):
 	out = f"# {codename.upper()}"
@@ -1327,15 +1320,7 @@ async def my_characters(ctx):
 					msg += f" (No traits)"
 		if premiums:
 			msg += "\n\* *premium character*"
-		if len(msg) > 2000:
-			msg = msg.replace("*","")
-			with open("message.txt","w") as file:
-				file.write(msg)
-			await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
-			os.remove('message.txt')
-			log("Sent character sheet as file")
-		else:
-			await ctx.respond(msg)
+		await response_with_file_fallback(ctx,msg)
 	else:
 		await ctx.respond("You haven't created any characters yet.",ephemeral=True)
 	
@@ -1365,15 +1350,7 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 			await ctx.respond(f"QR code of character sheet for **{codename.upper()}**:",file=discord.File('qr.png'))
 			os.remove('qr.png')
 	else:
-		if len(message) > 2000:
-			message = message.replace("*","").replace("# ","")
-			with open("message.txt","w") as file:
-				file.write(message)
-			await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
-			os.remove('message.txt')
-			log("Sent character sheet as file")
-		else:
-			await ctx.respond(message)
+		await response_with_file_fallback(ctx,message)
 
 @bot.command(description="Show your active character's inventory")
 async def inventory(ctx):
@@ -1395,15 +1372,7 @@ async def inventory(ctx):
 				for counter in counters:
 					counter_strings.append(f"{counter.upper()}: {counters[counter]}")
 				message += f" ({', '.join(counter_strings)})"
-	if len(message) > 2000:
-		message = message.replace("*","").replace("# ","")
-		with open("message.txt","w") as file:
-			file.write(message)
-		await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
-		os.remove('message.txt')
-		log("Sent inventory as file")
-	else:
-		await ctx.respond(message)
+	await response_with_file_fallback(ctx,message)
 
 @bot.command(description="Show the notes field for your active character")
 async def view_notes(ctx, hide_output: discord.Option(bool, "Hides the output message from everyone else.", required=False, default=True)):
@@ -1466,7 +1435,6 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 
 @bot.command(description="Check your current active character")
 async def active_character(ctx, show_all: discord.Option(bool, "If TRUE, lists all channels you have active characters in. FALSE by default.", required=False, default=False)):
-	#log(f"/active_character{' show_all' if show_all else ''}")
 	if show_all:
 		your_actives = character_data[str(ctx.author.id)]['active']
 		if len(your_actives) > 0:
@@ -1485,11 +1453,8 @@ async def active_character(ctx, show_all: discord.Option(bool, "If TRUE, lists a
 					except Exception as e:
 						log(f"Could not resolve name of channel {channel}")
 						message += f"\n- Unknown channel ({channel}) -> {your_actives[channel].upper()}"
-				with open("message.txt","w") as file:
-					file.write(message)
-				await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'),ephemeral=True)
-				os.remove('message.txt')
-				log("Sent actives list as file")
+				filedata = io.BytesIO(message.encode('utf-8'))
+				await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File(filedata,filename='response.md'),ephemeral=True)
 		else:
 			await ctx.respond(f"You do not have active characters in any channels.",ephemeral=True)
 	else:
@@ -1675,15 +1640,7 @@ async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait
 			full_trait = yourtraits[t]
 			
 			msg += f"\n- **{t.upper()}** ({full_trait['Stat']}, {full_trait['Item']})"
-		if len(msg) > 2000:
-			msg = msg.replace("*","")
-			with open("message.txt","w") as file:
-				file.write(msg)
-			await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
-			os.remove('message.txt')
-			log("Sent character sheet as file")
-		else:
-			await ctx.respond(msg)
+		await response_with_file_fallback(ctx,msg)
 	else:
 		name = name.upper()
 		if name not in yourtraits:
@@ -2192,15 +2149,7 @@ async def remove_item(ctx,
 		out = "The item that you wanted to remove could not be found. Your current items are:"
 		for i in character['items']:
 			out += f"\n- {i}"
-		if len(out) > 2000:
-			out = out.replace("*","").replace("# ","")
-			with open("message.txt","w") as file:
-				file.write(out)
-			await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'))
-			os.remove('message.txt')
-			log("Sent inventory as file")
-		else:
-			await ctx.respond(out)
+		await response_with_file_fallback(ctx,out)
 		return
 	
 	if item in character['counters']:
@@ -3268,15 +3217,7 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax"),
 	if not ('d' in syntax or 'D' in syntax):
 		message += f"\n\nIt seems your input didn't actually roll any dice. Did you mean `1d{syntax}` or `{syntax}d6`?\nSee [py-rolldice](<https://github.com/mundungus443/py-rolldice#dice-syntax>) for an explanation of dice syntax."
 	
-	if len(message) > 2000:
-		message = message.replace("*","").replace("`","")
-		with open("message.txt","w") as file:
-			file.write(message)
-		await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File('message.txt'),ephemeral=hidden)
-		os.remove('message.txt')
-		log("Sent dice results as file")
-	else:
-		await ctx.respond(message,ephemeral=hidden)
+	await response_with_file_fallback(ctx,message,hidden)
 
 bot.add_application_command(player_group)
 
