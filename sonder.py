@@ -469,6 +469,10 @@ async def invite(ctx):
 async def server(ctx):
 	await ctx.respond("https://discord.gg/VeedQmQc7k",ephemeral=True)
 
+@bot.command(description="Lists people responsible for this bot's creation")
+async def credits(ctx):
+	await ctx.respond(open('credits.md').read())
+
 @bot.command(description="Check to see if you have an active membership")
 async def membership(ctx):
 	id = ctx.author.id
