@@ -1,0 +1,4 @@
+py-cord
+py-rolldice
+func-timeout
+qrcode
