@@ -13,7 +13,7 @@ from func_timeout import func_timeout, FunctionTimedOut # pip install func-timeo
 import qrcode # pip install qrcode
 from copy import deepcopy
 import asyncio
-import io
+from io import BytesIO
 
 standard_character_limit = 10
 premium_character_limit = 50
@@ -227,7 +227,7 @@ def commands_view_constructor(ctx, cmds):
 
 async def response_with_file_fallback(ctx,message,eph=False):
 	if len(message) > 2000:
-		filedata = io.BytesIO(message.encode('utf-8'))
+		filedata = BytesIO(message.encode('utf-8'))
 		await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File(filedata,filename='response.md'),ephemeral=eph)
 		log(f"Sent response to /{ctx.command.qualified_name} as file")
 	else:
@@ -1451,7 +1451,7 @@ async def active_character(ctx, show_all: discord.Option(bool, "If TRUE, lists a
 					except Exception as e:
 						log(f"Could not resolve name of channel {channel}")
 						message += f"\n- Unknown channel ({channel}) -> {your_actives[channel].upper()}"
-				filedata = io.BytesIO(message.encode('utf-8'))
+				filedata = BytesIO(message.encode('utf-8'))
 				await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File(filedata,filename='response.md'),ephemeral=True)
 		else:
 			await ctx.respond(f"You do not have active characters in any channels.",ephemeral=True)
