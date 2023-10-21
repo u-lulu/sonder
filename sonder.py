@@ -3369,10 +3369,11 @@ file.close()
 async def cassette(ctx, type: discord.Option(str,"The type of audio that should be on the cassette tape.",choices=["Music","Sounds"],required=False,default=None)=None):
 	ctx.defer()
 	audio = rnd.choice(intelligence["cassettes"])
-	while type[0] == "M" and ('[' in audio or ']' in audio):
-		audio = rnd.choice(intelligence["cassettes"])
-	while type[0] == "S" and not ('[' in audio or ']' in audio):
-		audio = rnd.choice(intelligence["cassettes"])
+	if type is not None:
+		while type[0] == "M" and ('[' in audio or ']' in audio):
+			audio = rnd.choice(intelligence["cassettes"])
+		while type[0] == "S" and not ('[' in audio or ']' in audio):
+			audio = rnd.choice(intelligence["cassettes"])
 	if audio == "[Combination tape, roll 1D6 tapes]":
 		tapes = ["[Combination tape, roll 1D6 tapes]"]
 		while "[Combination tape, roll 1D6 tapes]" in tapes:
