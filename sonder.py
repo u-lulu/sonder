@@ -233,6 +233,51 @@ async def response_with_file_fallback(ctx,message,eph=False):
 	else:
 		await ctx.respond(message,ephemeral=eph)
 
+def replace_ignoring_case(string,thing_to_replace,replacement):
+	while thing_to_replace.lower() in string.lower():
+		start_index = string.lower().index(thing_to_replace.lower())
+		end_index = start_index + len(thing_to_replace)
+		before_string = string[:start_index]
+		after_string = string[end_index:]
+		string = before_string + replacement + after_string
+	return string
+
+async def roll_dice_with_context(ctx,syntax,reply=True):
+	output = ()
+	timeout = 2
+	character = get_active_char_object(ctx)
+
+	stats = ['frc','tac','cre','rfx']
+
+	for stat in stats:
+		if stat in syntax.lower():
+			if character is None:
+				if reply:
+					await ctx.respond(f"You do not have an active character in this channel that can provide a {stat.upper()} score. Select one with `/switch_character`.",ephemeral=True)
+				return None
+			else:
+				relevant_stat = str(character[stat])
+				syntax = replace_ignoring_case(syntax,stat,relevant_stat)
+
+	try:
+		result = func_timeout(timeout, rolldice.roll_dice, args=[syntax])
+		return result
+	except rolldice.rolldice.DiceGroupException as e:
+		log(f"Caught: {e}")
+		if reply:
+			await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
+		return None
+	except FunctionTimedOut as e:
+		log(f"Caught: {e}")
+		if reply:
+			await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
+		return None
+	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
+		log(f"Caught: {e}")
+		if reply:
+			await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
+		return None
+
 subscription_cache = {}
 sub_cache_timeout = 60 * 60 # 1 hour
 
@@ -1867,21 +1912,8 @@ async def adjust_item_counter(ctx,
 		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'.",ephemeral=True)
 		return
 	
-	output = ()
-	timeout = 2
-	try:
-		output = func_timeout(timeout, rolldice.roll_dice, args=[amount])
-	except rolldice.rolldice.DiceGroupException as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
-		return
-	except FunctionTimedOut as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
-		return
-	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
+	output = await roll_dice_with_context(ctx,amount,True)
+	if output is None:
 		return
 	
 	character['counters'][item][counter_name] += int(output[0])
@@ -1963,6 +1995,7 @@ async def set_item_counter(ctx,
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
+	item = get_full_item_from_name(item,character)
 	if item not in character['items']:
 		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'. The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
 		return
@@ -1972,21 +2005,8 @@ async def set_item_counter(ctx,
 		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'.",ephemeral=True)
 		return
 	
-	output = ()
-	timeout = 2
-	try:
-		output = func_timeout(timeout, rolldice.roll_dice, args=[amount])
-	except rolldice.rolldice.DiceGroupException as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
-		return
-	except FunctionTimedOut as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
-		return
-	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
+	output = await roll_dice_with_context(ctx,amount,True)
+	if output is None:
 		return
 	
 	character['counters'][item][counter_name] = output[0]
@@ -2310,21 +2330,8 @@ async def adjust(ctx,
 		return
 	
 	translated_stat = stats_translator[stat]
-	output = ()
-	timeout = 2
-	try:
-		output = func_timeout(timeout, rolldice.roll_dice, args=[amount])
-	except rolldice.rolldice.DiceGroupException as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
-		return
-	except FunctionTimedOut as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
-		return
-	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
+	output = await roll_dice_with_context(ctx,amount,True)
+	if output is None:
 		return
 	
 	character[translated_stat] += int(output[0])
@@ -2492,21 +2499,8 @@ async def damage(ctx,
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
-	timeout = 2
-	output = ()
-	try:
-		output = func_timeout(timeout, rolldice.roll_dice, args=[amount])
-	except rolldice.rolldice.DiceGroupException as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
-		return
-	except FunctionTimedOut as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
-		return
-	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
+	output = await roll_dice_with_context(ctx,amount,True)
+	if output is None:
 		return
 	
 	before_armor = output[0]
@@ -2583,21 +2577,8 @@ async def heal(ctx,
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
-	timeout = 2
-	output = ()
-	try:
-		output = func_timeout(timeout, rolldice.roll_dice, args=[amount])
-	except rolldice.rolldice.DiceGroupException as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
-		return
-	except FunctionTimedOut as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
-		return
-	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
+	output = await roll_dice_with_context(ctx,amount,True)
+	if output is None:
 		return
 	
 	healing_taken = int(output[0])
@@ -2635,9 +2616,13 @@ async def attack(ctx,
 	codename = get_active_codename(ctx)
 
 	base_damage = character['damage']
-	base_damage = rolldice.roll_dice(base_damage)
+	base_damage = await roll_dice_with_context(ctx,base_damage,True)
+	if base_damage is None:
+		return
 	
-	bonus_damage_result = rolldice.roll_dice(bonus_damage)
+	bonus_damage_result = await roll_dice_with_context(ctx,bonus_damage,True)
+	if bonus_damage_result is None:
+		return
 	
 	final_damage = (base_damage[0] + bonus_damage_result[0]) * multiplier
 	
@@ -2729,15 +2714,7 @@ async def equip_weapon(ctx,
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
-	timeout = 2
-	try:
-		func_timeout(timeout, rolldice.roll_dice, args=[damage])
-	except FunctionTimedOut as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"You cannot equip this weapon because attemping to roll its damage takes too long (>{timeout}s). Try using less dice.",ephemeral=True)
-		return
-	except Exception as e:
-		await ctx.respond(f"You cannot equip this weapon because attemping to roll its damage throws the following error:\n```{e}```",ephemeral=True)
+	if await roll_dice_with_context(ctx,damage,True) is None:
 		return
 	
 	character['weapon_name'] = name
@@ -3167,12 +3144,6 @@ async def roll(ctx,
 	
 	await ctx.respond(message,view=buttons)
 
-def roll_multiple_dice(syntax, amount):
-	out = []
-	for i in range(amount):
-		out.append(rolldice.roll_dice(syntax))
-	return out
-
 @player_group.command(description="Rolls dice using common dice syntax")
 async def dice(ctx, syntax: discord.Option(str,"The dice syntax"),
 	instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1, min_value=1),
@@ -3180,27 +3151,19 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax"),
 	#log(f"/player dice {syntax} {instances} {hidden}")
 	syntax = syntax.strip()
 	
-	timeout = 2
 	output = ()
 	if instances > 1:
 		output = []
-	try:
-		if instances > 1:
-			output = func_timeout(timeout, roll_multiple_dice, args=[syntax,instances])
-		else:
-			output = func_timeout(timeout, rolldice.roll_dice, args=[syntax])
-	except rolldice.rolldice.DiceGroupException as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
-		return
-	except FunctionTimedOut as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
-		return
-	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
-		log(f"Caught: {e}")
-		await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
-		return
+		for i in range(instances):
+			x = await roll_dice_with_context(ctx,syntax,True)
+			if x is None:
+				return
+			else:
+				output.append(x)
+	else:
+		output = await roll_dice_with_context(ctx,syntax,True)
+		if output is None:
+			return
 	
 	message = ""
 	if instances > 1:
