@@ -2633,37 +2633,41 @@ async def attack(ctx,
 		message += f"\nFinal damage multiplier: `{multiplier}`"
 	await ctx.respond(message)
 
+async def get_all_acceptable_syntax(ctx, string):
+	current_char = get_active_char_object(ctx)
+	out = []
+	words = string.split(" ")
+	for word in words:
+		diceout = await roll_dice_with_context(ctx,word,False)
+		if len(word) > 0 and diceout is not None:
+			out.append(word)
+	return out
+
+def get_item_effect(item):
+	item_split = item.split(" (")
+	if len(item) > 1:
+		return item_split[1].replace(")","")
+	else:
+		return None
+
 async def held_dice_autocomplete(ctx):
 	current_char = get_active_char_object(ctx)
 	if current_char is None:
 		return []
 	item_list = current_char['items']
 	dice_outs = set()
-	num_outs = set()
 	current_item_selected = ctx.options["name"]
 	if current_item_selected == 'Unarmed':
 		dice_outs.add("2d6k1")
-	dice_pattern = r'(\d*)[dD](\d+)([+-]\d+)?'
-	number_pattern = r'(\d+)'
-	for item in item_list:
-		cut = item.split(" (")
-		effect = cut[1] if len(cut) > 1 else ""
-		dice_matches = re.findall(dice_pattern, effect)
-		number_matches = re.findall(number_pattern, effect)
-		if current_item_selected != None and item.startswith(current_item_selected):
-			dice_outs = set()
-			num_outs = set()
-			for match in dice_matches:
-				dice_outs.add(f"{match[0]}D{match[1]}{match[2]}")
-			for match in number_matches:
-				num_outs.add(match)
-			break
-		else:
-			for match in dice_matches:
-				dice_outs.add(f"{match[0]}D{match[1]}{match[2]}")
-			for match in number_matches:
-				num_outs.add(match)
-	return list(dice_outs) + list(num_outs)
+	full_current_item = get_full_item_from_name(current_item_selected,current_char)
+	if full_current_item is None:
+		for item in item_list:
+			item_effect = get_item_effect(item)
+			dice_outs = dice_outs.union(set(await get_all_acceptable_syntax(ctx,item_effect)))
+	else:
+		item_effect = get_item_effect(full_current_item)
+		dice_outs = dice_outs.union(set(await get_all_acceptable_syntax(ctx,item_effect)))
+	return list(dice_outs)
 
 async def held_numbers_autocomplete(ctx):
 	current_char = get_active_char_object(ctx)
