@@ -3230,7 +3230,6 @@ file.close()
 
 @matrix_group.command(description="Provides a random Mission Dossier")
 async def mission(ctx):
-	#log("/matrix mission")
 	results = roll_all_matrices(intelligence["mission"])
 	instigator = decap_first(results[0])
 	activity = decap_first(results[1])
@@ -3247,7 +3246,6 @@ file.close()
 
 @matrix_group.command(description="Provides a random Mission Prompt")
 async def prompt(ctx):
-	#log("/matrix prompt")
 	message = roll_intelligence_matrix(intelligence["prompt"][0])
 	buttons = commands_view_constructor(ctx,get_commands_from_string(message))
 	await ctx.respond(message,view=buttons)
@@ -3258,7 +3256,6 @@ file.close()
 
 @matrix_group.command(description="Incants a Magical Word")
 async def syllables(ctx, amount: discord.Option(int, "The amount of syllables the word will have.", required=False, default=None, min_value=1, max_value=100)=None):
-	#log("/matrix syllables")
 	result = ""
 	count = d6() if amount is None else amount
 	for i in range(count):
@@ -3270,19 +3267,16 @@ async def syllables(ctx, amount: discord.Option(int, "The amount of syllables th
 
 @matrix_group.command(description="Gives a random Operation Codename")
 async def codename(ctx):
-	#log("/matrix codename")
 	result = roll_intelligence_matrix(intelligence["misc"][1])
 	await ctx.respond(result)
 
 @matrix_group.command(description="Provokes a random Combat Behavior")
 async def tactics(ctx):
-	#log("/matrix tactics")
 	result = roll_intelligence_matrix(intelligence["misc"][2])
 	await ctx.respond(result)
 
 @matrix_group.command(description="Strikes a random Hit Location")
 async def hit(ctx):
-	#log("/matrix hit")
 	result = [roll_intelligence_matrix(intelligence["misc"][3])]
 	while "Compound injury (roll two hit locations)" in result:
 		result.append(roll_intelligence_matrix(intelligence["misc"][3]))
@@ -3293,7 +3287,6 @@ async def hit(ctx):
 
 @matrix_group.command(description="Provokes a random Faction Action")
 async def factionaction(ctx):
-	#log("/matrix factionaction")
 	result = [roll_intelligence_matrix(intelligence["misc"][4])]
 	while "Fake-out zig-zag (roll two actions)" in result:
 		result.append(roll_intelligence_matrix(intelligence["misc"][4]))
@@ -3305,7 +3298,6 @@ async def factionaction(ctx):
 
 @matrix_group.command(description="Discloses a random Faction Mission")
 async def factionmission(ctx):
-	#log("/matrix factionmission")
 	result = [roll_intelligence_matrix(intelligence["misc"][5])]
 	while "Double mission (roll two objectives)" in result:
 		result.append(roll_intelligence_matrix(intelligence["misc"][5]))
@@ -3317,13 +3309,11 @@ async def factionmission(ctx):
 
 @matrix_group.command(description="Assigns a random CHOKE Score")
 async def choke(ctx):
-	#log("/matrix choke")
 	result = roll_intelligence_matrix(intelligence["misc"][10])
 	await ctx.respond(result)
 
 @matrix_group.command(description="Causes random consequences for a Partial Success")
 async def partial(ctx, type: discord.Option(str,"The type of consequence that should be inflicted",choices=["COMBAT","GENERAL","MENTAL","MOVEMENT","SOCIAL","WEIRD"],required=False,default=None)=None):
-	#log(f"/matrix partial {type}")
 	if type is not None:
 		type = type.upper()
 	if type == None:
@@ -3347,13 +3337,11 @@ async def partial(ctx, type: discord.Option(str,"The type of consequence that sh
 
 @matrix_group.command(description="Spawns a Random Encounter")
 async def encounter(ctx):
-	#log("/matrix encounter")
 	result = roll_intelligence_matrix(intelligence["misc"][12])
 	await ctx.respond(result)
 
 @matrix_group.command(description="Provokes a random Downtime Event")
 async def downtime(ctx):
-	#log("/matrix downtime")
 	result = roll_intelligence_matrix(intelligence["misc"][13])
 	await ctx.respond(result)
 
