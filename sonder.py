@@ -1397,7 +1397,6 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 
 @bot.command(description="Show your active character's inventory")
 async def inventory(ctx):
-	#log(f"/inventory")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
@@ -2022,7 +2021,6 @@ async def remove_item_counter(ctx,
 	counter_name: discord.Option(str, "The name of the counter",autocomplete=discord.utils.basic_autocomplete(counters_on_the_item_autocomp), required=True)
 	):
 	
-	#log(f"/remove_item_counter {item} {counter_name}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
@@ -2064,7 +2062,6 @@ async def active_character_traits_autocomp(ctx):
 async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to remove.",autocomplete=discord.utils.basic_autocomplete(active_character_traits_autocomp), required=True),
 	keep_item: discord.Option(bool, "If TRUE, the Trait's associated item will not be removed from your inventory.", required=False, default=False)):
 	
-	#log(f"/remove_trait {trait}{' keep_item' if keep_item else ''}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
@@ -2143,7 +2140,6 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 @bot.command(description="Remove an item from your active character")
 async def remove_item(ctx,
 		item: discord.Option(str, "The item to be removed",autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True)):
-	#log(f"/remove_item {item}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
@@ -2175,6 +2171,37 @@ async def remove_item(ctx,
 	
 	await ctx.respond(f"**{codename.upper()}** has removed **{item}** from their inventory.")
 	await save_character_data(str(ctx.author.id))
+
+@bot.command(description="Remove an item from your active character")
+async def show_item(ctx,item: discord.Option(str, "The item to be removed",autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True)):
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+
+	if len(character['items']) <= 0:
+		await ctx.respond(f"**{codename.upper()}** does not have any items.",ephemeral=True)
+		return
+
+	full_item = get_full_item_from_name(item, character)
+	message = f"Displaying an item from {codename.upper()}'s inventory:"
+
+	if full_item in character['items']:
+		await ctx.defer()
+		message += f"\n>>> ## {full_item}"
+		if full_item in character['counters']:
+			counters = character['counters'][full_item]
+			counter_strings = []
+			for counter in counters:
+				counter_strings.append(f"\n- {counter.upper()}: {counters[counter]}")
+			message += f"{', '.join(counter_strings)}"
+		await ctx.respond(message)
+		return
+	else:
+		await ctx.respond(f"**{codename.upper()}** does not have an item called '{item}'.",ephemeral=True)
+		return
+
 
 @bot.command(description="Spend a War Die from your active character")
 async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows the 'Exploding WAR DICE' optional rule.", required=False, default=False)):
