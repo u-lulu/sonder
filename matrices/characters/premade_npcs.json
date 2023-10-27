@@ -256,7 +256,7 @@
   {
     "Head": "NARCO-SUBMARINE (18 HP)",
     "Features": [
-      "Criminal (`/matrix faction criminals) crew (4D6 crewmembers)",
+      "Criminal (`/matrix faction criminals`) crew (4D6 crewmembers)",
       "Worn-down hull (2 ARMOR)",
       "Retrofitted torpedoes (2D6 DAMAGE, six uses)",
       "Drug payload (roll 1D6 for payload type: 1. Cannabis    4. Cocaine 2. Magic mushrooms 5. Heroin 3. Artifical psychedelics 6. Prescription drugs"
