@@ -2172,7 +2172,7 @@ async def remove_item(ctx,
 	await ctx.respond(f"**{codename.upper()}** has removed **{item}** from their inventory.")
 	await save_character_data(str(ctx.author.id))
 
-@bot.command(description="Remove an item from your active character")
+@bot.command(description="Display an item from your active character")
 async def show_item(ctx,item: discord.Option(str, "The item to be removed",autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True)):
 	character = get_active_char_object(ctx)
 	if character == None:
@@ -2202,6 +2202,20 @@ async def show_item(ctx,item: discord.Option(str, "The item to be removed",autoc
 		await ctx.respond(f"**{codename.upper()}** does not have an item called '{item}'.",ephemeral=True)
 		return
 
+@bot.command(description="Show your active character's current Role")
+async def show_role(ctx):
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	
+	r = character["role"]
+	if r == {}:
+		await ctx.respond(f"{codename.upper()} does not have a Role yet. You can set one with `/set_role`.",ephemeral=True)
+		return
+	else:
+		await ctx.respond(f"{codename.upper()}'s Role:\n>>> **{r['Name']}**\n{r['Text']}")
 
 @bot.command(description="Spend a War Die from your active character")
 async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows the 'Exploding WAR DICE' optional rule.", required=False, default=False)):
