@@ -3617,40 +3617,53 @@ file = open('matrices/cyclops/gadgets.json')
 intelligence["cyclops_gadgets"] = json.load(file)
 file.close()
 
+gadgets_by_name = {}
+for g in intelligence["cyclops_gadgets"][0]["Values"].values():
+	gadgets_by_name[g["Name"].upper()] = g
+
+async def gadget_lookup_autocomp(ctx):
+	return list(gadgets_by_name.keys())
+
 file = open('matrices/cyclops/rumors.json')
 intelligence["cyclops_rumors"] = json.load(file)
 file.close()
 
 @cyclops_group.command(description="Grants a random CYCLOPS Gadget")
 async def gadget(ctx, 
+	lookup: discord.Option(str,"Including this argument searches for a specific gadget. Overrides other arguments!",autocomplete=discord.utils.basic_autocomplete(gadget_lookup_autocomp),required=False,default=None)=None,
 	count: discord.Option(discord.SlashCommandOptionType.integer, "The number of CYCLOPS Gadgets to produce", required=False, default=1, min_value=1, max_value=250)=1,
 	duplicates: discord.Option(bool, "Mark FALSE to prevent duplicate items being rolled if count > 1", required=False, default=True)=True
 	):
-	#log(f"/matrix cyclops gadget {count}{' no_duplicates' if not duplicates else ''}")
+	ctx.defer()
 	message = ""
-	if count <= 1:
-		result = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
-		message = f"**{result['Name']}**: {result['Effect']}"
-	else:
-		if duplicates:
-			results = {}
-			for i in range(count):
-				g = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
-				name = g["Name"]
-				if name in results:
-					results[name] = results[name] + 1
-				else:
-					results[name] = 1
-			for key in results:
-				if results[key] > 1:
-					message += f"{key} **(x{results[key]})**\n"
-				else:
-					message += f"{key}\n"
+	if lookup is None: #getting random gadgets
+		if count <= 1:
+			result = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
+			message = f"**{result['Name']}**: {result['Effect']}"
 		else:
-			gs = list(intelligence["cyclops_gadgets"][0]["Values"].values())
-			outs = rnd.sample(gs, min([len(gs),count]))
-			for item in outs:
-				message += f"{item['Name']}\n"
+			if duplicates:
+				results = {}
+				for i in range(count):
+					g = roll_intelligence_matrix(intelligence["cyclops_gadgets"][0])
+					name = g["Name"]
+					if name in results:
+						results[name] = results[name] + 1
+					else:
+						results[name] = 1
+				for key in results:
+					if results[key] > 1:
+						message += f"{key} **(x{results[key]})**\n"
+					else:
+						message += f"{key}\n"
+			else:
+				gs = list(intelligence["cyclops_gadgets"][0]["Values"].values())
+				outs = rnd.sample(gs, min([len(gs),count]))
+				for item in outs:
+					message += f"{item['Name']}\n"
+	else: #performing lookup instead
+		best_match = get_close_matches(lookup.upper(), list(gadgets_by_name.keys()), n=1, cutoff=0.0)
+		result = gadgets_by_name[best_match[0]]
+		message = f"**{result['Name']}**: {result['Effect']}"
 	await ctx.respond(message)
 
 @cyclops_group.command(description="Divulges where CYCLOPS High Command is (allegedly) located")
