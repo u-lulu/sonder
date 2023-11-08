@@ -3571,7 +3571,6 @@ async def vehicleweapon(ctx, count: discord.Option(discord.SlashCommandOptionTyp
 
 @gear_group.command(description="Applies a random Weapon Skin")
 async def skin(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of weapon skins to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)=1):
-	#log(f"/matrix gear skin {count}")
 	results = {}
 	for i in range(count):
 		item = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
@@ -3589,11 +3588,12 @@ async def skin(ctx, count: discord.Option(discord.SlashCommandOptionType.integer
 	await ctx.respond(message)
 
 @gear_group.command(description="Generates a fully unique Weapon")
-async def weaponsmith(ctx):
+async def weaponsmith(ctx,
+		weapon_tags: discord.Option(discord.SlashCommandOptionType.integer, "The number of tags the weapon has", required=False, default=None, min_value=1, max_value=6)=None):
 	model = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][1])
 	
 	tags = []
-	amount = d6() if d6() <= 1 else 1
+	amount = (d6() if d6() <= 1 else 1) if weapon_tags is None else weapon_tags
 	tags = rnd.sample(list(intelligence["gear_weapons_and_armor"][2]["Values"].values()),amount)
 	
 	skin = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
@@ -3605,7 +3605,6 @@ async def weaponsmith(ctx):
 
 @gear_group.command(description="Generates a fully unique Vehicle")
 async def hangar(ctx):
-	#log("/matrix gear weaponsmith")
 	model = roll_intelligence_matrix(intelligence["gear_vehicles"][0])
 	weapon = roll_intelligence_matrix(intelligence["gear_vehicles"][1])
 	skin = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
