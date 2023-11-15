@@ -266,18 +266,18 @@ async def roll_dice_with_context(ctx,syntax,reply=True):
 		result = func_timeout(timeout, rolldice.roll_dice, args=[syntax])
 		return result
 	except rolldice.rolldice.DiceGroupException as e:
-		log(f"Caught: {e}")
 		if reply:
+			log(f"Caught: {e}")
 			await ctx.respond(f"{e}\nSee [py-rolldice](https://github.com/mundungus443/py-rolldice#dice-syntax) for an explanation of dice syntax.",ephemeral=True)
 		return None
 	except FunctionTimedOut as e:
-		log(f"Caught: {e}")
 		if reply:
+			log(f"Caught: {e}")
 			await ctx.respond(f"It took too long to roll your dice (>{timeout}s). Try rolling less dice.",ephemeral=True)
 		return None
 	except (ValueError, rolldice.rolldice.DiceOperatorException) as e:
-		log(f"Caught: {e}")
 		if reply:
+			log(f"Caught: {e}")
 			await ctx.respond(f"Could not properly parse your dice result. This usually means the result is much too large. Try rolling dice that will result in a smaller range of values.",ephemeral=True)
 		return None
 
