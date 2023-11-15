@@ -779,8 +779,8 @@ async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
 	if character_has_trait(character, 331): #hypnosis check
 		class HypnosisReroll(discord.ui.View):
 			orig_results = []
-			def __init__(self,original_results):
-				super().__init__()
+			def __init__(self,original_results,timeout,disable_on_timeout):
+				super().__init__(timeout=timeout,disable_on_timeout=disable_on_timeout)
 				self.orig_results = original_results
 			@discord.ui.button(label="Reroll Lowest (Hypnosis)",emoji="🌀")
 			async def hypnosis_reroll_callback(self,button,interaction):
@@ -3139,8 +3139,8 @@ async def roll(ctx,
 	if character is not None and character_has_trait(character, 331): #hypnosis check
 		class HypnosisReroll(discord.ui.View):
 			orig_results = []
-			def __init__(self,original_results):
-				super().__init__()
+			def __init__(self,original_results,timeout,disable_on_timeout):
+				super().__init__(timeout=timeout,disable_on_timeout=disable_on_timeout)
 				self.orig_results = original_results
 			@discord.ui.button(label="Reroll Lowest (Hypnosis)",emoji="🌀")
 			async def hypnosis_reroll_callback(self,button,interaction):
