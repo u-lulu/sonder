@@ -24,12 +24,15 @@ item_limit = 50
 logging_channel_id = 1145165620082638928
 logging_channel = None
 
-def log(msg):
+def log(msg,alert=False):
 	msg = str(msg).strip()
 	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
 	try:
 		if logging_channel is not None:
-			asyncio.create_task(logging_channel.send(f"<t:{int(time.time())}:R> `{msg}`"))
+			full_msg = f"<t:{int(time.time())}:R> `{msg}`"
+			if alert:
+				full_msg += f" (<@{ownerid}>)"
+			asyncio.create_task(logging_channel.send(full_msg))
 	except Exception as e:
 		print(date.today(), datetime.now().strftime("| %H:%M:%S |"), f"Could not log previous message: {e}")
 
@@ -478,7 +481,8 @@ async def on_application_command(ctx):
 
 @bot.event
 async def on_application_command_error(ctx, e):
-	await ctx.respond(f"This command could not be fulfilled due to the following error:\n`{e}`\nIf this continues, please submit a bug report on the [Support Server]( https://discord.gg/VeedQmQc7k ).")
+	await ctx.respond(f"This command could not be fulfilled due to the following error:\n`{e}`\nThis error has been logged and reported to the developer.\nIf this continues, please submit a bug report on the [Support Server]( https://discord.gg/VeedQmQc7k ) or the [Github issues page]( https://github.com/u-lulu/sonder/issues ).")
+	log(f"Uncaught exception thrown: {e}",alert=True)
 	raise e
 
 @bot.command(description="Checks how long the bot has been online")
