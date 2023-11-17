@@ -4618,3 +4618,6 @@ async def the_board(ctx, message_id_of_new_record: discord.Option(str, "The ID o
 
 log("Starting bot session")
 bot.run(token)
+
+log("Bot session ended. Saving character data...")
+asyncio.run(save_character_data())
