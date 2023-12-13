@@ -2042,9 +2042,11 @@ async def remove_item_counter(ctx,
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return
 	
-	if item not in character['items']:
+	full_item = get_full_item_from_name(item,character)
+	if full_item not in character['items']:
 		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'. The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
 		return
+	item = full_item
 	
 	counter_name = counter_name.lower()
 	if counter_name.lower() not in character['counters'][item]:
