@@ -419,6 +419,10 @@ for player in character_data:
 			character_data[player]['chars'][char]['special'] = {}
 			log(f"{char} (owned by {player}) updated to include special field")
 			changed = True
+		if 'pronouns' not in character_data[player]['chars'][char]:
+			character_data[player]['chars'][char]['pronouns'] = None
+			log(f"{char} (owned by {player}) updated to include pronouns field")
+			changed = True
 		if 'henshin_trait' not in character_data[player]['chars'][char]['special'] or 'henshin_stored_hp' not in character_data[player]['chars'][char]['special'] or 'henshin_stored_maxhp' not in character_data[player]['chars'][char]['special']:
 			for trt in character_data[player]['chars'][char]['traits']:
 				if trt['Number'] == 316:
@@ -611,6 +615,10 @@ async def d666(ctx, instances: discord.Option(discord.SlashCommandOptionType.int
 
 def output_character(codename, data):
 	out = f"# {codename.upper()}"
+	if data['pronouns'] is not None:
+		out += f"\nPRONOUNS: {data['pronouns']}"
+	else:
+		out += f"\nPRONOUNS: *Not set.*"
 	if data["role"] == {}:
 		out += "\nROLE: *No role yet.*"
 	else:
@@ -666,6 +674,10 @@ def output_character(codename, data):
 
 def output_character_short(codename, data):
 	out = f"# {codename.upper()}"
+	if data['pronouns'] is not None:
+		out += f"\nPRONOUNS: {data['pronouns']}"
+	else:
+		out += f"\nPRONOUNS: *Not set.*"
 	if data["role"] == {}:
 		out += "\nROLE: *No role yet.*"
 	else:
@@ -1161,7 +1173,8 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 		"creation_time": time.time(),
 		"counters": {},
 		"notes": "",
-		"special": {}
+		"special": {},
+		"pronouns": None
 	}
 	
 	msg = f"Created character with the codename '{codename}'."
@@ -1196,7 +1209,6 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 async def rename(ctx,
 	codename: discord.Option(str, "The codename of the character to rename.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete),required=True),
 	new_codename: discord.Option(str, "The new codename of the character.",required=True,max_length=50)):
-	#log(f"/rename {codename} {new_codename}")
 	codename = codename.strip()
 	new_codename = new_codename.strip()
 	userid = str(ctx.author.id)
@@ -1230,7 +1242,6 @@ async def rename(ctx,
 async def clone(ctx,
 	codename: discord.Option(str, "The codename of the character to duplicate.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete),required=True),
 	new_codename: discord.Option(str, "The new codename of the duplicated character.",required=True,max_length=50)):
-	#log(f"/clone {codename} {new_codename}")
 	codename = codename.strip()
 	new_codename = new_codename.strip()
 	userid = str(ctx.author.id)
@@ -1270,7 +1281,6 @@ async def clone(ctx,
 
 @bot.command(description="Delete a character from your roster")
 async def delete_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
-	#log(f"/delete {codename}")
 	codename = codename.lower()
 	yourid = str(ctx.author.id)
 	if yourid not in character_data:
@@ -1342,7 +1352,6 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 
 @bot.command(description="List all characters you've created")
 async def my_characters(ctx):
-	#log("/my_characters")
 	yourid = str(ctx.author.id)
 	if yourid in character_data and len(character_data[yourid]['chars']) > 0:
 		await ctx.defer()
@@ -1380,7 +1389,6 @@ async def my_characters(ctx):
 	
 @bot.command(description="Displays your current active character's sheet")
 async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default=""), full_detail: discord.Option(bool, "Sends the sheet with no information truncated.", required=False, default=False), qr: discord.Option(bool, "Sends a QR code of the final output instead.", required=False, default=False)):
-	#log(f"/sheet{' ' + codename if len(codename) > 0 else ''}{' full_detail' if full_detail else ''}{' qr' if qr else ''}")
 	codename = codename.lower().strip()
 	yourid = str(ctx.author.id)
 	if codename == "":
@@ -1427,9 +1435,26 @@ async def inventory(ctx):
 				message += f" ({', '.join(counter_strings)})"
 	await response_with_file_fallback(ctx,message)
 
+sample_pronouns = ["they/them","she/her","he/him","it/its","any pronouns","unspecified pronouns","no pronouns","any pronouns","bun/buns","e/em","ey/em","fae/faer","liv/lir","mer/merm","nya/nyas","pup/pups","shi/hir","sie/hir","v/v","ve/ver","xe/xem","ze/zir"]
+
+async def pronouns_autocomplete(ctx):
+	return sample_pronouns
+
+@bot.command(description="Set your active character's pronouns")
+async def set_pronouns(ctx, pronouns: discord.Option(str, "The new pronouns for your active character.", autocomplete=discord.utils.basic_autocomplete(pronouns_autocomplete), required=True)):
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+	character['pronouns'] = pronouns
+
+	out = f"**{codename.upper()}** now goes by the pronouns **{pronouns}**."
+	await ctx.respond(out)
+	await save_character_data(str(ctx.author.id))
+
 @bot.command(description="Show the notes field for your active character")
 async def view_notes(ctx, hide_output: discord.Option(bool, "Hides the output message from everyone else.", required=False, default=True)):
-	#log(f"/view_notes")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
@@ -1444,7 +1469,6 @@ async def view_notes(ctx, hide_output: discord.Option(bool, "Hides the output me
 
 @bot.command(description="Edit the notes field for your active character")
 async def edit_notes(ctx):
-	#log(f"/edit_notes")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
@@ -1530,7 +1554,6 @@ async def role_autocomp(ctx):
 async def set_role(ctx,
 	name: discord.Option(str,"The name of your role.",autocomplete=discord.utils.basic_autocomplete(role_autocomp),required=True,max_length=50),
 	description: discord.Option(str,"The role's description.",required=True)):
-	#log(f"/set_role '{name}' '{description}'")
 	name = name.strip()
 	description = description.strip()
 	character = get_active_char_object(ctx)
