@@ -1435,13 +1435,13 @@ async def inventory(ctx):
 				message += f" ({', '.join(counter_strings)})"
 	await response_with_file_fallback(ctx,message)
 
-sample_pronouns = ["they/them","she/her","he/him","it/its","any pronouns","unspecified pronouns","no pronouns","any pronouns","bun/buns","e/em","ey/em","fae/faer","liv/lir","mer/merm","nya/nyas","pup/pups","shi/hir","sie/hir","v/v","ve/ver","xe/xem","ze/zir"]
+sample_pronouns = ["they/them","she/her","he/him","it/its","any pronouns","unspecified pronouns","no pronouns","any pronouns","ae/aer","bun/buns","e/em","ey/em","fae/faer","liv/lir","mer/merm","nya/nyas","pup/pups","shi/hir","sie/hir","v/v","ve/ver","xe/xem","ze/zir"]
 
 async def pronouns_autocomplete(ctx):
 	return sample_pronouns
 
 @bot.command(description="Set your active character's pronouns")
-async def set_pronouns(ctx, pronouns: discord.Option(str, "The new pronouns for your active character.", autocomplete=discord.utils.basic_autocomplete(pronouns_autocomplete), required=True)):
+async def set_pronouns(ctx, pronouns: discord.Option(str, "The new pronouns for your active character.", autocomplete=discord.utils.basic_autocomplete(pronouns_autocomplete), required=True, max_length=30)):
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
