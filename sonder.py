@@ -1435,7 +1435,7 @@ async def inventory(ctx):
 				message += f" ({', '.join(counter_strings)})"
 	await response_with_file_fallback(ctx,message)
 
-sample_pronouns = ["they/them","she/her","he/him","it/its","any pronouns","unspecified pronouns","no pronouns","any pronouns","ae/aer","bun/buns","e/em","ey/em","fae/faer","liv/lir","mer/merm","nya/nyas","pup/pups","shi/hir","sie/hir","v/v","ve/ver","xe/xem","ze/zir"]
+sample_pronouns = ["they/them","she/her","he/him","it/its","any pronouns","unspecified pronouns","no pronouns","ae/aer","bun/buns","e/em","ey/em","fae/faer","liv/lir","mer/merm","nya/nyas","pup/pups","shi/hir","sie/hir","v/v","ve/ver","xe/xem","ze/zir"]
 
 async def pronouns_autocomplete(ctx):
 	return sample_pronouns
