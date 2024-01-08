@@ -142,18 +142,18 @@ def search_for_role(role):
 			message = "Could not find a role with an approximately similar name."
 	return message
 
-def roll_intelligence_matrix(table):
+def roll_intelligence_matrix(table,generator=rnd):
 	roll_type = table["Roll"].upper()
 	if roll_type == "2D6":
-		roll_result = d6() + d6()
+		roll_result = generator.randint(1,6) + generator.randint(1,6)
 		return table["Values"][str(roll_result)]
 	else:
-		return rnd.choice(list(table["Values"].values()))
+		return generator.choice(list(table["Values"].values()))
 
-def roll_all_matrices(table_list):
+def roll_all_matrices(table_list,generator=rnd):
 	out = []
 	for table in table_list:
-		out.append(roll_intelligence_matrix(table))
+		out.append(roll_intelligence_matrix(table,generator))
 	return out
 	
 def decap_first(string):
@@ -3010,6 +3010,115 @@ async def random(ctx):
 
 bot.add_application_command(role_group)
 
+log("Creating challenge commands")
+challenge_group = discord.SlashCommandGroup("challenge", "Challenge Commands")
+async def challenge(ctx, interval: int, interval_name: str):
+	current_int = int(time.time() / interval)
+	next_int = current_int + 1
+
+	seeded_rnd = rnd.Random()
+	seeded_rnd.seed(current_int)
+
+	message = f"# {interval_name} CHALLENGE\n".upper()
+	message += f"Began <t:{current_int * interval}:R>\n"
+	message += f"Next challenge begins <t:{next_int * interval}:R>\n"
+
+	# --- Generate Character ---
+
+	message += f"## 👤 Character: {seeded_rnd.choice(merc_codenames).upper()}\n"
+	traits = seeded_rnd.sample(trait_data, 2)
+	role = seeded_rnd.choice(role_data)
+	
+	for i in range(len(traits)):
+		if (seeded_rnd.randint(1,10000) == 1):
+			traits[i] = secret_trait
+			break
+	
+	traits.sort(key=trait_sort_key)
+	
+	extra_thing = seeded_rnd.randint(1,3)
+	
+	message += role_message_format(role) + "\n\n"
+	
+	stats = {
+		"MAX": 6,
+		"WAR": 0,
+		"FORCEFUL": 0,
+		"TACTICAL": 0,
+		"CREATIVE": 0,
+		"REFLEXIVE": 0
+	}
+	
+	if extra_thing == 1:
+		stats["MAX"] += d6()
+	elif extra_thing == 2:
+		stats["WAR"] += d6()
+	
+	for trait in traits:
+		bonus = trait["Stat"].split(" ")
+		num = 0
+		if bonus[1] in stats:
+			try: 
+				num = rolldice.roll_dice(bonus[0])[0]
+			except Exception as e:
+				num = 0
+				log(f"Caught dice-rolling exception: {e}")
+			stats[bonus[1]] += num
+	
+	message += f"MAX HP: {stats['MAX']}\n"
+	message += f"WAR DICE: {stats['WAR']}\n\n"
+	
+	if stats['FORCEFUL'] != 0:
+		message += f"FORCEFUL: {'+' if stats['FORCEFUL'] > 0 else ''}{stats['FORCEFUL']}\n"
+	if stats['TACTICAL'] != 0:
+		message += f"TACTICAL: {'+' if stats['TACTICAL'] > 0 else ''}{stats['TACTICAL']}\n"
+	if stats['CREATIVE'] != 0:
+		message += f"CREATIVE: {'+' if stats['CREATIVE'] > 0 else ''}{stats['CREATIVE']}\n"
+	if stats['REFLEXIVE'] != 0:
+		message += f"REFLEXIVE: {'+' if stats['REFLEXIVE'] > 0 else ''}{stats['REFLEXIVE']}\n"
+	
+	if stats['FORCEFUL'] != 0 or stats['TACTICAL'] != 0 or stats['CREATIVE'] != 0 or stats['REFLEXIVE'] != 0:
+		message += '\n'
+	
+	message += "TRAITS:\n"
+	for trait in traits:
+		message += f"- **{trait['Name']}** ({trait['Number']})\n"
+	
+	message += "\nITEMS:"
+	for trait in traits:
+		message += f"\n- {trait['Item']}"
+	if extra_thing == 3:
+		standard_issue_items = ["Balaclava (hides identity)", "Flashlight (can be used as a weapon attachment)", "Knife (1D6 DAMAGE)", "MRE field rations (+1D6 HP, one use)", "Pistol (1D6 DAMAGE)", "Riot shield (1 ARMOR, equip as weapon)"]
+		message += f"\n- {seeded_rnd.choice(standard_issue_items)}"
+	
+	# --- Generate Mission ---
+	
+	name_A = roll_intelligence_matrix(intelligence['misc'][1],seeded_rnd).split(" ")
+	name_B = roll_intelligence_matrix(intelligence['misc'][1],seeded_rnd).split(" ")
+	mission_name = name_A[0] + " " + name_B[1]
+
+	message += f"\n## 🗺️ Mission: {mission_name.upper()}\n"
+
+	results = roll_all_matrices(intelligence["mission"],seeded_rnd)
+	instigator = decap_first(results[0])
+	activity = decap_first(results[1])
+	effect = decap_first(results[2])
+	twist = decap_first(results[3])
+	reward = results[4]
+	message += f"\nThe dossier says that **{instigator}** is trying to **{activity}**, which will **{effect}**. However, **{twist}**.\n- Reward: **{reward}**"
+	
+	await ctx.respond(message)
+
+@challenge_group.command(description="Shows the current daily challenge")
+async def daily(ctx):
+	await challenge(ctx,60*60*24,"daily")
+
+@challenge_group.command(description="Shows the current weekly challenge")
+async def weekly(ctx):
+	await challenge(ctx,7*60*60*24,"weekly")
+
+bot.add_application_command(challenge_group)
+
 log("Creating player commands")
 player_group = discord.SlashCommandGroup("player", "Player Commands")
 
@@ -3023,8 +3132,6 @@ file.close()
 
 @player_group.command(description="Produces a random character sheet")
 async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionType.integer, "The number of traits this character should have. Defaults to 2.", required=False, default=2, min_value=1, max_value=40)):
-	#log(f"/player character {traitcount}")
-	
 	message = f"# {rnd.choice(merc_codenames)}\n"
 	traits = rnd.sample(trait_data, traitcount)
 	role = rnd.choice(role_data)
