@@ -3088,6 +3088,7 @@ async def challenge(ctx, interval: int, interval_name: str):
 	reward = results[4]
 	message += f"\nThe dossier says that **{instigator}** is trying to **{activity}**, which will **{effect}**. However, **{twist}**.\n- Reward: **{reward}**"
 	
+	message = replace_commands_with_mentions(message)
 	await ctx.respond(message)
 
 @challenge_group.command(description="Shows the current daily challenge")
