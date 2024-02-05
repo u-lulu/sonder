@@ -2846,8 +2846,7 @@ async def random(ctx):
 	await ctx.respond(message)
 
 @bot.command(description="Convert a barcode into a MONSTERS statblock")
-async def monsters(ctx, barcode: discord.Option(str,"The barcode to input")):
-	#log(f"/trait monsters {barcode}")
+async def monsters(ctx, barcode: discord.Option(str,"The barcode to input"), type: discord.Option(str,"A descriptor, usually the item the barcode was on",required=False,default=None,max_length=50)):
 	try:
 		barcode = [int(digit) for digit in barcode]
 	except ValueError:
@@ -2870,7 +2869,7 @@ async def monsters(ctx, barcode: discord.Option(str,"The barcode to input")):
 		lower_middle_index = upper_middle_index - 1
 		armor = (barcode[lower_middle_index] + barcode[upper_middle_index]) // 2
 	
-	await ctx.respond(f"Your summoned MONSTER has:\n- 💥 1D6{'+'+str(damage_bonus) if damage_bonus > 0 else ''} DAMAGE\n- ❤️ {health} HP\n- 🛡️ {armor} ARMOR")
+	await ctx.respond(f"Your summoned {type.upper() + ' ' if type is not None else ''}MONSTER has:\n- 💥 1D6{'+'+str(damage_bonus) if damage_bonus > 0 else ''} DAMAGE\n- ❤️ {health} HP\n- 🛡️ {armor} ARMOR")
 
 @bot.command(description="Rolls a check for HARVEST")
 async def harvest(ctx):
