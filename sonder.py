@@ -3431,7 +3431,7 @@ async def factionaction(ctx):
 		result.append(roll_intelligence_matrix(intelligence["misc"][4]))
 		result.remove("Compound injury (roll two hit locations)")
 	result = " __*and*__ ".join(result)
-	result = f"A faction (any `/matrix faction`) tasks you with the following: **{result}**"
+	result = f"A faction (any `/matrix faction`) makes the following move: **{result}**"
 	await ctx.respond(result)
 
 @matrix_group.command(description="Discloses a random Faction Mission")
@@ -3442,7 +3442,7 @@ async def factionmission(ctx):
 		result.append(roll_intelligence_matrix(intelligence["misc"][5]))
 		result.remove("Double mission (roll two objectives)")
 	result = " __*and*__ ".join(result)
-	message = f"A faction tasks you with this objective: **{result}**"
+	message = f"A faction (any `/matrix faction`) tasks you with this objective: **{result}**"
 	await ctx.respond(message)
 
 @matrix_group.command(description="Assigns a random CHOKE Score")
