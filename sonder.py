@@ -4657,15 +4657,27 @@ def strain():
 	return f"{symptom} {area}"
 
 @ctsh_group.command(description="Provide a new Bacteria Canister from Colony's shop")
-async def canister(ctx, amount: discord.Option(discord.SlashCommandOptionType.integer, "The number of canisters to provide", required=False, default=1, min_value=1, max_value=15)):
-	#log(f"/colony canister {amount}")
+async def canister(ctx, amount: discord.Option(str, "The number of canisters to provide", required=False, default="1")):
+	original_syntax = amount
+	syntax_results = None
+	amount = await roll_dice_with_context(ctx,amount,True)
+	if amount is None:
+		return
+	else:
+		syntax_results = amount[1]
+		amount = amount[0]
+
+	msg = ""
 	if amount == 1:
-		await ctx.respond(f"Colony offers you a Bacteria Canister that's labelled... **{strain()}**. Whatever that means.")
+		msg = f"Colony offers you a Bacteria Canister that's labelled... **{strain()}**. Whatever that means."
 	else:
 		msg = "Colony offers you several Bacteria Canisters:"
 		for i in range(amount):
 			msg += f"\n- **{strain()}**"
-		await ctx.respond(msg)
+	if 'd' in original_syntax.lower():
+		msg += f"\nDice results: `{original_syntax}` -> `{syntax_results}` -> `{amount}`"
+	
+	await response_with_file_fallback(ctx,msg)
 
 @ctsh_group.command(description="Roll to see if Colony will spawn.")
 async def spawn(ctx):
