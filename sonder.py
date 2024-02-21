@@ -5,7 +5,7 @@ import re
 import random as rnd
 from datetime import datetime
 from datetime import date
-import time
+from time import time
 import os
 import math
 import rolldice # pip install py-rolldice
@@ -29,7 +29,7 @@ def log(msg,alert=False):
 	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
 	try:
 		if logging_channel is not None:
-			full_msg = f"<t:{int(time.time())}:R> `{msg}`"
+			full_msg = f"<t:{int(time())}:R> `{msg}`"
 			if alert:
 				full_msg += f" (<@{ownerid}>)"
 			asyncio.create_task(logging_channel.send(full_msg))
@@ -37,7 +37,7 @@ def log(msg,alert=False):
 		print(date.today(), datetime.now().strftime("| %H:%M:%S |"), f"Could not log previous message: {e}")
 
 log("Initializing...")
-boot_time = int(time.time())
+boot_time = int(time())
 
 bot = discord.Bot(activity=discord.Game(name='Loading...'),status=discord.Status.dnd)
 
@@ -271,7 +271,7 @@ async def ext_character_management(id):
 	except:
 		log(f"Could not cast ID to integer for membership check, received value '{id}'")
 		return False
-	if id in subscription_cache and time.time() < subscription_cache[id]:
+	if id in subscription_cache and time() < subscription_cache[id]:
 		log("Membership check succeeded via cache")
 		return True
 	if support_server_obj is None:
@@ -297,7 +297,7 @@ async def ext_character_management(id):
 			del subscription_cache[id]
 		return False
 	log(f"Membership check succeeds")
-	subscription_cache[id] = time.time() + sub_cache_timeout
+	subscription_cache[id] = time() + sub_cache_timeout
 	return True
 
 support_server_id = 1101249440230154300
@@ -315,12 +315,12 @@ async def save_character_data(userid=None):
 	
 	try:
 		if userid in character_data:
-			psavestart = time.time()
+			psavestart = time()
 			if not os.path.exists('playerdata'):
 				os.mkdir('playerdata')
 			with open(f"playerdata/{userid}.json", "w") as outfile:
 				outfile.write(json.dumps(character_data[userid],indent=2))
-			psaveend = time.time()
+			psaveend = time()
 			savetime = round(psaveend-psavestart,5)
 			this_guys_chars = len(character_data[userid]['chars'])
 			this_guys_traits = len(character_data[userid]['traits'])
@@ -342,11 +342,11 @@ if os.path.exists('playerdata'):
 	present_files = os.listdir('playerdata')
 	for filename in present_files:
 		userid = filename.split(".")[0]
-		ploadstart = time.time()
+		ploadstart = time()
 		file = open(f'playerdata/{filename}')
 		character_data[userid] = json.load(file)
 		file.close()
-		ploadend = time.time()
+		ploadend = time()
 		loadtime = round(ploadend-ploadstart,5)
 		this_guys_chars = len(character_data[userid]['chars'])
 		this_guys_traits = len(character_data[userid]['traits'])
@@ -356,11 +356,11 @@ if os.path.exists('playerdata'):
 		log(f"Loaded player data for {userid} in {loadtime if loadtime > 0 else '<0.00001'}s ({size_in_kb if size_in_mb < 1 else size_in_mb} {'KB' if size_in_mb < 1 else 'MB'}). Contains {this_guys_chars} characters & {this_guys_traits} custom traits.")
 elif os.path.exists('player_data.json'):
 	log("Old player data found. Converting...")
-	ploadstart = time.time()
+	ploadstart = time()
 	file = open('player_data.json')
 	character_data = json.load(file)
 	file.close()
-	ploadend = time.time()
+	ploadend = time()
 	loadtime = round(ploadend-ploadstart,5)
 	total_users = len(character_data)
 	total_characters = 0
@@ -442,7 +442,7 @@ async def on_ready():
 	
 	await bot.change_presence(activity=discord.Game(name='FIST: Ultra Edition'),status=discord.Status.online)
 	log(f"{bot.user} is ready and online in {len(bot.guilds)} guilds!")
-	boot_time = int(time.time())
+	boot_time = int(time())
 	
 	report_player_count = len(character_data)
 	report_character_count = 0
@@ -545,7 +545,7 @@ async def membership(ctx):
 		return
 	log("Result is YES")
 	await ctx.respond(f"You have an active subscription!\nYou are able to manage {premium_character_limit} characters and {premium_custrait_limit} custom traits.\nYou can manage your subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).",ephemeral=True)
-	subscription_cache[id] = time.time() + sub_cache_timeout
+	subscription_cache[id] = time() + sub_cache_timeout
 	return
 
 @bot.command(description="Pin (or unpin) a message inside a thread, if you own the thread")
@@ -1151,7 +1151,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 		"traits": [],
 		"items": [],
 		"premium": premium_character,
-		"creation_time": time.time(),
+		"creation_time": time(),
 		"counters": {},
 		"notes": "",
 		"special": {},
@@ -1251,7 +1251,7 @@ async def clone(ctx,
 	
 	character_data[userid]['chars'][new_codename] = deepcopy(character_data[userid]['chars'][codename])
 	character_data[userid]['chars'][new_codename]['premium'] = premium_character
-	character_data[userid]['chars'][new_codename]['creation_time'] = time.time()
+	character_data[userid]['chars'][new_codename]['creation_time'] = time()
 	
 	msg = f"Cloned character with the codename '{codename}' with new codename '{new_codename}'."
 	msg += f"\nYou now have {len(character_data[userid]['chars'])} characters."
@@ -2993,7 +2993,7 @@ bot.add_application_command(role_group)
 log("Creating challenge commands")
 challenge_group = discord.SlashCommandGroup("challenge", "Challenge Commands")
 async def challenge(ctx, interval: int, interval_name: str):
-	current_int = int(time.time() / interval)
+	current_int = int(time() / interval)
 	next_int = current_int + 1
 
 	seeded_rnd = rnd.Random()
