@@ -4484,9 +4484,28 @@ async def spell(ctx):
 		names[0] = names[0].rsplit(" ", 1)
 		names[1] = names[1].rsplit(" ", 1)
 		name = names[0][0] + " " + names[1][1]
-	feature = result[3]
-	effect = result[4]
-	message = f"Name: {name}\nEffect: {effect}\nFeature: {feature}\nLevel: {level}\nObscurity: {obscurity}"
+	
+	number_of_features = 0
+	if level == "Novice":
+		number_of_features = 1
+	elif level == "Apprentice":
+		number_of_features = 2
+	elif level == "Adept":
+		number_of_features = 3
+	elif level == "Expert":
+		number_of_features = 4
+	elif level == "Master":
+		number_of_features = 5
+	elif level == "Legendary":
+		number_of_features = 6
+	feature = ", ".join(rnd.sample(list(intelligence["lore_spells"][3]["Values"].values()),number_of_features))
+
+	number_of_effects = 1
+	if level == "Legendary":
+		number_of_effects = d6()
+	
+	effect = ", ".join(rnd.sample(list(intelligence["lore_spells"][4]["Values"].values()),number_of_effects))
+	message = f"Name: {name}\nLevel: {level}\nEffect{'s' if number_of_effects > 1 else ''}: {effect}\nFeature{'s' if number_of_features > 1 else ''}: {feature}\nObscurity: {obscurity}"
 	message = replace_commands_with_mentions(message)
 	await ctx.respond(message)
 
