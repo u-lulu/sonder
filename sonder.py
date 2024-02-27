@@ -191,13 +191,16 @@ def character_has_trait(character, number):
 
 def get_commands_from_string(working_string):
 	commands = []
-	while len(working_string) > 0 and '`' in working_string:
-		start_of_command = working_string.index('`/') + 2
-		working_string = working_string[start_of_command:]
-		end_of_command = working_string.index('`')
-		command_name = working_string[:end_of_command]
-		commands.append(command_name)
-		working_string = working_string[end_of_command+1:]
+	while '`/' in working_string:
+		try:
+			start_of_command = working_string.index('`/') + 2
+			working_string = working_string[start_of_command:]
+			end_of_command = working_string.index('`')
+			command_name = working_string[:end_of_command]
+			commands.append(command_name)
+			working_string = working_string[end_of_command+1:]
+		except ValueError as e:
+			break
 	return commands
 
 def replace_commands_with_mentions(text):
@@ -237,7 +240,7 @@ async def roll_dice_with_context(ctx,syntax,reply=True):
 		if stat in syntax.lower():
 			if character is None:
 				if reply:
-					await ctx.respond(f"You do not have an active character in this channel that can provide a {stat.upper()} score. Select one with `/switch_character`.",ephemeral=True)
+					await ctx.respond(replace_commands_with_mentions(f"You do not have an active character in this channel that can provide a {stat.upper()} score. Select one with `/switch_character`."),ephemeral=True)
 				return None
 			else:
 				relevant_stat = str(character[stat])
@@ -637,7 +640,7 @@ def output_character(codename, data):
 		if htrait is not None:
 			out += f"\nHENSHIN TRAIT ({'**__ACTIVE__**' if data['special']['henshin_stored_maxhp'] != 0 else 'INACTIVE'}):\n- **{htrait['Name']}** ({htrait['Number']}): {htrait['Effect']} ({htrait['Stat']})\n"
 		else:
-			out += f"\nHENSHIN TRAIT:\n- *Not set. Try out `/henshin`!*\n"
+			out += replace_commands_with_mentions(f"\nHENSHIN TRAIT:\n- *Not set. Try out `/henshin`!*\n")
 	
 	out += "\nINVENTORY:"
 	if len(data['items']) <= 0:
@@ -697,13 +700,13 @@ def output_character_short(codename, data):
 		if htrait is not None:
 			out += f"\n- Henshin trait ({'**__active__**' if data['special']['henshin_stored_maxhp'] != 0 else 'inactive'}): **{htrait['Name'][0].upper()+htrait['Name'][1:].lower()}** ({htrait['Number']})"
 		else:
-			out += f"\n- Henshin trait: *Not set. Try out `/henshin`!*"
+			out += replace_commands_with_mentions(f"\n- Henshin trait: *Not set. Try out `/henshin`!*")
 	
 	out += "\n\nINVENTORY: "
 	if len(data['items']) <= 0:
 		out += "\n *No items yet.*"
 	else:
-		out += f"*{len(data['items'])} items. View with `/inventory`*."
+		out += replace_commands_with_mentions(f"*{len(data['items'])} items. View with `/inventory`*.")
 	return out
 
 def get_active_codename(ctx):
@@ -738,7 +741,7 @@ async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
 	
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 	
@@ -882,7 +885,7 @@ async def add_trait(ctx,
 		rename_item = rename_item.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -970,7 +973,7 @@ async def add_trait(ctx,
 	if old_max_hp > character['maxhp'] and character['maxhp'] <= 0:
 		out += f"\n**This character now has a Max HP of {character['maxhp']}!!**"
 	if my_new_trait['Number'] in trait_tips:
-		out += f"\n💡 {trait_tips[my_new_trait['Number']]}"
+		out += replace_commands_with_mentions(f"\n💡 {trait_tips[my_new_trait['Number']]}")
 	out += f"\n>>> {trait_message_format(my_new_trait)}"
 	await ctx.respond(out)
 	if 'add_trait' in ctx.command.qualified_name:
@@ -983,7 +986,7 @@ async def henshin(ctx, set_trait: discord.Option(str, "The core book name or num
 		set_trait = set_trait.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -1065,7 +1068,7 @@ async def henshin(ctx, set_trait: discord.Option(str, "The core book name or num
 					return
 		else: #setting the trait
 			if character['special']['henshin_stored_maxhp'] != 0: #henshin is active; don't change anything!
-				await ctx.respond(f"You cannot change your HENSHIN trait while the alternate form is active.\nTo disable the alternate form, perform `/henshin`, without additional arguments.",ephemeral=True)
+				await ctx.respond(replace_commands_with_mentions(f"You cannot change your HENSHIN trait while the alternate form is active.\nTo disable the alternate form, perform `/henshin`, without additional arguments."),ephemeral=True)
 				return
 			else:
 				set_trait = set_trait.upper()
@@ -1093,7 +1096,7 @@ async def henshin(ctx, set_trait: discord.Option(str, "The core book name or num
 				await save_character_data(str(ctx.author.id))
 				return
 	else: #character does not have henshin
-		await ctx.respond(f"**{codename.upper()}** does not have the HENSHIN trait. To add it, use `/add_trait trait:HENSHIN`.",ephemeral=True)
+		await ctx.respond(f"**{codename.upper()}**" + replace_commands_with_mentions(" does not have the HENSHIN trait. You can add it with `/add_trait`."),ephemeral=True)
 		return
 	
 valid_bonuses = ["+1D6 Max Hp","+1D6 War Dice","Random Standard Issue Item","Balaclava (hides identity)","Flashlight (can be used as a weapon attachment)","Knife (1D6 DAMAGE)","MRE field rations (+1D6 HP, one use)","Pistol (1D6 DAMAGE)","Riot shield (1 ARMOR, equip as weapon)"]
@@ -1196,7 +1199,7 @@ async def rename(ctx,
 
 	codename = codename.lower()
 	if userid not in character_data or codename not in character_data[userid]['chars']:
-		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create_character`.",ephemeral=True)
+		await ctx.respond(f"You have not created a character with the codename '{codename}'." + replace_commands_with_mentions("You can view what characters you've made with `/my_characters`. Check your spelling, or try creating a new one with `/create_character`."),ephemeral=True)
 		return
 	
 	if character_data[userid]['chars'][codename]['premium'] and not await ext_character_management(ctx.author.id):
@@ -1229,7 +1232,7 @@ async def clone(ctx,
 	
 	codename = codename.lower()
 	if userid not in character_data or codename not in character_data[userid]['chars']:
-		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create_character`.",ephemeral=True)
+		await ctx.respond(f"You have not created a character with the codename '{codename}'." + replace_commands_with_mentions(" You can view what characters you've made with `/my_characters`. Check your spelling, or try creating a new one with `/create_character`."),ephemeral=True)
 		return
 	
 	premium_character = False
@@ -1375,10 +1378,10 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 	if codename == "":
 		codename = get_active_codename(ctx)
 	if codename == None:
-		await ctx.respond("You have not set an active character in this channel. Either set your active character with `/switch_character`, or specify which character's sheet you want to view using the optional `codename` argument for this command.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You have not set an active character in this channel. Either set your active character with `/switch_character`, or specify which character's sheet you want to view using the optional `codename` argument for this command."),ephemeral=True)
 		return
 	if yourid not in character_data or codename not in character_data[yourid]['chars']:
-		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create_character`.",ephemeral=True)
+		await ctx.respond(f"You have not created a character with the codename '{codename}'." + replace_commands_with_mentions(" You can view what characters you've made with `/my_characters`. Check your spelling, or try creating a new one with `/create_character`."),ephemeral=True)
 		return
 	
 	ch = character_data[yourid]['chars'][codename]
@@ -1399,7 +1402,7 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 async def inventory(ctx):
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 	message = f"**{codename.upper()}**'s inventory ({len(character['items'])}/{item_limit}):"
@@ -1425,7 +1428,7 @@ async def pronouns_autocomplete(ctx):
 async def set_pronouns(ctx, pronouns: discord.Option(str, "The new pronouns for your active character.", autocomplete=discord.utils.basic_autocomplete(pronouns_autocomplete), required=True, max_length=30)):
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 	character['pronouns'] = pronouns
@@ -1438,7 +1441,7 @@ async def set_pronouns(ctx, pronouns: discord.Option(str, "The new pronouns for 
 async def view_notes(ctx, hide_output: discord.Option(bool, "Hides the output message from everyone else.", required=False, default=True)):
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 	note = character['notes']
@@ -1452,7 +1455,7 @@ async def view_notes(ctx, hide_output: discord.Option(bool, "Hides the output me
 async def edit_notes(ctx):
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 	note = character['notes']
@@ -1477,12 +1480,12 @@ async def switch_character(ctx, codename: discord.Option(str, "The codename of t
 	codename = codename.strip()
 	userid = str(ctx.author.id)
 	if userid not in character_data or len(character_data[userid]['chars']) <= 0:
-		await ctx.respond("You have no characters available. Use `/create_character` to make one.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You have no characters available. Use `/create_character` to make one."),ephemeral=True)
 		return
 		
 	codename = codename.lower()
 	if codename not in character_data[userid]["chars"]:
-		await ctx.respond(f"You have not created a character with the codename '{codename}'. You can view what characters you've made with `/list`. Check your spelling, or try creating a new one with `/create_character`.",ephemeral=True)
+		await ctx.respond(f"You have not created a character with the codename '{codename}'." + replace_commands_with_mentions(" You can view what characters you've made with `/my_characters`. Check your spelling, or try creating a new one with `/create_character`."),ephemeral=True)
 		return
 	else:
 		character_data[userid]['active'][str(ctx.channel_id)] = codename
@@ -1539,7 +1542,7 @@ async def set_role(ctx,
 	description = description.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 	
@@ -1719,7 +1722,7 @@ async def add_item(ctx,
 	effect = effect.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -1739,7 +1742,7 @@ async def add_item(ctx,
 	for held_item in character['items']:
 		held_name = held_item.split(" (")[0]
 		if held_name.lower() == name.lower():
-			await ctx.respond(f"You already have an item named '{held_name}'.\nFor organizational reasons, please do not add two items to your inventory with the same name. Instead, label them differently, or keep track of copies with an item counter (via `/add_item_counter`).",ephemeral=True)
+			await ctx.respond(f"You already have an item named '{held_name}'.\nFor organizational reasons, please do not add two items to your inventory with the same name. Instead, label them differently, or keep track of copies with an item counter" + replace_commands_with_mentions(" (via `/add_item_counter`)."),ephemeral=True)
 			return
 	
 	item_to_add = name
@@ -1794,7 +1797,7 @@ async def edit_item(ctx,
 	effect = effect.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -1852,7 +1855,7 @@ async def add_item_counter(ctx,
 	counter_name = counter_name.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -1913,7 +1916,7 @@ async def adjust_item_counter(ctx,
 	amount = amount.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 	item = get_full_item_from_name(item,character)
@@ -1952,7 +1955,7 @@ async def ammo_check(ctx,
 	):
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -2006,7 +2009,7 @@ async def set_item_counter(ctx,
 	amount = amount.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -2044,7 +2047,7 @@ async def remove_item_counter(ctx,
 	
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 	
@@ -2087,7 +2090,7 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 	
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -2165,7 +2168,7 @@ async def remove_item(ctx,
 		item: discord.Option(str, "The item to be removed",autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True)):
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -2199,7 +2202,7 @@ async def remove_item(ctx,
 async def show_item(ctx,item: discord.Option(str, "The item to be removed",autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True)):
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -2229,13 +2232,13 @@ async def show_item(ctx,item: discord.Option(str, "The item to be removed",autoc
 async def show_role(ctx):
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 	
 	r = character["role"]
 	if r == {}:
-		await ctx.respond(f"{codename.upper()} does not have a Role yet. You can set one with `/set_role`.",ephemeral=True)
+		await ctx.respond(f"{codename.upper()} does not have a Role yet." + replace_commands_with_mentions(" You can set one with `/set_role`."),ephemeral=True)
 		return
 	else:
 		await ctx.respond(f"{codename.upper()}'s Role:\n>>> **{r['Name']}**\n{r['Text']}")
@@ -2245,7 +2248,7 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 	#log(f"/war_die{' explode' if explode else ''}")
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 	
@@ -2368,7 +2371,7 @@ async def adjust(ctx,
 	amount: discord.Option(str, "Amount to increase the stat by. Supports dice syntax. Negative values will decrease.", required=True)):
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -2435,7 +2438,7 @@ async def refresh(ctx,
 	#log(f"/refresh{' reset_hp' if reset_hp else ''}{' reset_war_dice' if reset_war_dice else ''}")
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -2499,7 +2502,7 @@ async def refresh(ctx,
 	
 	character['hp'] = character['maxhp']
 	
-	message = f"**{codename.upper()}** has been reset to their default stats. Use `/sheet` to view updated information."
+	message = f"**{codename.upper()}**" + replace_commands_with_mentions(" has been reset to their default stats. Use `/sheet` to view updated information.")
 	if weapon_reset:
 		message += "\nThis action has reset your equipped weapon to **Unarmed (2d6k1 DAMAGE)**."
 	if armor_reset:
@@ -2512,6 +2515,7 @@ async def refresh(ctx,
 		character['special']['henshin_stored_hp'] = 0
 		character['special']['henshin_stored_maxhp'] = 0
 		message += f"\nYour active HENSHIN status has been cleared."
+	message = replace_commands_with_mentions(message)
 	await ctx.respond(message)
 	await save_character_data(str(ctx.author.id))
 
@@ -2555,7 +2559,7 @@ async def damage(ctx,
 	
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -2633,7 +2637,7 @@ async def heal(ctx,
 	):
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -2675,7 +2679,7 @@ async def attack(ctx,
 	multiplier: discord.Option(int, "Amount to multiply the final damage by.", required=False, default=1)):
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -2774,7 +2778,7 @@ async def equip_weapon(ctx,
 	name = name.strip()
 	damage = damage.strip()
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -2807,7 +2811,7 @@ async def equip_armor(ctx,
 	name = name.strip()
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 
@@ -2875,7 +2879,7 @@ async def monsters(ctx, barcode: discord.Option(str,"The barcode to input"), typ
 async def harvest(ctx):
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 	
@@ -2924,7 +2928,7 @@ sunder_tracker = {}
 async def sunder(ctx):
 	character = get_active_char_object(ctx)
 	if character == None:
-		await ctx.respond("You do not have an active character in this channel. Select one with `/switch_character`.",ephemeral=True)
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 		return
 	codename = get_active_codename(ctx)
 	
