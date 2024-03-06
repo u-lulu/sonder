@@ -2829,8 +2829,6 @@ async def equip_armor(ctx,
 log("Creating trait commands")
 trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
-trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
-
 @trait_group.command(description="Looks up a trait by name or d666 number")
 async def lookup(ctx, trait: discord.Option(str,"The trait to search for",autocomplete=discord.utils.basic_autocomplete(trait_autocomp))):
 	#log(f"/trait lookup {trait}")
