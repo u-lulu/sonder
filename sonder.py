@@ -1444,12 +1444,20 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 		await response_with_file_fallback(ctx,message)
 
 @bot.command(description="Show your active character's inventory")
-async def inventory(ctx):
-	character = get_active_char_object(ctx)
-	if character == None:
-		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
+async def inventory(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default="")):
+	codename = codename.lower().strip()
+	yourid = str(ctx.author.id)
+	if codename == "":
+		codename = get_active_codename(ctx)
+	if codename == None:
+		await ctx.respond(replace_commands_with_mentions("You have not set an active character in this channel. Either set your active character with `/switch_character`, or specify which character's sheet you want to view using the optional `codename` argument for this command."),ephemeral=True)
 		return
-	codename = get_active_codename(ctx)
+	if yourid not in character_data or codename not in character_data[yourid]['chars']:
+		await ctx.respond(f"You have not created a character with the codename '{codename}'." + replace_commands_with_mentions(" You can view what characters you've made with `/my_characters`. Check your spelling, or try creating a new one with `/create_character`."),ephemeral=True)
+		return
+	
+	character = character_data[yourid]['chars'][codename]
+
 	message = f"**{codename.upper()}**'s inventory ({len(character['items'])}/{item_limit}):"
 	if len(character['items']) <= 0:
 		message = f"**{codename.upper()}** has no items in their inventory."
