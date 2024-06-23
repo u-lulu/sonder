@@ -3161,10 +3161,14 @@ player_group = discord.SlashCommandGroup("player", "Player Commands")
 def trait_sort_key(trait):
 	return trait["Name"]
 
-log("Loading Ripley's codenames")
-file = open('ripley_codenames.json')
+log("Loading Codenames")
+file = open('codenames.json')
 merc_codenames = json.load(file)
 file.close()
+
+@player_group.command(description="Produces a random operative codename")
+async def codename(ctx):
+	await ctx.respond("# " + rnd.choice(merc_codenames))
 
 @player_group.command(description="Produces a random character sheet")
 async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionType.integer, "The number of traits this character should have. Defaults to 2.", required=False, default=2, min_value=1, max_value=40)):
@@ -3459,9 +3463,9 @@ async def syllables(ctx, amount: discord.Option(int, "The amount of syllables th
 	await ctx.respond(result)
 
 @matrix_group.command(description="Gives a random Operation Codename")
-async def codename(ctx):
+async def operation_codename(ctx):
 	result = roll_intelligence_matrix(intelligence["misc"][1])
-	await ctx.respond(result)
+	await ctx.respond("# " + result)
 
 @matrix_group.command(description="Provokes a random Combat Behavior")
 async def tactics(ctx):
