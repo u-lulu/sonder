@@ -3171,9 +3171,18 @@ async def codename(ctx):
 	await ctx.respond("# " + rnd.choice(merc_codenames))
 
 @player_group.command(description="Produces a random character sheet")
-async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionType.integer, "The number of traits this character should have. Defaults to 2.", required=False, default=2, min_value=1, max_value=40)):
+async def character(ctx,
+					traitcount: discord.Option(discord.SlashCommandOptionType.integer, "The number of traits this character should have. Defaults to 2.", required=False, default=2, min_value=1, max_value=40),
+					include_custom_traits: discord.Option(bool, "Include your own custom traits in the list of possible traits.", required=False, default=False)):
 	message = f"# {rnd.choice(merc_codenames)}\n"
-	traits = rnd.sample(trait_data, traitcount)
+	traits_to_use = trait_data
+
+	if include_custom_traits:
+		uid = str(ctx.author.id)
+		if uid in character_data and len(character_data[uid]['traits']) > 0:
+			traits_to_use = deepcopy(trait_data) + list(character_data[uid]['traits'].values())
+
+	traits = rnd.sample(traits_to_use, traitcount)
 	role = rnd.choice(role_data)
 	
 	for i in range(len(traits)):
