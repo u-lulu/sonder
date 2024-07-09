@@ -14,6 +14,7 @@ import qrcode # pip install qrcode
 from copy import deepcopy
 import asyncio
 from io import BytesIO
+import zipfile
 
 standard_character_limit = 10
 premium_character_limit = 50
@@ -23,6 +24,8 @@ premium_custrait_limit = 2 * premium_character_limit
 item_limit = 50
 logging_channel_id = 1145165620082638928
 logging_channel = None
+backups_channel_id = 1240474179481108510
+backups_channel = None
 
 def log(msg,alert=False):
 	msg = str(msg).strip()
@@ -422,6 +425,37 @@ if changed:
 else:
 	log("No required changes to player data found.")
 
+SAVE_INTERVAL = 86400
+
+async def backup_generation_loop():
+	while True:
+		if backups_channel is None:
+			log(f"Backups channel does not exist. Trying again in {SAVE_INTERVAL} seconds.",alert=True)
+		else:
+			try:
+				data_dir = 'playerdata'
+				zip_buffer = BytesIO()
+				
+				save_time = int(time())
+
+				with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+					for root,dirs,files in os.walk(data_dir):
+						for file in files:
+							relative_path = os.path.relpath(os.path.join(root, file), data_dir)
+							zipf.write(os.path.join(root, file), arcname=relative_path)
+				
+				zip_buffer.seek(0)
+
+				n = f'backup-{save_time}.zip'
+				backup_file = discord.File(zip_buffer,filename=n)
+
+				await backups_channel.send(file=backup_file)
+				log(f"Created backup file '{n}' in backup channel. Repeating in {SAVE_INTERVAL} seconds.")
+			except Exception as e:
+				log(f"Failed to create a backup. Trying again in {SAVE_INTERVAL} seconds. Error: {e}",alert=True)
+
+		await asyncio.sleep(SAVE_INTERVAL)
+
 log("Creating generic commands")
 @bot.event
 async def on_ready():
@@ -443,6 +477,15 @@ async def on_ready():
 		log(f"Logging channel could not be found: {e}")
 		logging_channel = None
 	
+	try:
+		log("Checking for backups channel...")
+		global backups_channel
+		backups_channel = await bot.fetch_channel(backups_channel_id)
+		log(f"Found backups channel: {backups_channel.name} ({backups_channel.id})")
+	except Exception as e:
+		log(f"Backups channel could not be found: {e}")
+		backups_channel = None
+	
 	await bot.change_presence(activity=discord.Game(name='FIST: Ultra Edition'),status=discord.Status.online)
 	log(f"{bot.user} is ready and online in {len(bot.guilds)} guilds!")
 	boot_time = int(time())
@@ -454,6 +497,8 @@ async def on_ready():
 		report_character_count += len(character_data[player]['chars'])
 		report_trait_count += len(character_data[player]['traits'])
 	log(f"Currently tracking {report_player_count} players, {report_character_count} characters, and {report_trait_count} custom traits.")
+
+	asyncio.create_task(backup_generation_loop())
 
 @bot.event
 async def on_application_command(ctx):
@@ -1399,12 +1444,20 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 		await response_with_file_fallback(ctx,message)
 
 @bot.command(description="Show your active character's inventory")
-async def inventory(ctx):
-	character = get_active_char_object(ctx)
-	if character == None:
-		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
+async def inventory(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default="")):
+	codename = codename.lower().strip()
+	yourid = str(ctx.author.id)
+	if codename == "":
+		codename = get_active_codename(ctx)
+	if codename == None:
+		await ctx.respond(replace_commands_with_mentions("You have not set an active character in this channel. Either set your active character with `/switch_character`, or specify which character's sheet you want to view using the optional `codename` argument for this command."),ephemeral=True)
 		return
-	codename = get_active_codename(ctx)
+	if yourid not in character_data or codename not in character_data[yourid]['chars']:
+		await ctx.respond(f"You have not created a character with the codename '{codename}'." + replace_commands_with_mentions(" You can view what characters you've made with `/my_characters`. Check your spelling, or try creating a new one with `/create_character`."),ephemeral=True)
+		return
+	
+	character = character_data[yourid]['chars'][codename]
+
 	message = f"**{codename.upper()}**'s inventory ({len(character['items'])}/{item_limit}):"
 	if len(character['items']) <= 0:
 		message = f"**{codename.upper()}** has no items in their inventory."
@@ -3108,15 +3161,28 @@ player_group = discord.SlashCommandGroup("player", "Player Commands")
 def trait_sort_key(trait):
 	return trait["Name"]
 
-log("Loading Ripley's codenames")
-file = open('ripley_codenames.json')
+log("Loading Codenames")
+file = open('codenames.json')
 merc_codenames = json.load(file)
 file.close()
 
+@player_group.command(description="Produces a random operative codename")
+async def codename(ctx):
+	await ctx.respond("# " + rnd.choice(merc_codenames))
+
 @player_group.command(description="Produces a random character sheet")
-async def character(ctx, traitcount: discord.Option(discord.SlashCommandOptionType.integer, "The number of traits this character should have. Defaults to 2.", required=False, default=2, min_value=1, max_value=40)):
+async def character(ctx,
+					traitcount: discord.Option(discord.SlashCommandOptionType.integer, "The number of traits this character should have. Defaults to 2.", required=False, default=2, min_value=1, max_value=40),
+					include_custom_traits: discord.Option(bool, "Include your own custom traits in the list of possible traits.", required=False, default=False)):
 	message = f"# {rnd.choice(merc_codenames)}\n"
-	traits = rnd.sample(trait_data, traitcount)
+	traits_to_use = trait_data
+
+	if include_custom_traits:
+		uid = str(ctx.author.id)
+		if uid in character_data and len(character_data[uid]['traits']) > 0:
+			traits_to_use = deepcopy(trait_data) + list(character_data[uid]['traits'].values())
+
+	traits = rnd.sample(traits_to_use, traitcount)
 	role = rnd.choice(role_data)
 	
 	for i in range(len(traits)):
@@ -3406,9 +3472,9 @@ async def syllables(ctx, amount: discord.Option(int, "The amount of syllables th
 	await ctx.respond(result)
 
 @matrix_group.command(description="Gives a random Operation Codename")
-async def codename(ctx):
+async def operation_codename(ctx):
 	result = roll_intelligence_matrix(intelligence["misc"][1])
-	await ctx.respond(result)
+	await ctx.respond("# " + result)
 
 @matrix_group.command(description="Provokes a random Combat Behavior")
 async def tactics(ctx):
@@ -3495,7 +3561,7 @@ file.close()
 
 @matrix_group.command(description="Plays a random Cassette Tape")
 async def cassette(ctx, type: discord.Option(str,"The type of audio that should be on the cassette tape.",choices=["Music","Sounds"],required=False,default=None)=None):
-	ctx.defer()
+	await ctx.defer()
 	audio = rnd.choice(intelligence["cassettes"])
 	if type is not None:
 		while type[0] == "M" and ('[' in audio or ']' in audio):
@@ -3766,7 +3832,7 @@ async def gadget(ctx,
 	count: discord.Option(discord.SlashCommandOptionType.integer, "The number of CYCLOPS Gadgets to produce", required=False, default=1, min_value=1, max_value=250)=1,
 	duplicates: discord.Option(bool, "Mark FALSE to prevent duplicate items being rolled if count > 1", required=False, default=True)=True
 	):
-	ctx.defer()
+	await ctx.defer()
 	message = ""
 	if lookup is None: #getting random gadgets
 		if count <= 1:
