@@ -1487,7 +1487,7 @@ async def set_pronouns(ctx, pronouns: discord.Option(str, "The new pronouns for 
 	character['pronouns'] = pronouns
 
 	out = f"**{codename.upper()}** now goes by the pronouns **{pronouns}**."
-	await response_with_file_fallback(out)
+	await response_with_file_fallback(ctx,out)
 	await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Show the notes field for your active character")
