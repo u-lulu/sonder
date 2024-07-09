@@ -1425,7 +1425,7 @@ async def pronouns_autocomplete(ctx):
 	return sample_pronouns
 
 @bot.command(description="Set your active character's pronouns")
-async def set_pronouns(ctx, pronouns: discord.Option(str, "The new pronouns for your active character.", autocomplete=discord.utils.basic_autocomplete(pronouns_autocomplete), required=True, max_length=30)):
+async def set_pronouns(ctx, pronouns: discord.Option(str, "The new pronouns for your active character.", autocomplete=discord.utils.basic_autocomplete(pronouns_autocomplete), required=True)):
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
