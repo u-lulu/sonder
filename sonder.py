@@ -514,7 +514,7 @@ async def on_application_command(ctx):
 
 @bot.event
 async def on_application_command_error(ctx, e):
-	await ctx.respond(f"This command could not be fulfilled due to the following error:\n`{e}`\nThis error has been logged and reported to the developer.\nIf this continues, please submit a bug report on the [Support Server]( https://discord.gg/VeedQmQc7k ) or the [Github issues page]( https://github.com/u-lulu/sonder/issues ).")
+	await ctx.respond(f"⚠️ This command could not be fulfilled due to the following error:\n`{e}`\n-# This error has been logged and reported to the developer. If this continues, please submit a bug report on the [Support Server](<https://discord.gg/VeedQmQc7k>) or the [Github issues page](<https://github.com/u-lulu/sonder/issues>).")
 	log(f"Uncaught exception thrown: {e}",alert=True)
 	raise e
 
@@ -782,8 +782,6 @@ def get_active_char_object(ctx):
 		return character_data[uid]['chars'][codename]
 
 async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
-	#log(f"/{stat.lower()} {extra_mod}{' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
-	
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
@@ -1018,7 +1016,7 @@ async def add_trait(ctx,
 	if old_max_hp > character['maxhp'] and character['maxhp'] <= 0:
 		out += f"\n**This character now has a Max HP of {character['maxhp']}!!**"
 	if my_new_trait['Number'] in trait_tips:
-		out += replace_commands_with_mentions(f"\n💡 {trait_tips[my_new_trait['Number']]}")
+		out += replace_commands_with_mentions(f"\n-# 💡 {trait_tips[my_new_trait['Number']]}")
 	out += f"\n>>> {trait_message_format(my_new_trait)}"
 	await ctx.respond(out)
 	if 'add_trait' in ctx.command.qualified_name:
@@ -1180,7 +1178,7 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 	
 	codename = codename.lower()
 	if codename in character_data[userid]["chars"]:
-		await ctx.respond(f"You have already created a character with the codename '{codename}'.",ephemeral=True)
+		await ctx.respond(f"You have already created a character with the codename '{codename.upper()}'.",ephemeral=True)
 		return
 	
 	character_data[userid]["chars"][codename] = {
@@ -1206,12 +1204,12 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 		"pronouns": None
 	}
 	
-	msg = f"Created character with the codename '{codename}'."
-	msg += f"\nYou now have {len(character_data[userid]['chars'])} characters."
+	msg = f"Created character with the codename **{codename.upper()}**."
+	msg += f"\n-# You now have {len(character_data[userid]['chars'])} characters."
 	if premium_character:
-		msg += "\n*This character uses a premium slot!*"
+		msg += "\n-# *This character uses a premium slot!*"
 	if starter_bonus is not None and starter_bonus not in valid_bonuses:
-		msg += "\n*The provided `starter_bonus` is invalid. No starter bonus has been applied.*"
+		msg += "\n-# *The provided `starter_bonus` is invalid. No starter bonus has been applied.*"
 	await ctx.respond(msg)
 	await switch_character(ctx, codename)
 	if starter_trait_1 is not None:
@@ -1301,10 +1299,10 @@ async def clone(ctx,
 	character_data[userid]['chars'][new_codename]['premium'] = premium_character
 	character_data[userid]['chars'][new_codename]['creation_time'] = time()
 	
-	msg = f"Cloned character with the codename '{codename}' with new codename '{new_codename}'."
-	msg += f"\nYou now have {len(character_data[userid]['chars'])} characters."
+	msg = f"Cloned character with the codename **{codename.upper()}** with new codename **{new_codename.upper()}**."
+	msg += f"\n-# You now have {len(character_data[userid]['chars'])} characters."
 	if premium_character:
-		msg += "\n*This character uses a premium slot!*"
+		msg += "\n-# *This character uses a premium slot!*"
 	await ctx.respond(msg)
 	await switch_character(ctx, new_codename)
 
@@ -1348,7 +1346,7 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 							channel_unbinds += 1
 							keys_to_purge.append(key)
 					if channel_unbinds > 0:
-						message += f"\nThis action has cleared your active character across {channel_unbinds} channels:"
+						message += f"\n-# This action has cleared your active character across {channel_unbinds} channels:"
 					for key in keys_to_purge:
 						message += f" <#{key}>"
 						del yourstuff['active'][key]
@@ -1364,13 +1362,13 @@ async def delete_character(ctx, codename: discord.Option(str, "The character's c
 								earliest_prem_codename = deletion_target
 						if earliest_premium_char is not None:
 							earliest_premium_char['premium'] = False
-							message += f"\nYou have freed up a non-premium slot. **{earliest_prem_codename.upper()}** is no longer a premium character."
+							message += f"\n-# You have freed up a non-premium slot. **{earliest_prem_codename.upper()}** is no longer a premium character."
 					
 					if len(yourstuff['chars']) <= 0 and len(yourstuff['traits']) <= 0:
 						del character_data[yourid]
-						message += "\nYou no longer have any characters or traits. All data associated with your User ID has been deleted."
+						message += "\n-# You no longer have any characters or traits. All data associated with your User ID has been deleted."
 					else:
-						message += f"\nYou now have {len(yourstuff['chars'])} characters."
+						message += f"\n-# You now have {len(yourstuff['chars'])} characters."
 					await ctx.respond(message)
 					await save_character_data(str(ctx.author.id))
 				else:
@@ -1411,7 +1409,7 @@ async def my_characters(ctx):
 				else:
 					msg += f" (No traits)"
 		if premiums:
-			msg += "\n\* *premium character*"
+			msg += "\n-# \* *premium character*"
 		await response_with_file_fallback(ctx,msg)
 	else:
 		await ctx.respond("You haven't created any characters yet.",ephemeral=True)
@@ -1643,7 +1641,6 @@ async def create_custom_trait(ctx,
 	stat_amount = stat_amount.strip()
 	item_name = item_name.strip()
 	item_effect = item_effect.strip()
-	#log(f"/create_character_custom_trait {title} {description} {stat_type} {stat_amount} {item_name} {item_effect}")
 	
 	if userid in character_data and len(character_data[userid]['traits']) >= standard_custrait_limit:
 		premium_user = await ext_character_management(ctx.author.id)
@@ -1703,7 +1700,7 @@ async def create_custom_trait(ctx,
 	character_data[userid]['traits'][title] = new_trait
 	
 	out = f"Created the custom trait {title}."
-	out += f"\nYou now have {len(character_data[userid]['traits'])} custom traits.\n>>> "
+	out += f"\n-# You now have {len(character_data[userid]['traits'])} custom traits.\n>>> "
 	out += trait_message_format(new_trait)
 	await ctx.respond(out)
 	await save_character_data(str(ctx.author.id))
@@ -1734,9 +1731,9 @@ async def delete_custom_trait(ctx,
 	message = f"Successfully deleted custom trait {name}."
 	if len(character_data[uid]['chars']) <= 0 and len(character_data[uid]['traits']) <= 0:
 		del character_data[uid]
-		message += "\nYou no longer have any characters or traits. All data associated with your User ID has been deleted."
+		message += "\n-# You no longer have any characters or traits. All data associated with your User ID has been deleted."
 	else:
-		message += f"\nYou now have {len(character_data[uid]['traits'])} custom traits."
+		message += f"\n-# You now have {len(character_data[uid]['traits'])} custom traits."
 	
 	await ctx.respond(message)
 	await save_character_data(str(ctx.author.id))
@@ -1822,7 +1819,7 @@ def get_full_item_from_name(item_name, character):
 	for full_item in character['items']:
 		if full_item.split(" (")[0] == item_name:
 			return full_item
-	return None
+	return item_name
 
 async def orig_item_name_autocomp(ctx):
 	return [ctx.options['original_item']]
@@ -1882,13 +1879,13 @@ async def edit_item(ctx,
 	if original_item in character['counters']:
 		character['counters'][new_item] = character['counters'][original_item]
 		del character['counters'][original_item]
-		message += f"\n- {len(character['counters'][new_item])} counters have been transferred to the new item."
+		message += f"\n-# {len(character['counters'][new_item])} counters have been transferred to the new item."
 	
 	# trait item override
 	for trait in character['traits']:
 		if original_item == trait['Item']:
 			trait['Item'] = new_item
-			message += f"\n- The trait item for {trait['Name']} has been updated accordingly."
+			message += f"\n-# The trait item for {trait['Name']} has been updated accordingly."
 			break
 	
 	await ctx.respond(message)
@@ -1923,7 +1920,7 @@ async def add_item_counter(ctx,
 			break
 	
 	if item is None or item not in character['items']:
-		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'. The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
+		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'.\n-# The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
 		return
 	
 	if item not in character['counters']:
@@ -1995,9 +1992,9 @@ async def adjust_item_counter(ctx,
 	character['counters'][item][counter_name] += int(output[0])
 	message = f"You have **{'in' if output[0] >= 0 else 'de'}creased** the {counter_name.upper()} counter on {codename.upper()}'s **{item}** by {abs(int(output[0]))}. The new value is **{character['counters'][item][counter_name]}**."
 	if output[0] - int(output[0]) != 0:
-		message += f"\nThe dice result or provided number was not an integer; it has been rounded down from {output[0]}"
+		message += f"\n-# The dice result or provided number was not an integer; it has been rounded down from {output[0]}"
 	if 'd' in amount or 'D' in amount:
-		message += f"\n\nDice results: `{output[1]}`"
+		message += f"\n-# Dice results: `{output[1]}`"
 	await ctx.respond(message)
 	await save_character_data(str(ctx.author.id))
 
@@ -2088,7 +2085,7 @@ async def set_item_counter(ctx,
 	character['counters'][item][counter_name] = output[0]
 	message = f"You have set the {counter_name.upper()} counter on {codename.upper()}'s **{item}** to {abs(output[0])}."
 	if 'd' in amount or 'D' in amount:
-		message += f"\n\nDice results: `{output[1]}`"
+		message += f"\n-# Dice results: `{output[1]}`"
 	await ctx.respond(message)
 	await save_character_data(str(ctx.author.id))
 
@@ -2298,7 +2295,6 @@ async def show_role(ctx):
 
 @bot.command(description="Spend a War Die from your active character")
 async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows the 'Exploding WAR DICE' optional rule.", required=False, default=False)):
-	#log(f"/war_die{' explode' if explode else ''}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
@@ -2475,10 +2471,10 @@ async def adjust(ctx,
 		character['maxhp'] = character['special']['henshin_stored_maxhp']
 		character['special']['henshin_stored_hp'] = 0
 		character['special']['henshin_stored_maxhp'] = 0
-		message += f"\n- **This has deactivated HENSHIN.** HP has been reverted to **{character['hp']}/{character['maxhp']}**."
+		message += f"\n-#  **This has deactivated HENSHIN.** HP has been reverted to **{character['hp']}/{character['maxhp']}**."
 
 	if 'd' in amount or 'D' in amount:
-		message += f"\n\nDice results: `{output[1]}`"
+		message += f"\n-# Dice results: `{output[1]}`"
 	
 	await ctx.respond(message)
 	if 'adjust' in ctx.command.qualified_name:
@@ -2488,7 +2484,6 @@ async def adjust(ctx,
 async def refresh(ctx, 
 	reset_hp: discord.Option(bool, "If TRUE, sets your base HP to 6 and recalculates it. FALSE by default.", required=False, default=False), 
 	reset_war_dice: discord.Option(bool, "If TRUE, sets your War Dice to 0 and recalculates it. FALSE by default.", required=False, default=False)):
-	#log(f"/refresh{' reset_hp' if reset_hp else ''}{' reset_war_dice' if reset_war_dice else ''}")
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
@@ -2557,13 +2552,13 @@ async def refresh(ctx,
 	
 	message = f"**{codename.upper()}**" + replace_commands_with_mentions(" has been reset to their default stats. Use `/sheet` to view updated information.")
 	if weapon_reset:
-		message += "\nThis action has reset your equipped weapon to **Unarmed (2d6k1 DAMAGE)**."
+		message += "\n-# This action has reset your equipped weapon to **Unarmed (2d6k1 DAMAGE)**."
 	if armor_reset:
-		message += "\nThis action has reset your equipped weapon to **Nothing (0 ARMOR)**."
+		message += "\n-# This action has reset your equipped weapon to **Nothing (0 ARMOR)**."
 	if reset_hp:
-		message += f"\nYour Max HP has been recalculated from the base 6, and is now **{character['maxhp']}**."
+		message += f"\n-# Your Max HP has been recalculated from the base 6, and is now **{character['maxhp']}**."
 	if reset_war_dice:
-		message += f"\nYour War Dice have been recalculated from the base 0, and is now **{character['wd']}**."
+		message += f"\n-# Your War Dice have been recalculated from the base 0, and is now **{character['wd']}**."
 	if 'henshin_stored_maxhp' in character['special'] and character['special']['henshin_stored_maxhp'] != 0:
 		character['special']['henshin_stored_hp'] = 0
 		character['special']['henshin_stored_maxhp'] = 0
@@ -2674,10 +2669,10 @@ async def damage(ctx,
 		character['special']['henshin_stored_hp'] = 0
 		character['special']['henshin_stored_maxhp'] = 0
 
-		message += f"\n- **This has deactivated HENSHIN.** HP has been reverted to **{character['hp']}/{character['maxhp']}**."
+		message += f"\n-# **This has deactivated HENSHIN.** HP has been reverted to **{character['hp']}/{character['maxhp']}**."
 	
 	if ('d' in amount or 'd' in amount):
-		message += f"\n\nDice results: `{dice_results}`"
+		message += f"\n-# Dice results: `{dice_results}`"
 		limit = 300
 		if len(message) > limit:
 			message = message[:limit-5]+"...]`"
@@ -2718,8 +2713,8 @@ async def heal(ctx,
 	message += f"\nHP: {character['hp']}/{character['maxhp']}"
 	if character['hp'] >= character['maxhp']:
 		message += " (Full restore!)"
-	if ('d' in amount or 'd' in amount):
-		message += f"\n\nDice results: `{dice_results}`"
+	if ('d' in amount or 'D' in amount):
+		message += f"\n-# Dice results: `{dice_results}`"
 		limit = 300
 		if len(message) > limit:
 			message = message[:limit-5]+"...]`"
@@ -2747,11 +2742,11 @@ async def attack(ctx,
 	
 	final_damage = (base_damage[0] + bonus_damage_result[0]) * multiplier
 	
-	message = f"**{codename.upper()}** has dealt **{final_damage} damage** using **{character['weapon_name']}**!\n\nBase damage: `{character['damage']}` -> `{base_damage[1]}`"
+	message = f"**{codename.upper()}** has dealt **{final_damage} damage** using **{character['weapon_name']}**!\n-# Base damage: `{character['damage']}` -> `{base_damage[1]}`"
 	if bonus_damage != "0":
-		message += f"\nBonus damage: `{bonus_damage}` -> `{bonus_damage_result[1]}`"
+		message += f"\n-# Bonus damage: `{bonus_damage}` -> `{bonus_damage_result[1]}`"
 	if multiplier != 1:
-		message += f"\nFinal damage multiplier: `{multiplier}`"
+		message += f"\n-# Final damage multiplier: `{multiplier}`"
 	await ctx.respond(message)
 
 async def get_all_acceptable_syntax(ctx, string):
@@ -2884,7 +2879,6 @@ trait_group = discord.SlashCommandGroup("trait", "Trait Commands")
 
 @trait_group.command(description="Looks up a trait by name or d666 number")
 async def lookup(ctx, trait: discord.Option(str,"The trait to search for",autocomplete=discord.utils.basic_autocomplete(trait_autocomp))):
-	#log(f"/trait lookup {trait}")
 	trait = trait.strip()
 	message = search_for_trait(trait)
 	hidden = message in ["No trait exists with the given number. Trait numbers must be possible d666 roll outputs.","Could not find a trait with an approximately similar name."]
@@ -2893,7 +2887,6 @@ async def lookup(ctx, trait: discord.Option(str,"The trait to search for",autoco
 
 @trait_group.command(description="Produces a random trait")
 async def random(ctx):
-	#log("/trait random")
 	result = rnd.choice(trait_data)
 	if (rnd.randint(1,10000) == 1):
 		result = secret_trait
@@ -3030,7 +3023,6 @@ role_group = discord.SlashCommandGroup("role", "Role Commands")
 
 @role_group.command(description="Looks up a role by name or d66 number")
 async def lookup(ctx, role: discord.Option(str,"The role to search for",autocomplete=discord.utils.basic_autocomplete(role_autocomp))):
-	#log(f"/role lookup {role}")
 	role = role.strip()
 	message = search_for_role(role)
 	hidden = message in ["No role exists with the given number. Role numbers must be possible d66 roll outputs.","Could not find a role with an approximately similar name."]
@@ -3038,7 +3030,6 @@ async def lookup(ctx, role: discord.Option(str,"The role to search for",autocomp
 
 @role_group.command(description="Produces a random role")
 async def random(ctx):
-	#log("/role random")
 	result = rnd.choice(role_data)
 	message = role_message_format(result)
 	await ctx.respond(message)
@@ -3272,7 +3263,6 @@ async def character(ctx,
 
 @player_group.command(description="Rolls against the Emergency Insertion table")
 async def emergencyinsertion(ctx):
-	#log("/player emergencyinsertion")
 	results = [d6(), d6()]
 	sum = results[0] + results[1]
 	
@@ -3296,7 +3286,6 @@ async def roll(ctx,
 	superior_dice: discord.Option(bool, "Roll 3d6 and take the best two.", required=False, default=False),
 	inferior_dice: discord.Option(bool, "Roll 3d6 and take the worst two.", required=False, default=False)
 	):
-	#log(f"/player roll {modifier}{' superior_dice' if superior_dice else ''}{' inferior_dice' if inferior_dice else ''}")
 	results = [d6(), d6()]
 	if superior_dice ^ inferior_dice:
 		results.append(d6())
@@ -3391,7 +3380,6 @@ async def roll(ctx,
 async def dice(ctx, syntax: discord.Option(str,"The dice syntax"),
 	instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1, min_value=1),
 	hidden: discord.Option(bool, "If TRUE, the output of this command is hidden to others", required=False, default=False)):
-	#log(f"/player dice {syntax} {instances} {hidden}")
 	syntax = syntax.strip()
 	
 	output = ()
@@ -3419,7 +3407,7 @@ async def dice(ctx, syntax: discord.Option(str,"The dice syntax"),
 	else:
 		message = f"**Total: {output[0]}**\n`{output[1]}`"
 	if not ('d' in syntax or 'D' in syntax):
-		message += f"\n\nIt seems your input didn't actually roll any dice. Did you mean `1d{syntax}` or `{syntax}d6`?\nSee [py-rolldice](<https://github.com/mundungus443/py-rolldice#dice-syntax>) for an explanation of dice syntax."
+		message += f"\n-# It seems your input didn't actually roll any dice. Did you mean `1d{syntax}` or `{syntax}d6`?\n-# See [py-rolldice](<https://github.com/mundungus443/py-rolldice#dice-syntax>) for an explanation of dice syntax."
 	
 	await response_with_file_fallback(ctx,message,hidden)
 
