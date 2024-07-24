@@ -1024,7 +1024,6 @@ async def add_trait(ctx,
 
 @bot.command(description="Activate (or set) your active character's HENSHIN trait")
 async def henshin(ctx, set_trait: discord.Option(str, "The core book name or number of the trait to set.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None)):
-	#log(f"/henshin {set_trait if set_trait is not None else ''}")
 	if set_trait is not None:
 		set_trait = set_trait.strip()
 	character = get_active_char_object(ctx)
@@ -1305,6 +1304,96 @@ async def clone(ctx,
 		msg += "\n-# *This character uses a premium slot!*"
 	await ctx.respond(msg)
 	await switch_character(ctx, new_codename)
+
+@bot.command(description="Duplicate one character's items into another's inventory")
+async def copy_inventory(ctx,
+	source_character: discord.Option(str, "The codename of the character to copy items from.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete),required=True),
+	destination_character: discord.Option(str, "The codename of the character to recieve the copied items.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True),
+	delete_original_items: discord.Option(bool, "If set to True, the items in the source character's inventory are deleted.", required=False, default=False)):
+
+	# verify each character exists
+	userid = str(ctx.author.id)
+	source_character = source_character.lower().strip()
+	if userid not in character_data or source_character not in character_data[userid]['chars']:
+		await ctx.respond(f"You have not created a character with the codename '{source_character}'." + replace_commands_with_mentions(" You can view what characters you've made with `/my_characters`. Check your spelling, or try creating a new one with `/create_character`."),ephemeral=True)
+		return
+	
+	destination_character = destination_character.lower().strip()
+	if userid not in character_data or destination_character not in character_data[userid]['chars']:
+		await ctx.respond(f"You have not created a character with the codename '{destination_character}'." + replace_commands_with_mentions(" You can view what characters you've made with `/my_characters`. Check your spelling, or try creating a new one with `/create_character`."),ephemeral=True)
+		return
+	
+	# verify the duplication would not run past the item limit
+	source_count = len(character_data[userid]['chars'][source_character]['items'])
+	dest_count = len(character_data[userid]['chars'][destination_character]['items'])
+	if source_count + dest_count > item_limit:
+		msg = f"Adding {source_count} items to **{destination_character.upper()}**'s inventory would bring them over the item limit ({item_limit})."
+		msg += f"\n{source_count + dest_count - item_limit} items must be removed from both inventories collectively before proceeding."
+		msg += f"\n-# If you intend to overwrite **{destination_character.upper()}**'s inventory, " + replace_commands_with_mentions("use `/replace_inventory` instead.")
+		await ctx.respond(msg)
+		return
+	
+	# verify that no item name duplicates would arise
+	source_items = set()
+	dest_items = set()
+
+	for item in character_data[userid]['chars'][source_character]['items']:
+		source_items.add(get_item_name(item))
+	
+	for item in character_data[userid]['chars'][destination_character]['items']:
+		dest_items.add(get_item_name(item))
+	
+	collisions = source_items.intersection(dest_items)
+	if len(collisions) > 0:
+		msg = f"There are {len(collisions)} items with the same name across both characters:"
+		collisions = sorted(list(collisions))
+		for item in collisions:
+			msg += "\n- " + item
+		msg += "\nThese items must be renamed before they can be copied over."
+		msg += f"\n-# If you intend to overwrite **{destination_character}**'s inventory, " + replace_commands_with_mentions("use `/replace_inventory` instead.")
+		return await response_with_file_fallback(ctx,msg,eph=True)
+	
+	# all checks pass; copy the inventory over
+	character_data[userid]['chars'][destination_character]['items'] += deepcopy(character_data[userid]['chars'][source_character]['items'])
+	msg = f"Copied all {source_count} items from **{source_character.upper()}**'s inventory to **{destination_character.upper()}**'s inventory."
+
+	if delete_original_items:
+		character_data[userid]['chars'][source_character]['items'] = []
+		msg = msg.replace("Copied", "Moved")
+		msg += f"\n-# All items in **{source_character.upper()}**'s inventory have been removed."
+	
+	await ctx.respond(msg)
+	await save_character_data(userid)
+
+@bot.command(description="Replace one character's inventory with another's")
+async def replace_inventory(ctx,
+	source_character: discord.Option(str, "The codename of the character to take items from.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete),required=True),
+	destination_character: discord.Option(str, "The codename of the character whose inventory will be overwritten.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True),
+	delete_original_items: discord.Option(bool, "If set to True, the items in the source character's inventory are deleted.", required=False, default=False)):
+
+	# verify each character exists
+	userid = str(ctx.author.id)
+	source_character = source_character.lower().strip()
+	if userid not in character_data or source_character not in character_data[userid]['chars']:
+		await ctx.respond(f"You have not created a character with the codename '{source_character}'." + replace_commands_with_mentions(" You can view what characters you've made with `/my_characters`. Check your spelling, or try creating a new one with `/create_character`."),ephemeral=True)
+		return
+	
+	destination_character = destination_character.lower().strip()
+	if userid not in character_data or destination_character not in character_data[userid]['chars']:
+		await ctx.respond(f"You have not created a character with the codename '{destination_character}'." + replace_commands_with_mentions(" You can view what characters you've made with `/my_characters`. Check your spelling, or try creating a new one with `/create_character`."),ephemeral=True)
+		return
+	
+	# copy the inventory over
+	character_data[userid]['chars'][destination_character]['items'] = deepcopy(character_data[userid]['chars'][source_character]['items'])
+	msg = f"Replaced **{destination_character.upper()}**'s inventory with a copy of **{source_character.upper()}**'s inventory."
+	msg += f"\n-# All items originally held by **{destination_character.upper()}** have been removed."
+
+	if delete_original_items:
+		character_data[userid]['chars'][source_character]['items'] = []
+		msg += f"\n-# All items in **{source_character.upper()}**'s inventory have been removed."
+	
+	await ctx.respond(msg)
+	await save_character_data(userid)
 
 @bot.command(description="Delete a character from your roster")
 async def delete_character(ctx, codename: discord.Option(str, "The character's codename, used for selecting them with other commands.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=True)):
@@ -2779,6 +2868,10 @@ def get_item_effect(item):
 		return item_split[1].replace(")","")
 	else:
 		return None
+
+def get_item_name(item):
+	item_split = item.split(" (")
+	return item_split[0]
 
 async def held_dice_autocomplete(ctx):
 	current_char = get_active_char_object(ctx)
