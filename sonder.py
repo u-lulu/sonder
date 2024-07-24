@@ -2414,8 +2414,8 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 
 editable_stats = ["CURRENT HP","MAX HP","WAR DICE","FORCEFUL","TACTICAL","REFLEXIVE","CREATIVE","ARMOR"]
 
-@bot.command(description="Adjust one of your character's stats")
-async def adjust(ctx,
+@bot.command(description="Increase one of your character's stats")
+async def increase_stat(ctx,
 	stat: discord.Option(str, "The stat to change.", choices=editable_stats, required=True),
 	amount: discord.Option(str, "Amount to increase the stat by. Supports dice syntax. Negative values will decrease.", required=True)):
 	character = get_active_char_object(ctx)
@@ -2479,6 +2479,20 @@ async def adjust(ctx,
 	await ctx.respond(message)
 	if 'adjust' in ctx.command.qualified_name:
 		await save_character_data(str(ctx.author.id))
+
+@bot.command(description="Decrease one of your character's stats")
+async def decrease_stat(ctx,
+	stat: discord.Option(str, "The stat to change.", choices=editable_stats, required=True),
+	amount: discord.Option(str, "Amount to decrease the stat by. Supports dice syntax. Negative values will increase.", required=True)):
+	
+	return increase_stat(ctx,stat,amount*-1)
+
+@bot.command(description="Adjust one of your character's stats")
+async def adjust(ctx,
+	stat: discord.Option(str, "The stat to change.", choices=editable_stats, required=True),
+	amount: discord.Option(str, "Amount to increase the stat by. Supports dice syntax. Negative values will decrease.", required=True)):
+	
+	return increase_stat(ctx,stat,amount)
 
 @bot.command(description="Reset your active character's stats and items to the trait defaults")
 async def refresh(ctx, 
