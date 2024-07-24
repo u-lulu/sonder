@@ -2485,14 +2485,14 @@ async def decrease_stat(ctx,
 	stat: discord.Option(str, "The stat to change.", choices=editable_stats, required=True),
 	amount: discord.Option(str, "Amount to decrease the stat by. Supports dice syntax. Negative values will increase.", required=True)):
 	
-	return increase_stat(ctx,stat,amount*-1)
+	return await increase_stat(ctx,stat,f"-({amount})")
 
 @bot.command(description="Adjust one of your character's stats")
 async def adjust(ctx,
 	stat: discord.Option(str, "The stat to change.", choices=editable_stats, required=True),
 	amount: discord.Option(str, "Amount to increase the stat by. Supports dice syntax. Negative values will decrease.", required=True)):
 	
-	return increase_stat(ctx,stat,amount)
+	return await increase_stat(ctx,stat,amount)
 
 @bot.command(description="Reset your active character's stats and items to the trait defaults")
 async def refresh(ctx, 
