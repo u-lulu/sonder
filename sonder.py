@@ -761,8 +761,12 @@ def get_active_codename(ctx):
 		uid = str(ctx.author.id)
 		cid = str(ctx.channel_id)
 	except:
-		uid = str(ctx.interaction.user.id)
-		cid = str(ctx.interaction.channel.id)
+		try:
+			uid = str(ctx.interaction.user.id)
+			cid = str(ctx.interaction.channel.id)
+		except:
+			uid = str(ctx.user.id)
+			cid = str(ctx.channel_id)
 	if uid in character_data:
 		your_actives = character_data[uid]['active']
 		if cid in your_actives:
@@ -771,14 +775,17 @@ def get_active_codename(ctx):
 
 def get_active_char_object(ctx):
 	codename = get_active_codename(ctx)
-	if codename == None:
+	if codename is None:
 		return None
 	else:
 		uid = None
 		try:
 			uid = str(ctx.author.id)
 		except:
-			uid = str(ctx.interaction.user.id)
+			try:
+				uid = str(ctx.interaction.user.id)
+			except:
+				uid = str(ctx.user.id)
 		return character_data[uid]['chars'][codename]
 
 async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
@@ -1862,27 +1869,27 @@ async def add_item(ctx,
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
-		return
+		return False
 	codename = get_active_codename(ctx)
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
-		return
+		return False
 	
 	if len(character['items']) >= item_limit:
 		await ctx.respond(f"Characters cannot carry more than {item_limit} items.",ephemeral=True)
-		return
+		return False
 	
 	concat = name+effect
 	if "(" in concat or ")" in concat:
 		await ctx.respond("For organizational reasons, please do not use parenthesis in the `name` or `effect` of your item.",ephemeral=True)
-		return
+		return False
 	
 	for held_item in character['items']:
 		held_name = held_item.split(" (")[0]
 		if held_name.lower() == name.lower():
 			await ctx.respond(f"You already have an item named '{held_name}'.\nFor organizational reasons, please do not add two items to your inventory with the same name. Instead, label them differently, or keep track of copies with an item counter" + replace_commands_with_mentions(" (via `/add_item_counter`)."),ephemeral=True)
-			return
+			return False
 	
 	item_to_add = name
 	if len(effect) > 0 and effect != "NO_EFFECT":
@@ -1893,6 +1900,8 @@ async def add_item(ctx,
 	await ctx.respond(f"**{codename.upper()}** has added **{item_to_add}** to their inventory.")
 	if 'add_item' in ctx.command.qualified_name:
 		await save_character_data(str(ctx.author.id))
+	
+	return True
 
 async def item_name_autocomplete(ctx):
 	current_char = get_active_char_object(ctx)
@@ -1979,7 +1988,129 @@ async def edit_item(ctx,
 	
 	await ctx.respond(message)
 	await save_character_data(str(ctx.author.id))
+
+@bot.command(description="Create an item in this channel for characters to pick up")
+async def spawn_item(ctx,
+					 item_name: discord.Option(str, "The name of the item", required=True,max_length=100), 
+					 item_effect: discord.Option(str, "The effect of the item",autocomplete=discord.utils.basic_autocomplete(no_effect_autocomp), required=True),
+					 count: discord.Option(int, "The number of times this item can be picked up.",required=False,default=1)):
+	class ItemPickup(discord.ui.View):
+		items_left = 1
+		name = None
+		effect = None
+		def __init__(self,amount,item_name,item_effect,timeout,disable_on_timeout):
+			super().__init__(timeout=timeout,disable_on_timeout=disable_on_timeout)
+			self.items_left = amount
+			self.name = item_name
+			self.effect = item_effect
+		@discord.ui.button(label=f"Pick up",style=discord.ButtonStyle.blurple,emoji="🎲")
+		async def item_pickup_callback(self,button,interaction):
+			char = get_active_char_object(interaction)
+			if char is None:
+				log("Denying item pickup from user with no active character")
+				await interaction.response.send_message(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
+				return
+			else:
+				full_item = self.name
+				if self.effect != "NO_EFFECT":
+					full_item += f" ({self.effect})"
+
+				if await add_item(ctx,self.name,self.effect or "NO_EFFECT"):
+					self.items_left -= 1
+					
+				message = f"An item has spawned:\n**{full_item}**\nThere are {self.items_left} available to take."
+				if self.items_left <= 0:
+					self.disable_all_items()
+				await interaction.response.edit_message(content=message,view=self)
+	full_item = item_name
+	if item_effect != "NO_EFFECT":
+		full_item += f" ({item_effect})"
 	
+	buttons = ItemPickup(count,item_name,item_effect,timeout=5*60,disable_on_timeout=True)
+
+	message = f"An item has spawned:\n**{full_item}**\nThere are {count} available to take."
+	await ctx.respond(message,view=buttons)
+
+@bot.command(description="Drop an item in this channel for other characters to pick up")
+async def drop_item(ctx,
+					 item: discord.Option(str, "The item to be dropped",autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True)):
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
+		return
+	
+	if len(character['items']) <= 0:
+		await ctx.respond(f"**{codename.upper()}** does not have any items.",ephemeral=True)
+		return
+	
+	item = get_full_item_from_name(item, character)
+	item_name = get_item_name(item)
+	item_effect = get_item_effect(item) or "NO_EFFECT"
+	
+	class ItemPickup(discord.ui.View):
+		source_character = None
+		source_codename = None
+		name = None
+		effect = None
+		def __init__(self,source_char,source_name,item_name,item_effect,timeout,disable_on_timeout):
+			super().__init__(timeout=timeout,disable_on_timeout=disable_on_timeout)
+			self.source_character = source_char
+			self.source_codename = source_name
+			self.name = item_name
+			self.effect = item_effect
+		@discord.ui.button(label=f"Pick up",style=discord.ButtonStyle.blurple,emoji="🎲")
+		async def item_pickup_callback(self,button,interaction):
+			char = get_active_char_object(interaction)
+			nm = get_active_codename(interaction)
+			if char is None:
+				log("Denying item pickup from user with no active character")
+				await interaction.response.send_message(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
+				return
+			else:
+				full_item = self.name
+				if self.effect != "NO_EFFECT":
+					full_item += f" ({self.effect})"
+				
+				counters = None
+				if full_item in character['counters']:
+					counters = deepcopy(character['counters'][full_item])
+				
+				try:
+					self.source_character['items'].remove(full_item)
+					if full_item in character['counters']:
+						del character['counters'][full_item]
+				except ValueError as e:
+					log(f"Caught ValueError: {e}")
+					out = "The item that you wanted to remove could not be found. Your current items are:"
+					for i in self.source_character['items']:
+						out += f"\n- {i}"
+					await response_with_file_fallback(ctx,out)
+
+				message = f"**{self.source_codename.upper()}** has dropped **{full_item}**.\n-# The item will only be removed from their inventory once it has been claimed."
+				
+				if await add_item(ctx,self.name,self.effect or "NO_EFFECT"):
+					self.disable_all_items()
+					message = f"**{self.source_codename.upper()}** has dropped **{full_item}**.\nIt was picked up by **{nm.upper()}**."
+					if counters is not None:
+						char['counters'][full_item] = counters
+						await save_character_data(str(ctx.author.id))
+				
+				await interaction.response.edit_message(content=message,view=self)
+
+	full_item = item_name
+	if item_effect != "NO_EFFECT":
+		full_item += f" ({item_effect})"
+	
+	buttons = ItemPickup(character,codename,item_name,item_effect,timeout=5*60,disable_on_timeout=True)
+
+	message = f"**{codename.upper()}** has dropped **{full_item}**.\n-# The item will only be removed from their inventory once it has been claimed."
+	await ctx.respond(message,view=buttons)
+
 async def example_counter_names(ctx):
 	return ["Amount","Ammo","Uses remaining","Charges","Counter"]
 
@@ -2308,16 +2439,16 @@ async def remove_item(ctx,
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
-		return
+		return False
 	codename = get_active_codename(ctx)
 
 	if character['premium'] and not await ext_character_management(ctx.author.id):
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
-		return
+		return False
 	
 	if len(character['items']) <= 0:
 		await ctx.respond(f"**{codename.upper()}** does not have any items.",ephemeral=True)
-		return
+		return False
 	
 	item = get_full_item_from_name(item, character)
 	
@@ -2329,13 +2460,14 @@ async def remove_item(ctx,
 		for i in character['items']:
 			out += f"\n- {i}"
 		await response_with_file_fallback(ctx,out)
-		return
+		return False
 	
 	if item in character['counters']:
 		del character['counters'][item]
 	
 	await ctx.respond(f"**{codename.upper()}** has removed **{item}** from their inventory.")
 	await save_character_data(str(ctx.author.id))
+	return True
 
 @bot.command(description="Display an item from your active character")
 async def show_item(ctx,item: discord.Option(str, "The item to be removed",autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True)):
