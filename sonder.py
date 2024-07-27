@@ -2086,6 +2086,10 @@ async def drop_item(ctx,
 				await interaction.response.send_message(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 				return
 			else:
+				if ctx.author.id == interaction.user.id and nm == self.source_codename:
+					log("Denying self pickup")
+					await interaction.response.send_message("You cannot pick up your own dropped item.\nTo cancel the item drop, use the Cancel button instead.",ephemeral=True)
+					return
 				log("Performing item transfer")
 				full_item = self.name
 				if self.effect != "NO_EFFECT":
