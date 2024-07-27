@@ -2011,18 +2011,21 @@ async def spawn_item(ctx,
 				await interaction.response.send_message(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 				return
 			else:
-				log("Performing item pickup")
-				full_item = self.name
-				if self.effect != "NO_EFFECT":
-					full_item += f" ({self.effect})"
+				try:
+					log("Performing item pickup")
+					full_item = self.name
+					if self.effect != "NO_EFFECT":
+						full_item += f" ({self.effect})"
 
-				if await add_item(interaction,self.name,self.effect or "NO_EFFECT"):
-					self.items_left -= 1
-					
-				message = f"An item has spawned:\n**{full_item}**\nThere are {self.items_left} available to take."
-				if self.items_left <= 0:
-					self.disable_all_items()
-				await interaction.followup.edit_message(content=message,view=self,message_id=interaction.message.id)
+					if await add_item(interaction,self.name,self.effect or "NO_EFFECT"):
+						self.items_left -= 1
+						
+					message = f"An item has spawned:\n**{full_item}**\nThere are {self.items_left} available to take."
+					if self.items_left <= 0:
+						self.disable_all_items()
+					await interaction.followup.edit_message(content=message,view=self,message_id=interaction.message.id)
+				except Exception as e:
+					await interaction.response.send_message(f"```{e}```")
 		@discord.ui.button(label="Cancel",style=discord.ButtonStyle.red,emoji='✋')
 		async def item_pickup_cancel_callback(self,button,interaction):
 			if interaction.user.id == ctx.author.id:
