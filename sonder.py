@@ -2094,25 +2094,25 @@ async def drop_item(ctx,
 				full_item = self.name
 				if self.effect != "NO_EFFECT":
 					full_item += f" ({self.effect})"
-				
-				counters = None
-				if full_item in character['counters']:
-					counters = deepcopy(character['counters'][full_item])
-				
-				try:
-					self.source_character['items'].remove(full_item)
-					if full_item in character['counters']:
-						del character['counters'][full_item]
-				except ValueError as e:
-					log(f"Caught ValueError: {e}")
-					out = "The item that you wanted to remove could not be found. Your current items are:"
-					for i in self.source_character['items']:
-						out += f"\n- {i}"
-					await response_with_file_fallback(ctx,out)
 
 				message = f"**{self.source_codename.upper()}** has dropped **{full_item}**.\n-# The item will only be removed from their inventory once it has been claimed."
 				
 				if await add_item(ctx,self.name,self.effect or "NO_EFFECT"):
+					counters = None
+					if full_item in character['counters']:
+						counters = deepcopy(character['counters'][full_item])
+					
+					try:
+						self.source_character['items'].remove(full_item)
+						if full_item in character['counters']:
+							del character['counters'][full_item]
+					except ValueError as e:
+						log(f"Caught ValueError: {e}")
+						out = "The item that you wanted to remove could not be found. Your current items are:"
+						for i in self.source_character['items']:
+							out += f"\n- {i}"
+						await response_with_file_fallback(ctx,out)
+					
 					self.disable_all_items()
 					message = f"**{self.source_codename.upper()}** has dropped **{full_item}**.\nIt was picked up by **{nm.upper()}**."
 					if counters is not None:
