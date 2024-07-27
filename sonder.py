@@ -1993,7 +1993,7 @@ async def edit_item(ctx,
 async def spawn_item(ctx,
 					 item_name: discord.Option(str, "The name of the item", required=True,max_length=100), 
 					 item_effect: discord.Option(str, "The effect of the item",autocomplete=discord.utils.basic_autocomplete(no_effect_autocomp), required=True),
-					 count: discord.Option(int, "The number of times this item can be picked up.",required=False,default=1)):
+					 count: discord.Option(int, "The number of times this item can be picked up.",required=False,default=1,min_value=1)):
 	class ItemPickup(discord.ui.View):
 		items_left = 1
 		name = None
@@ -2003,7 +2003,7 @@ async def spawn_item(ctx,
 			self.items_left = amount
 			self.name = item_name
 			self.effect = item_effect
-		@discord.ui.button(label=f"Pick up",style=discord.ButtonStyle.blurple,emoji="🎲")
+		@discord.ui.button(label="Pick up",style=discord.ButtonStyle.green,emoji="🫳")
 		async def item_pickup_callback(self,button,interaction):
 			char = get_active_char_object(interaction)
 			if char is None:
@@ -2011,6 +2011,7 @@ async def spawn_item(ctx,
 				await interaction.response.send_message(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 				return
 			else:
+				log("Performing item pickup")
 				full_item = self.name
 				if self.effect != "NO_EFFECT":
 					full_item += f" ({self.effect})"
@@ -2022,6 +2023,19 @@ async def spawn_item(ctx,
 				if self.items_left <= 0:
 					self.disable_all_items()
 				await interaction.response.edit_message(content=message,view=self)
+		@discord.ui.button(label="Cancel",style=discord.ButtonStyle.red,emoji='❌')
+		async def item_pickup_cancel_callback(self,button,interaction):
+			if interaction.user.id == ctx.author.id:
+				log("Cancelling item spawn")
+				self.disable_all_items()
+				full_item = self.name
+				if self.effect != "NO_EFFECT":
+					full_item += f" ({self.effect})"
+				message = f"An item has spawned:\n**{full_item}**\n~~There are {self.items_left} available to take.~~ The remaining items have been revoked."
+				await interaction.response.edit_message(content=message,view=self)
+			else:
+				log("Denying invalid item spawn cancellation")
+				await interaction.response.send_message("This is not your item spawn.",ephemeral=True)
 	full_item = item_name
 	if item_effect != "NO_EFFECT":
 		full_item += f" ({item_effect})"
@@ -2063,15 +2077,16 @@ async def drop_item(ctx,
 			self.source_codename = source_name
 			self.name = item_name
 			self.effect = item_effect
-		@discord.ui.button(label=f"Pick up",style=discord.ButtonStyle.blurple,emoji="🎲")
+		@discord.ui.button(label=f"Pick up",style=discord.ButtonStyle.green,emoji="🫳")
 		async def item_pickup_callback(self,button,interaction):
 			char = get_active_char_object(interaction)
 			nm = get_active_codename(interaction)
 			if char is None:
-				log("Denying item pickup from user with no active character")
+				log("Denying item transfer to user with no active character")
 				await interaction.response.send_message(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
 				return
 			else:
+				log("Performing item transfer")
 				full_item = self.name
 				if self.effect != "NO_EFFECT":
 					full_item += f" ({self.effect})"
@@ -2101,6 +2116,19 @@ async def drop_item(ctx,
 						await save_character_data(str(ctx.author.id))
 				
 				await interaction.response.edit_message(content=message,view=self)
+		@discord.ui.button(label="Cancel",style=discord.ButtonStyle.red,emoji='❌')
+		async def item_pickup_cancel_callback(self,button,interaction):
+			if interaction.user.id == ctx.author.id:
+				log("Cancelling item drop")
+				self.disable_all_items()
+				full_item = self.name
+				if self.effect != "NO_EFFECT":
+					full_item += f" ({self.effect})"
+				message = f"~~**{self.source_codename.upper()}** has dropped **{full_item}**.~~ The item has been picked back up.\n-# ~~The item will only be removed from their inventory once it has been claimed.~~"
+				await interaction.response.edit_message(content=message,view=self)
+			else:
+				log("Denying invalid item drop cancellation")
+				await interaction.response.send_message("This is not your item drop.",ephemeral=True)
 
 	full_item = item_name
 	if item_effect != "NO_EFFECT":
