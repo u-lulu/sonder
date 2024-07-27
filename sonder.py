@@ -2000,11 +2000,13 @@ async def spawn_item(ctx,
 		items_left = 1
 		name = None
 		effect = None
-		def __init__(self,amount,item_name,item_effect,timeout,disable_on_timeout):
+		expiry = 0
+		def __init__(self,amount,item_name,item_effect,expiry,timeout,disable_on_timeout):
 			super().__init__(timeout=timeout,disable_on_timeout=disable_on_timeout)
 			self.items_left = amount
 			self.name = item_name
 			self.effect = item_effect
+			self.expiry = expiry
 		@discord.ui.button(label="Pick up",style=discord.ButtonStyle.green,emoji="🫳")
 		async def item_pickup_callback(self,button,interaction):
 			char = get_active_char_object(interaction)
@@ -2022,9 +2024,10 @@ async def spawn_item(ctx,
 					if await add_item(interaction,self.name,self.effect or "NO_EFFECT"):
 						self.items_left -= 1
 						
-					message = f"An item has spawned:\n**{full_item}**\nThere are {self.items_left} available to take."
+					message = f"An item has spawned:\n**{full_item}**\nThere are {self.items_left} available to take.\n-# This prompt will expire <t:{self.expiry}:R>."
 					if self.items_left <= 0:
 						self.disable_all_items()
+						message = message.replace(f"\n-# This prompt will expire <t:{self.expiry}:R>.","")
 					await interaction.followup.edit_message(content=message,view=self,message_id=interaction.message.id)
 				except Exception as e:
 					await interaction.response.send_message(f"```{e}```")
@@ -2045,9 +2048,11 @@ async def spawn_item(ctx,
 	if item_effect != "NO_EFFECT":
 		full_item += f" ({item_effect})"
 	
-	buttons = ItemPickup(count,item_name,item_effect,timeout=5*60,disable_on_timeout=True)
+	to = 5*60
+	t = int(time())
+	buttons = ItemPickup(count,item_name,item_effect,t+to,timeout=to,disable_on_timeout=True)
 
-	message = f"An item has spawned:\n**{full_item}**\nThere are {count} available to take."
+	message = f"An item has spawned:\n**{full_item}**\nThere are {count} available to take.\n-# This prompt will expire <t:{t+to}:R>."
 	await ctx.respond(message,view=buttons)
 
 @bot.command(description="Drop an item in this channel for other characters to pick up")
@@ -2076,12 +2081,14 @@ async def drop_item(ctx,
 		source_codename = None
 		name = None
 		effect = None
-		def __init__(self,source_char,source_name,item_name,item_effect,timeout,disable_on_timeout):
+		expiry = 0
+		def __init__(self,source_char,source_name,item_name,item_effect,expiry,timeout,disable_on_timeout):
 			super().__init__(timeout=timeout,disable_on_timeout=disable_on_timeout)
 			self.source_character = source_char
 			self.source_codename = source_name
 			self.name = item_name
 			self.effect = item_effect
+			self.expiry = expiry
 		@discord.ui.button(label=f"Pick up",style=discord.ButtonStyle.green,emoji="🫳")
 		async def item_pickup_callback(self,button,interaction):
 			char = get_active_char_object(interaction)
@@ -2100,7 +2107,7 @@ async def drop_item(ctx,
 				if self.effect != "NO_EFFECT":
 					full_item += f" ({self.effect})"
 
-				message = f"**{self.source_codename.upper()}** has dropped **{full_item}**.\n-# The item will only be removed from their inventory once it has been claimed."
+				message = f"**{self.source_codename.upper()}** has dropped **{full_item}**.\n-# The item will only be removed from their inventory once it has been claimed.\n-# This prompt will expire <t:{self.expiry}:R>."
 				
 				if await add_item(interaction,self.name,self.effect or "NO_EFFECT"):
 					counters = None
@@ -2143,9 +2150,11 @@ async def drop_item(ctx,
 	if item_effect != "NO_EFFECT":
 		full_item += f" ({item_effect})"
 	
-	buttons = ItemPickup(character,codename,item_name,item_effect,timeout=5*60,disable_on_timeout=True)
+	to = 5*60
+	t = int(time())
+	buttons = ItemPickup(character,codename,item_name,item_effect,t+to,timeout=to,disable_on_timeout=True)
 
-	message = f"**{codename.upper()}** has dropped **{full_item}**.\n-# The item will only be removed from their inventory once it has been claimed."
+	message = f"**{codename.upper()}** has dropped **{full_item}**.\n-# The item will only be removed from their inventory once it has been claimed.\n-# This prompt will expire <t:{t+to}:R>."
 	await ctx.respond(message,view=buttons)
 
 async def example_counter_names(ctx):
