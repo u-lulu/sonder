@@ -1898,7 +1898,7 @@ async def add_item(ctx,
 	character['items'].append(item_to_add)
 	
 	await ctx.respond(f"**{codename.upper()}** has added **{item_to_add}** to their inventory.")
-	if 'add_item' in ctx.command.qualified_name:
+	if isinstance(ctx,discord.ApplicationContext) and 'add_item' in ctx.command.qualified_name:
 		await save_character_data(str(ctx.author.id))
 	
 	return True
@@ -2016,14 +2016,14 @@ async def spawn_item(ctx,
 				if self.effect != "NO_EFFECT":
 					full_item += f" ({self.effect})"
 
-				if await add_item(ctx,self.name,self.effect or "NO_EFFECT"):
+				if await add_item(interaction,self.name,self.effect or "NO_EFFECT"):
 					self.items_left -= 1
 					
 				message = f"An item has spawned:\n**{full_item}**\nThere are {self.items_left} available to take."
 				if self.items_left <= 0:
 					self.disable_all_items()
-				await interaction.response.edit_message(content=message,view=self)
-		@discord.ui.button(label="Cancel",style=discord.ButtonStyle.red,emoji='❌')
+				await interaction.followup.edit_message(content=message,view=self,message_id=interaction.message.id)
+		@discord.ui.button(label="Cancel",style=discord.ButtonStyle.red,emoji='✋')
 		async def item_pickup_cancel_callback(self,button,interaction):
 			if interaction.user.id == ctx.author.id:
 				log("Cancelling item spawn")
@@ -2097,7 +2097,7 @@ async def drop_item(ctx,
 
 				message = f"**{self.source_codename.upper()}** has dropped **{full_item}**.\n-# The item will only be removed from their inventory once it has been claimed."
 				
-				if await add_item(ctx,self.name,self.effect or "NO_EFFECT"):
+				if await add_item(interaction,self.name,self.effect or "NO_EFFECT"):
 					counters = None
 					if full_item in character['counters']:
 						counters = deepcopy(character['counters'][full_item])
@@ -2119,8 +2119,8 @@ async def drop_item(ctx,
 						char['counters'][full_item] = counters
 						await save_character_data(str(ctx.author.id))
 				
-				await interaction.response.edit_message(content=message,view=self)
-		@discord.ui.button(label="Cancel",style=discord.ButtonStyle.red,emoji='❌')
+				await interaction.followup.edit_message(content=message,view=self,message_id=interaction.message.id)
+		@discord.ui.button(label="Cancel",style=discord.ButtonStyle.red,emoji='✋')
 		async def item_pickup_cancel_callback(self,button,interaction):
 			if interaction.user.id == ctx.author.id:
 				log("Cancelling item drop")
