@@ -1872,7 +1872,9 @@ async def add_item(ctx,
 		return False
 	codename = get_active_codename(ctx)
 
-	if character['premium'] and not await ext_character_management(ctx.author.id):
+	uid = ctx.author.id if isinstance(ctx,discord.ApplicationContext) else ctx.user.id
+
+	if character['premium'] and not await ext_character_management(uid):
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return False
 	
