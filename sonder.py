@@ -3042,7 +3042,8 @@ async def get_all_acceptable_syntax(ctx, string):
 
 def get_item_effect(item):
 	item_split = item.split(" (")
-	if len(item) > 1:
+	print(f"Item length: {len(item)}")
+	if len(item_split) > 1:
 		return item_split[1].replace(")","")
 	else:
 		return None
