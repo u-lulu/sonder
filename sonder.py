@@ -215,13 +215,41 @@ def replace_commands_with_mentions(text):
 			text = text.replace(cmd_formatted,cmd_object.mention)
 	return text
 
-async def response_with_file_fallback(ctx,message,eph=False):
+async def response_with_file_fallback(ctx:discord.ApplicationContext, message:str, eph=False):
 	if len(message) > 2000:
 		filedata = BytesIO(message.encode('utf-8'))
-		await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File(filedata,filename='response.md'),ephemeral=eph)
+		out = await ctx.respond("The message is too long to send. Please view the attached file.",file=discord.File(filedata,filename='response.md'),ephemeral=eph)
 		log(f"Sent response to /{ctx.command.qualified_name} as file")
+		return out
 	else:
-		await ctx.respond(message,ephemeral=eph)
+		return await ctx.respond(message,ephemeral=eph)
+
+async def paginated_response(ctx:discord.ApplicationContext, pages:list[str], eph=False):
+	class Pager(discord.ui.View):
+		pages = []
+		current_page = 0
+		max_page = 0
+		def __init__(self,pages):
+			super().__init__(timeout=5*60,disable_on_timeout=True)
+			self.pages = pages
+			self.max_page = len(pages) - 1
+		@discord.ui.button(label="Previous",emoji="⬅️")
+		async def page_down_callback(self,button,interaction):
+			self.current_page -= 1
+			if self.current_page < 0:
+				self.current_page = self.max_page
+			await interaction.response.edit_message(content=self.pages[self.current_page],view=self)
+		@discord.ui.button(label="Next",emoji="➡️")
+		async def page_up_callback(self,button,interaction):
+			self.current_page += 1
+			if self.current_page > self.max_page:
+				self.current_page = 0
+			await interaction.response.edit_message(content=self.pages[self.current_page],view=self)
+	
+	if len(pages) <= 1:
+		raise Exception("paginated_response called with 1 or fewer pages (expected minimum 2).")
+	else:
+		return await ctx.respond(pages[0],view=Pager(pages))
 
 def replace_ignoring_case(string,thing_to_replace,replacement):
 	while thing_to_replace.lower() in string.lower():
@@ -4151,14 +4179,12 @@ async def gadget(ctx,
 
 @cyclops_group.command(description="Divulges where CYCLOPS High Command is (allegedly) located")
 async def location(ctx):
-	#log("/matrix cyclops location")
 	result = roll_intelligence_matrix(intelligence["cyclops_rumors"][0])
 	message = f"Rumored location of CYCLOPS High Command: **{result}**"
 	await ctx.respond(message)
 
 @cyclops_group.command(description="Divulges the (alleged) origin of CYCLOPS")
 async def origin(ctx):
-	#log("/matrix cyclops origin")
 	result = roll_intelligence_matrix(intelligence["cyclops_rumors"][1])
 	message = f"Rumored origin of CYCLOPS: **{result}**"
 	await ctx.respond(message)
@@ -4171,21 +4197,18 @@ file.close()
 
 @world_group.command(description="Spawns a random Hazard")
 async def hazard(ctx):
-	#log("/matrix world hazard")
 	result = roll_intelligence_matrix(intelligence["world_hazards"][0])
 	message = f"Tread carefully; the area ahead contains **{result.lower()}**."
 	await ctx.respond(message)
 
 @world_group.command(description="Reveals a random Trap")
 async def trap(ctx):
-	#log("/matrix world trap")
 	result = roll_intelligence_matrix(intelligence["world_hazards"][1])
 	message = f"You've sprung a trap! You suffer the effects of **{result.lower()}**."
 	await ctx.respond(message)
 
 @world_group.command(description="Starts in a random Year")
 async def year(ctx):
-	#log("/matrix world year")
 	start = int(roll_intelligence_matrix(intelligence["misc"][6]))
 	modifier = int(roll_intelligence_matrix(intelligence["misc"][7]))
 	year = start + modifier
@@ -4193,7 +4216,6 @@ async def year(ctx):
 
 @world_group.command(description="Randomly modifies the local Temperature and Precipitation")
 async def weather(ctx):
-	#log("/matrix world weather")
 	temp = roll_intelligence_matrix(intelligence["misc"][8])
 	precip = roll_intelligence_matrix(intelligence["misc"][9])
 	result = f"**Temperature:** {temp}\n**Precipitation:** {precip}"
@@ -4227,7 +4249,6 @@ async def npc_lookup_autocomp(ctx):
 
 @chars_group.command(description="Spawns a random pre-made NPC")
 async def premade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific NPC instead",autocomplete=discord.utils.basic_autocomplete(npc_lookup_autocomp),required=False,default=None)=None):
-	#log(f"/matrix character premade {lookup}")
 	message = ""
 	if lookup is None:
 		result = rnd.choice(intelligence["chars_premade"])
@@ -4250,7 +4271,6 @@ file.close()
 
 @chars_group.command(description="Spawns a random Celebrity")
 async def celebrity(ctx):
-	#log("/matrix character celebrity")
 	result = roll_all_matrices(intelligence["chars_celebs"])
 	profession = [result[0]]
 	while "Roll twice, ignoring duplicates" in profession:
@@ -4272,7 +4292,6 @@ file.close()
 
 @chars_group.command(description="Spawns a random Civilian")
 async def civilian(ctx):
-	#log("/matrix character civilian")
 	result = roll_all_matrices(intelligence["chars_civvies"])
 	job = result[0]
 	name = result[1]
@@ -4287,7 +4306,6 @@ file.close()
 
 @chars_group.command(description="Spawns a random Politician")
 async def politician(ctx):
-	#log("/matrix character politician")
 	result = roll_all_matrices(intelligence["chars_politicians"])
 	position = result[0]
 	vice = result[1]
@@ -4304,7 +4322,6 @@ file.close()
 
 @chars_group.command(description="Spawns a random Scientist")
 async def scientist(ctx):
-	#log("/matrix character scientist")
 	result = roll_all_matrices(intelligence["chars_scientists"])
 	alleg = result[0]
 	career = result[1]
@@ -4321,7 +4338,6 @@ file.close()
 
 @chars_group.command(description="Spawns a random Soldier")
 async def soldier(ctx):
-	#log("/matrix character soldier")
 	result = roll_all_matrices(intelligence["chars_soldiers"])
 	rank = result[0]
 	name = result[1]
@@ -4337,7 +4353,6 @@ file.close()
 
 @chars_group.command(description="Spawns a random Spy")
 async def spy(ctx):
-	#log("/matrix character spy")
 	result = roll_all_matrices(intelligence["chars_spies"])
 	code = result[0]
 	clearance = result[1]
@@ -4366,7 +4381,6 @@ async def enemy_lookup_autocomp(ctx):
 
 @enemy_group.command(description="Spawns a random pre-made Enemy")
 async def premade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Enemy instead",autocomplete=discord.utils.basic_autocomplete(enemy_lookup_autocomp),required=False,default=None)=None):
-	#log(f"/matrix enemy premade {lookup}")
 	message = ""
 	if lookup is None:
 		result = rnd.choice(intelligence["chars_enemy_premade"])
@@ -4389,7 +4403,6 @@ file.close()
 
 @enemy_group.command(description="Spawns a random Animal")
 async def animal(ctx):
-	#log("/matrix enemy animal")
 	result = roll_all_matrices(intelligence["chars_animals"])
 	amount = result[0]
 	desc = result[1]
@@ -4405,7 +4418,6 @@ file.close()
 
 @enemy_group.command(description="Spawns a random Anomaly")
 async def anomaly(ctx):
-	#log("/matrix enemy anomaly")
 	result = roll_all_matrices(intelligence["chars_anomalies"])
 	signature = result[0]
 	desc = result[1]
@@ -4420,7 +4432,6 @@ file.close()
 
 @enemy_group.command(description="Performs a random Experiment")
 async def experiment(ctx):
-	#log("/matrix enemy experiment")
 	result = roll_all_matrices(intelligence["chars_experiments"])
 	creation = result[0]
 	desc = result[1]
@@ -4448,7 +4459,6 @@ file.close()
 
 @enemy_group.command(description="Spawns a random Monster")
 async def monster(ctx):
-	#log("/matrix enemy monster")
 	result = roll_all_matrices(intelligence["chars_monsters"])
 	amount = result[0]
 	desc = result[1]
