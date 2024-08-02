@@ -1479,34 +1479,45 @@ async def my_characters(ctx):
 	if yourid in character_data and len(character_data[yourid]['chars']) > 0:
 		await ctx.defer()
 		yourchars = character_data[yourid]['chars']
-		msg = f"Characters created by <@{yourid}> ({len(yourchars)}/{premium_character_limit if await ext_character_management(yourid) else standard_character_limit}):"
+		msg_long = f"Characters created by <@{yourid}> ({len(yourchars)}/{premium_character_limit if await ext_character_management(yourid) else standard_character_limit}):"
+		msg_short = msg_long
 		premiums = False
 		for codename in yourchars:
 			if not yourchars[codename]['premium']:
 				char_traits = character_data[yourid]['chars'][codename]['traits']
-				msg += f"\n- **{codename.upper()}**"
+				msg_long += f"\n- **{codename.upper()}**"
+				msg_short += f"\n- **{codename.upper()}**"
 				if len(char_traits) > 0:
 					char_trait_names = []
 					for t in char_traits:
 						char_trait_names.append(t['Name'])
-					msg += f" ({'/'.join(char_trait_names)})"
+					msg_long += f" ({'/'.join(char_trait_names)})"
+					msg_short += f" ({len(char_traits)} traits)"
 				else:
-					msg += f" (No traits)"
+					msg_long += f" (No traits)"
+					msg_short += f" (No traits)"
 		for codename in yourchars:
 			if yourchars[codename]['premium']:
 				premiums = True
 				char_traits = character_data[yourid]['chars'][codename]['traits']
-				msg += f"\n- **{codename.upper()}**\*"
+				msg_long += f"\n- **{codename.upper()}**\*"
+				msg_short += f"\n- **{codename.upper()}**\*"
 				if len(char_traits) > 0:
 					char_trait_names = []
 					for t in char_traits:
 						char_trait_names.append(t['Name'])
-					msg += f" ({'/'.join(char_trait_names)})"
+					msg_long += f" ({'/'.join(char_trait_names)})"
+					msg_short += f" ({len(char_traits)} traits)"
 				else:
-					msg += f" (No traits)"
+					msg_long += f" (No traits)"
+					msg_short += f" (No traits)"
 		if premiums:
-			msg += "\n-# \* *premium character*"
-		await response_with_file_fallback(ctx,msg)
+			msg_long += "\n-# \* *premium character*"
+			msg_short += "\n-# \* *premium character*"
+		if len(msg_long) <= 2000:
+			await ctx.respond(msg_long)
+		else:
+			await response_with_file_fallback(ctx,msg_short)
 	else:
 		await ctx.respond("You haven't created any characters yet.",ephemeral=True)
 	
