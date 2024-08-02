@@ -626,7 +626,6 @@ async def membership(ctx):
 
 @bot.command(description="Pin (or unpin) a message inside a thread, if you own the thread")
 async def threadpin(ctx, id: discord.Option(str, "The ID of the message to pin.", required=True, min_length=18, max_length=19)):
-	#log(f"/threadpin {id}")
 	try:
 		channel = ctx.channel
 		if type(channel) != discord.Thread:
@@ -1850,7 +1849,6 @@ async def custom_traits_list_autocomp(ctx):
 @bot.command(description="Delete one of your custom traits")
 async def delete_custom_trait(ctx,	
 		name: discord.Option(str, "The name of the trait to delete",autocomplete=discord.utils.basic_autocomplete(custom_traits_list_autocomp), required=True)):
-	#log(f"/delete_custom_trait {name}")
 	uid = str(ctx.author.id)
 	if uid not in character_data or len(character_data[uid]['traits']) <= 0:
 		await ctx.respond("You do not have any custom traits on file.",ephemeral=True)
@@ -1875,7 +1873,6 @@ async def delete_custom_trait(ctx,
 
 @bot.command(description="View your custom traits")
 async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait to view",autocomplete=discord.utils.basic_autocomplete(custom_traits_list_autocomp), required=False, default=None)):
-	#log(f"/my_traits {name if name is not None else ''}")
 	if name is not None:
 		name = name.strip()
 	uid = str(ctx.author.id)
@@ -1981,7 +1978,6 @@ async def edit_item(ctx,
 		original_item: discord.Option(str, "The name of the original item",autocomplete=discord.utils.basic_autocomplete(item_name_autocomplete), required=True),
 		name: discord.Option(str, "The new name of the item",autocomplete=discord.utils.basic_autocomplete(orig_item_name_autocomp), required=True, max_length=100), 
 		effect: discord.Option(str, "The new effect of the item",autocomplete=discord.utils.basic_autocomplete(orig_item_effect_autocomp), required=True)):
-	#log(f"/edit_item {original_item} {name} {effect}")
 	name = name.strip()
 	effect = effect.strip()
 	character = get_active_char_object(ctx)
@@ -3920,7 +3916,6 @@ async def bupgrade_autocomp(ctx):
 
 @gear_group.command(description="Applies a random Base Upgrade")
 async def baseupgrade(ctx, lookup: discord.Option(str,"Including this argument searches for a specific Base Upgrade instead",choices=bupgrade_names,required=False,default=None)=None):
-	#log("/matrix gear baseupgrade")
 	message = ""
 	if lookup is None:
 		result = rnd.choice(intelligence["gear_bupgrades"])
@@ -3939,7 +3934,6 @@ async def baseupgrade(ctx, lookup: discord.Option(str,"Including this argument s
 
 @gear_group.command(description="Divulges the contents of a random Crate")
 async def crate(ctx):
-	#log("/matrix gear crate")
 	result = roll_intelligence_matrix(intelligence["gear_items"][1])
 	message = f"You crack open a crate, revealing **{result}** inside."
 	message = replace_commands_with_mentions(message)
@@ -3947,7 +3941,6 @@ async def crate(ctx):
 
 @gear_group.command(description="Grants a random Common Item")
 async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of items to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)=1):
-	#log(f"/matrix gear item {count}")
 	results = {}
 	for i in range(count):
 		item = roll_intelligence_matrix(intelligence["gear_items"][0])
@@ -3967,7 +3960,6 @@ async def item(ctx, count: discord.Option(discord.SlashCommandOptionType.integer
 
 @gear_group.command(description="Grants a random piece of Armor")
 async def armor(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of armor pieces to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)=1):
-	#log("/matrix gear armor")
 	results = {}
 	for i in range(count):
 		item = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][0])
@@ -3986,7 +3978,6 @@ async def armor(ctx, count: discord.Option(discord.SlashCommandOptionType.intege
 
 @gear_group.command(description="Grants a random Weapon")
 async def weapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of weapons to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)=1):
-	#log(f"/matrix gear weapon {count}")
 	results = {}
 	for i in range(count):
 		item = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][1])
@@ -4012,7 +4003,6 @@ async def tag_lookup_autocomp(ctx):
 
 @gear_group.command(description="Applies a random Weapon Tag")
 async def tag(ctx, lookup: discord.Option(str,"Including this argument searches for a specific tag instead",autocomplete=discord.utils.basic_autocomplete(tag_lookup_autocomp),required=False,default=None)=None):
-	#log("/matrix gear tag")
 	tags = intelligence["gear_weapons_and_armor"][2]["Values"]
 	message = ""
 	hidden = False
@@ -4044,7 +4034,6 @@ async def tag(ctx, lookup: discord.Option(str,"Including this argument searches 
 
 @gear_group.command(description="Grants a random Vehicle")
 async def vehicle(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of vehicles to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)=1):
-	#log(f"/matrix gear vehicle {count}")
 	results = {}
 	for i in range(count):
 		item = roll_intelligence_matrix(intelligence["gear_vehicles"][0])
@@ -4063,7 +4052,6 @@ async def vehicle(ctx, count: discord.Option(discord.SlashCommandOptionType.inte
 
 @gear_group.command(description="Grants a random Vehicle Weapon")
 async def vehicleweapon(ctx, count: discord.Option(discord.SlashCommandOptionType.integer, "The number of vehicle weapons to produce (allows duplicates)", required=False, default=1, min_value=1, max_value=50)=1):
-	#log(f"/matrix gear vehicleweapon {count}")
 	results = {}
 	for i in range(count):
 		item = roll_intelligence_matrix(intelligence["gear_vehicles"][1])
@@ -4882,14 +4870,12 @@ file.close()
 
 @atrx_group.command(description="Listens to a rumor from Vizhay")
 async def rumor(ctx):
-	#log("/ataraxia rumor")
 	result = roll_intelligence_matrix(intelligence["ataraxia"][0])
 	message = f"You pick up on a rumor in Vizhay: {result}"
 	await ctx.respond(message)
 
 @atrx_group.command(description="Encounter something in Dyatlov Pass")
 async def encounter(ctx):
-	#log("/ataraxia encounter")
 	result = roll_intelligence_matrix(intelligence["ataraxia"][1])
 	message = f"During your travels through Dyatlov Pass, you run into: **{result}**"
 	await ctx.respond(message)
@@ -4904,25 +4890,21 @@ file.close()
 
 @hzfc_group.command(description="Enter a new chamber")
 async def room(ctx):
-	#log("/hazfunction room")
 	result = roll_intelligence_matrix(intelligence["hazfunction"][0])
 	await ctx.respond(result)
 
 @hzfc_group.command(description="Spawn a chamber's hazard")
 async def hazard(ctx):
-	#log("/hazfunction hazard")
 	result = roll_intelligence_matrix(intelligence["hazfunction"][1])
 	await ctx.respond(result)
 
 @hzfc_group.command(description="Spawn a crucible animal")
 async def animal(ctx):
-	#log("/hazfunction animal")
 	result = roll_intelligence_matrix(intelligence["hazfunction"][4])
 	await ctx.respond(result)
 
 @hzfc_group.command(description="Spawn a chamber's encounter")
 async def encounter(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True, min_value=0)):
-	#log(f"/hazfunction encounter {rooms_cleared}")
 	options = intelligence["hazfunction"][2]["Values"]
 	roll = d6() + rooms_cleared
 	if roll > 16:
@@ -4932,7 +4914,6 @@ async def encounter(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptio
 
 @hzfc_group.command(description="Spawn a chamber's item")
 async def item(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True, min_value=0)):
-	#log(f"/hazfunction item {rooms_cleared}")
 	options = intelligence["hazfunction"][3]["Values"]
 	roll = d6() + rooms_cleared
 	if roll > 16:
@@ -4942,7 +4923,6 @@ async def item(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType
 
 @hzfc_group.command(description="Enter a new chamber, and outfit it with an encounter, hazard, and item")
 async def full_room(ctx, rooms_cleared: discord.Option(discord.SlashCommandOptionType.integer, "The number of rooms already cleared", required=True, min_value=0)):
-	#log(f"/hazfunction full_room {rooms_cleared}")
 	room = roll_intelligence_matrix(intelligence["hazfunction"][0])
 	haz = roll_intelligence_matrix(intelligence["hazfunction"][1])
 	encounter_options = intelligence["hazfunction"][2]["Values"]
@@ -4963,8 +4943,6 @@ def hazfunc_codename():
 
 @hzfc_group.command(description="Produces a random Hazard Function character")
 async def character(ctx):
-	#log(f"/hazfunction character")
-	
 	message = f"# {hazfunc_codename()}"
 	message += "\nROLE: **SURVIVOR**\nDescribe why you want to live. If you live until the end of the mission, take another trait and gain a role, change your MAX HP to 6, then take a standard issue item, +1D6 MAX HP, or +1D6 WAR DICE.\n\n"
 	
@@ -5063,7 +5041,6 @@ async def canister(ctx, amount: discord.Option(str, "The number of canisters to 
 
 @ctsh_group.command(description="Roll to see if Colony will spawn.")
 async def spawn(ctx):
-	#log(f"/colony spawn")
 	if d6() % 2 == 1:
 		await ctx.respond("Colony **will** spawn in this region.")
 	else:
