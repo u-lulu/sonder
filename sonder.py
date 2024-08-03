@@ -246,10 +246,23 @@ async def paginated_response(ctx:discord.ApplicationContext, pages:list[str], ep
 				self.current_page = 0
 			await interaction.response.edit_message(content=self.pages[self.current_page],view=self)
 	
-	if len(pages) <= 1:
-		raise Exception("paginated_response called with 1 or fewer pages (expected minimum 2).")
-	else:
-		return await ctx.respond(pages[0],view=Pager(pages))
+	while '' in pages:
+		# trim out pages with no content
+		pages.remove('')
+
+	if len(pages) == 1:
+		# if there is only 1 page, simply show that page without buttons
+		return await ctx.respond(pages[0],ephemeral=eph)
+	elif len(pages) <= 0:
+		# if there are no pages, what are you doing?
+		raise Exception("paginated_response recieved empty pages list")
+	
+	for page in pages:
+		# ensure no page would exceed message length cap
+		if len(page) > 2000:
+			raise Exception(f"paginated_response recieved page of size {len(page)} (expected maximum 2000)")
+
+	return await ctx.respond(pages[0],view=Pager(pages),ephemeral=eph)
 
 def replace_ignoring_case(string,thing_to_replace,replacement):
 	while thing_to_replace.lower() in string.lower():
