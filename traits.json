@@ -506,7 +506,7 @@
   {
     "Number": 311,
     "Name": "HARVEST",
-    "Effect": "When you would deal a killing blow with a melee weapon, you may roll 1D6 to attempt to harvest an internal organ before death\u2014on a 4 or above, consume it, and choose to a) gain a WAR DIE, or b) heal for 1D6 HP. On a 3 or below, your killing blow doesn’t land.",
+    "Effect": "When you would deal a killing blow with a melee weapon, you may roll 1D6 to attempt to harvest an internal organ before death\u2014on a 4 or above, consume it, and choose to a) gain a WAR DIE, or b) heal for 1D6 HP. On a 3 or below, your killing blow doesn't land.",
     "Item": "Bloody axe (1D6 DAMAGE)",
     "Stat": "+1 REFLEXIVE"
   },

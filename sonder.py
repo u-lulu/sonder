@@ -866,7 +866,7 @@ async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
 	if results == [6,6]:
 		message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
 	elif total <= 6:
-		message += "Your roll is a **failure.** You don’t do what you wanted to do, and things go wrong somehow."
+		message += "Your roll is a **failure.** You don't do what you wanted to do, and things go wrong somehow."
 	elif total <= 9:
 		message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
 	else:
@@ -914,7 +914,7 @@ async def roll_with_skill(ctx, extra_mod, superior_dice, inferior_dice, stat):
 					if self.orig_results == [6,6]:
 						message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
 					elif total <= 6:
-						message += "Your roll is a **failure.** You don’t do what you wanted to do, and things go wrong somehow."
+						message += "Your roll is a **failure.** You don't do what you wanted to do, and things go wrong somehow."
 					elif total <= 9:
 						message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
 					else:
@@ -2634,7 +2634,7 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 						first.append(d6())
 					while second[-1] == 6:
 						second.append(d6())
-					message = f"**{codename.upper()}** spends a **Fated** War Die. **They rolled doubles—both are used!**"
+					message = f"**{codename.upper()}** spends a **Fated** War Die. **They rolled doubles - both are used!**"
 					message += f"\n-"
 					for result in first:
 						if result == 6:
@@ -3495,6 +3495,41 @@ file.close()
 async def codename(ctx):
 	await ctx.respond("# " + rnd.choice(merc_codenames))
 
+log("Loading Rules blocks")
+rules_blocks = dict()
+rules_names = list()
+if os.path.exists('rules_references'):
+	present_files = os.listdir('rules_references')
+	for filename in present_files:
+		n,title,ext = filename.split(".")
+		if ext == "md":
+			log(f"- Got rules block for '{title}'")
+			n = int(n)
+			while len(rules_names) < n:
+				rules_names.append(None)
+			file = open(f'rules_references/{filename}')
+			block = file.read()
+			file.close()
+			rules_names[n-1] = title
+			rules_blocks[title] = block
+
+while None in rules_names:
+	rules_names.remove(None)
+
+@player_group.command(description="Look up a block of rules")
+async def rules(ctx, query: discord.Option(str, "The rule to look up.",required=True,choices=rules_names)):
+	resulting_block = rules_blocks[query]
+	title_bar = "# " + query + "\n"
+	if len(resulting_block) + len(title_bar) > 2000:
+		resulting_block = resulting_block.split("\n\n")
+		for n in range(len(resulting_block)):
+			section = resulting_block[n]
+			section = title_bar + f"-# Page {n+1} of {len(resulting_block)}\n\n" + section
+			resulting_block[n] = section
+		return await paginated_response(ctx, resulting_block)
+	else:
+		return await ctx.respond(title_bar+resulting_block)
+
 @player_group.command(description="Produces a random character sheet")
 async def character(ctx,
 					traitcount: discord.Option(discord.SlashCommandOptionType.integer, "The number of traits this character should have. Defaults to 2.", required=False, default=2, min_value=1, max_value=40),
@@ -3649,7 +3684,7 @@ async def roll(ctx,
 	if results == [6,6]:
 		message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
 	elif total <= 6:
-		message += "Your roll is a **failure.** You don’t do what you wanted to do, and things go wrong somehow."
+		message += "Your roll is a **failure.** You don't do what you wanted to do, and things go wrong somehow."
 	elif total <= 9:
 		message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
 	else:
@@ -3696,7 +3731,7 @@ async def roll(ctx,
 					if self.orig_results == [6,6]:
 						message += "Your roll is an **ultra success!** You do exactly what you wanted to do, with some spectacular added bonus."
 					elif total <= 6:
-						message += "Your roll is a **failure.** You don’t do what you wanted to do, and things go wrong somehow."
+						message += "Your roll is a **failure.** You don't do what you wanted to do, and things go wrong somehow."
 					elif total <= 9:
 						message += "Your roll is a **partial success.** You do what you wanted to, but with a cost, compromise, or complication."
 					else:

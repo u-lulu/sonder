@@ -34,11 +34,11 @@
 				},
 				"9": {
 					"Name":"Dissolving ammunition",
-					"Effect":"For high-profile assassinations or missions which require leaving no trace of an agent's presence, CYCLOPS uses proprietary \"dissolving ammunition\" which contains a strain of specially-cultivated alien bacteria capable of rapidly metabolizing lead (as well as flesh, to a certain extent—dissolving ammo deals an additonal 1 DAMAGE). Dissolving ammo is a finite resource, so you should either track your shots directly (dissolving ammo clips have 6 shots), or use the abstract ammo tracking rules."
+					"Effect":"For high-profile assassinations or missions which require leaving no trace of an agent's presence, CYCLOPS uses proprietary \"dissolving ammunition\" which contains a strain of specially-cultivated alien bacteria capable of rapidly metabolizing lead (as well as flesh, to a certain extent - dissolving ammo deals an additonal 1 DAMAGE). Dissolving ammo is a finite resource, so you should either track your shots directly (dissolving ammo clips have 6 shots), or use the abstract ammo tracking rules."
 				},
 				"10": {
 					"Name":"Portable fusion generator",
-					"Effect":"Despite the ensuing stable time loop, CYCLOPS Command has deemed their decision to build miniaturized cold fusion reactors based upon their own blueprints from the distant future \"an acceptable risk.\" The briefcase-sized generator can supply a city grid's worth of power for 24 hours—if pushed beyond this point, it will erupt in a small nuclear explosion which deals 10D6 DAMAGE."
+					"Effect":"Despite the ensuing stable time loop, CYCLOPS Command has deemed their decision to build miniaturized cold fusion reactors based upon their own blueprints from the distant future \"an acceptable risk.\" The briefcase-sized generator can supply a city grid's worth of power for 24 hours - if pushed beyond this point, it will erupt in a small nuclear explosion which deals 10D6 DAMAGE."
 				},
 				"11": {
 					"Name":"Teleporter relay",
