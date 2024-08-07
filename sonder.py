@@ -5112,6 +5112,12 @@ log("Loading context menu reactions...")
 async def generic_emoji_react(ctx: discord.ApplicationContext, message: discord.Message, emoji: str):
 	await ctx.defer(ephemeral=True)
 
+	for r in message.reactions:
+		if not r.is_custom_emoji() and r.emoji == emoji:
+			async for user in r.users():
+				if user.id == bot.user.id:
+					return await ctx.respond(f"I have already reacted to that message with {emoji}.",ephemeral=True)
+
 	reaction_failure = None
 	reply_failure = None
 
@@ -5145,25 +5151,12 @@ async def generic_emoji_react(ctx: discord.ApplicationContext, message: discord.
 		msg = f"\n-# The reply could not be completed: {reply_failure}"
 		return await ctx.respond(msg,ephemeral=True)
 
-@bot.message_command(name="React with ❌")
-async def react_cross(ctx: discord.ApplicationContext, message: discord.Message):
-	return await generic_emoji_react(ctx,message,"❌")
+react_emojis = list("❌⭕🟢🟡🔴")
 
-@bot.message_command(name="React with ⭕")
-async def react_circle(ctx: discord.ApplicationContext, message: discord.Message):
-	return await generic_emoji_react(ctx,message,"⭕")
-
-@bot.message_command(name="React with 🟢")
-async def react_green(ctx: discord.ApplicationContext, message: discord.Message):
-	return await generic_emoji_react(ctx,message,"🟢")
-
-@bot.message_command(name="React with 🟡")
-async def react_yellow(ctx: discord.ApplicationContext, message: discord.Message):
-	return await generic_emoji_react(ctx,message,"🟡")
-
-@bot.message_command(name="React with 🔴")
-async def react_red(ctx: discord.ApplicationContext, message: discord.Message):
-	return await generic_emoji_react(ctx,message,"🔴")
+for emj in react_emojis:
+	@bot.message_command(name=f"React with {emj}")
+	async def react_cross(ctx: discord.ApplicationContext, message: discord.Message):
+		return await generic_emoji_react(ctx,message,ctx.command.name.split(" ")[-1])
 
 log("Starting bot session")
 bot.run(token)
