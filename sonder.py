@@ -5107,6 +5107,64 @@ async def the_board(ctx, message_id_of_new_record: discord.Option(str, "The ID o
 	else:
 		await ctx.respond(f"# TIME SINCE LAST INCIDENT: <t:{board_data['time']}:R>\nLast incident: {board_data['url']}")
 
+log("Loading context menu reactions...")
+
+async def generic_emoji_react(ctx: discord.ApplicationContext, message: discord.Message, emoji: str):
+	await ctx.defer(ephemeral=True)
+
+	reaction_failure = None
+	reply_failure = None
+
+	try:
+		await message.add_reaction(emoji)
+	except Exception as e:
+		reaction_failure = e
+	
+	try:
+		await message.reply(content=emoji)
+	except Exception as f:
+		reply_failure = f
+
+	if reaction_failure is None and reply_failure is None:
+		# no errors encountered
+		return await ctx.respond(f"Reacted with {emoji} for you.",ephemeral=True)
+	elif reaction_failure is not None and reply_failure is not None:
+		# both errors encountered
+		msg = "This action could not be completed."
+		msg += f"\n-# Reaction error: {reaction_failure}"
+		msg += f"\n-# Reply error: {reply_failure}"
+		return await ctx.respond(msg,ephemeral=True)
+	elif reaction_failure is not None:
+		# only reaction failure
+		msg = f"Replied with {emoji} for you."
+		msg = f"\n-# The reaction could not be completed: {reaction_failure}"
+		return await ctx.respond(msg,ephemeral=True)
+	elif reply_failure is not None:
+		# only reply failure
+		msg = f"Replied with {emoji} for you."
+		msg = f"\n-# The reply could not be completed: {reply_failure}"
+		return await ctx.respond(msg,ephemeral=True)
+
+@bot.message_command(name="React with ❌")
+async def react_cross(ctx: discord.ApplicationContext, message: discord.Message):
+	return await generic_emoji_react(ctx,message,"❌")
+
+@bot.message_command(name="React with ⭕")
+async def react_circle(ctx: discord.ApplicationContext, message: discord.Message):
+	return await generic_emoji_react(ctx,message,"⭕")
+
+@bot.message_command(name="React with 🟢")
+async def react_green(ctx: discord.ApplicationContext, message: discord.Message):
+	return await generic_emoji_react(ctx,message,"🟢")
+
+@bot.message_command(name="React with 🟡")
+async def react_yellow(ctx: discord.ApplicationContext, message: discord.Message):
+	return await generic_emoji_react(ctx,message,"🟡")
+
+@bot.message_command(name="React with 🔴")
+async def react_red(ctx: discord.ApplicationContext, message: discord.Message):
+	return await generic_emoji_react(ctx,message,"🔴")
+
 log("Starting bot session")
 bot.run(token)
 
