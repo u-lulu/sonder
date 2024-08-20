@@ -1954,6 +1954,10 @@ async def add_item(ctx,
 	
 	return True
 
+@bot.command(description="(heal 1D6+TAC HP, one use)")
+async def navy_medkit(ctx: discord.ApplicationContext):
+	await spawn_item(ctx,"Navy Medkit <:navymedkit:1275300173689393182>","heal 1D6+TAC HP, one use",1)
+
 async def item_name_autocomplete(ctx):
 	current_char = get_active_char_object(ctx)
 	if current_char is None:
