@@ -17,7 +17,7 @@ from io import BytesIO
 import zipfile
 
 standard_character_limit = 10
-premium_character_limit = 50
+premium_character_limit = 100
 standard_custrait_limit = 2 * standard_character_limit
 premium_custrait_limit = 2 * premium_character_limit
 
@@ -1519,45 +1519,42 @@ async def my_characters(ctx):
 	if yourid in character_data and len(character_data[yourid]['chars']) > 0:
 		await ctx.defer()
 		yourchars = character_data[yourid]['chars']
-		msg_long = f"Characters created by <@{yourid}> ({len(yourchars)}/{premium_character_limit if await ext_character_management(yourid) else standard_character_limit}):"
-		msg_short = msg_long
-		premiums = False
-		for codename in yourchars:
-			if not yourchars[codename]['premium']:
+		msg_header = f"Characters created by <@{yourid}> ({len(yourchars)}/{premium_character_limit if await ext_character_management(yourid) else standard_character_limit}):"
+		
+		def cretime(cd):
+			return yourchars[cd]['creation_time']
+		
+		def divide_chunks(l:list, n:int):
+			# looping till length l
+			for i in range(0, len(l), n): 
+				yield l[i:i + n]
+
+		characters_per_page = 15
+
+		sorted_chars = sorted(list(yourchars.keys()), key=cretime)
+		char_pages = list(divide_chunks(sorted_chars,characters_per_page))
+		pages = []
+		pagenum = 0
+		pagecount = len(char_pages)
+
+		for sublist in char_pages:
+			premiums = False
+			page = msg_header
+			if pagecount > 1:
+				pagenum += 1
+				page += f"\n-# Page {pagenum}/{pagecount}"
+			for codename in sublist:
 				char_traits = character_data[yourid]['chars'][codename]['traits']
-				msg_long += f"\n- **{codename.upper()}**"
-				msg_short += f"\n- **{codename.upper()}**"
-				if len(char_traits) > 0:
-					char_trait_names = []
-					for t in char_traits:
-						char_trait_names.append(t['Name'])
-					msg_long += f" ({'/'.join(char_trait_names)})"
-					msg_short += f" ({len(char_traits)} traits)"
-				else:
-					msg_long += f" (No traits)"
-					msg_short += f" (No traits)"
-		for codename in yourchars:
-			if yourchars[codename]['premium']:
-				premiums = True
-				char_traits = character_data[yourid]['chars'][codename]['traits']
-				msg_long += f"\n- **{codename.upper()}**\*"
-				msg_short += f"\n- **{codename.upper()}**\*"
-				if len(char_traits) > 0:
-					char_trait_names = []
-					for t in char_traits:
-						char_trait_names.append(t['Name'])
-					msg_long += f" ({'/'.join(char_trait_names)})"
-					msg_short += f" ({len(char_traits)} traits)"
-				else:
-					msg_long += f" (No traits)"
-					msg_short += f" (No traits)"
-		if premiums:
-			msg_long += "\n-# \* *premium character*"
-			msg_short += "\n-# \* *premium character*"
-		if len(msg_long) <= 2000:
-			await ctx.respond(msg_long)
-		else:
-			await response_with_file_fallback(ctx,msg_short)
+				page += f"\n- **{codename.upper()}**"
+				if character_data[yourid]['chars'][codename]['premium']:
+					page += "\*"
+				page += f" ({len(char_traits) if len(char_traits) > 0 else 'No'} traits)"
+				premiums = premiums or character_data[yourid]['chars'][codename]['premium']
+			if premiums:
+				page += "\n-# \* *premium character*"
+			pages.append(page)
+		
+		await paginated_response(ctx,pages)
 	else:
 		await ctx.respond("You haven't created any characters yet.",ephemeral=True)
 	
@@ -1893,21 +1890,37 @@ async def my_traits(ctx, name: discord.Option(str, "The name of a specific trait
 		await ctx.respond("You do not have any custom traits on file.",ephemeral=True)
 		return
 	
+	def divide_chunks(l:list, n:int):
+		# looping till length l
+		for i in range(0, len(l), n): 
+			yield l[i:i + n]
+	
 	yourtraits = character_data[uid]['traits']
+	traits_per_page = 10
+	trait_pages = list(divide_chunks(list(yourtraits.keys()),traits_per_page))
+	pages = []
+	pagenum = 0
+	pagecount = len(trait_pages)
+
 	if name is None:
 		await ctx.defer()
-		msg = f"Custom traits created by <@{uid}> ({len(yourtraits)}/{premium_custrait_limit if await ext_character_management(uid) else standard_custrait_limit}):"
-		for t in yourtraits:
-			full_trait = yourtraits[t]
-			
-			msg += f"\n- **{t.upper()}** ({full_trait['Stat']}, {full_trait['Item']})"
-		await response_with_file_fallback(ctx,msg)
+		msg_header = f"Custom traits created by <@{uid}> ({len(yourtraits)}/{premium_custrait_limit if await ext_character_management(uid) else standard_custrait_limit}):"
+		for sublist in trait_pages:
+			page = msg_header
+			if pagecount > 1:
+				pagenum += 1
+				page += f"\n-# Page {pagenum}/{pagecount}"
+			for t in sublist:
+				full_trait = yourtraits[t]
+				page += f"\n- **{t.upper()}** ({full_trait['Stat']}, {get_item_name(full_trait['Item'])})"
+			pages.append(page)
+		await paginated_response(ctx,pages)
 	else:
 		name = name.upper()
 		if name not in yourtraits:
 			await ctx.respond(f"You do not have a custom trait called {name}.",ephemeral=True)
 		else:
-			await ctx.respond(trait_message_format(yourtraits[name]))
+			await response_with_file_fallback(ctx,trait_message_format(yourtraits[name]))
 
 @bot.command(description="Add an item your active character")
 async def add_item(ctx,
