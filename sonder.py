@@ -16,12 +16,12 @@ import asyncio
 from io import BytesIO
 import zipfile
 
-standard_character_limit = 10
-premium_character_limit = 100
-standard_custrait_limit = 2 * standard_character_limit
-premium_custrait_limit = 2 * premium_character_limit
+STANDARD_CHARACTER_LIMIT = 10
+PREMIUM_CHARACTER_LIMIT = 100
+standard_custrait_limit = 2 * STANDARD_CHARACTER_LIMIT
+premium_custrait_limit = 2 * PREMIUM_CHARACTER_LIMIT
 
-item_limit = 50
+ITEM_LIMIT = 50
 logging_channel_id = 1145165620082638928
 logging_channel = None
 backups_channel_id = 1240474179481108510
@@ -50,6 +50,7 @@ token_file_data = json.load(token_file)
 ownerid = token_file_data["owner_id"]
 token = token_file_data["token"]
 token_file.close()
+del token_file_data
 
 log("Loading traits")
 trait_file = open('traits.json')
@@ -615,25 +616,25 @@ async def membership(ctx):
 		user = await support_server_obj.fetch_member(id)
 	except discord.HTTPException as e:
 		log("Result is NO; not present on support server (threw exception)")
-		await ctx.respond(f"You do not have an active subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).\nYou are able to manage {standard_character_limit} characters and {standard_custrait_limit} custom traits.\nIf you have paid for a subscription but are seeing this message, you must join the [Support Server]( https://discord.gg/VeedQmQc7k ) and link your Ko-fi account to Discord before you can receive benefits.",ephemeral=True)
+		await ctx.respond(f"You do not have an active subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).\nYou are able to manage {STANDARD_CHARACTER_LIMIT} characters and {standard_custrait_limit} custom traits.\nIf you have paid for a subscription but are seeing this message, you must join the [Support Server]( https://discord.gg/VeedQmQc7k ) and link your Ko-fi account to Discord before you can receive benefits.",ephemeral=True)
 		if id in subscription_cache:
 			del subscription_cache[id]
 		return
 	if user is None:
 		log("Result is NO; not present on support server")
-		await ctx.respond(f"You do not have an active subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).\nYou are able to manage {standard_character_limit} characters and {standard_custrait_limit} custom traits.\nIf you have paid for a subscription but are seeing this message, you must join the [Support Server]( https://discord.gg/VeedQmQc7k ) and link your Ko-fi account to Discord before you can receive benefits.",ephemeral=True)
+		await ctx.respond(f"You do not have an active subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).\nYou are able to manage {STANDARD_CHARACTER_LIMIT} characters and {standard_custrait_limit} custom traits.\nIf you have paid for a subscription but are seeing this message, you must join the [Support Server]( https://discord.gg/VeedQmQc7k ) and link your Ko-fi account to Discord before you can receive benefits.",ephemeral=True)
 		if id in subscription_cache:
 			del subscription_cache[id]
 		return
 	role = user.get_role(1142272148099055666)
 	if role is None:
 		log("Result is NO; no assigned role")
-		await ctx.respond(f"You do not have an active subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).\nYou are able to manage {standard_character_limit} characters and {standard_custrait_limit} custom traits.\nIf you have paid for a subscription but are seeing this message, you must link your Ko-fi account to Discord before you can receive benefits.",ephemeral=True)
+		await ctx.respond(f"You do not have an active subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).\nYou are able to manage {STANDARD_CHARACTER_LIMIT} characters and {standard_custrait_limit} custom traits.\nIf you have paid for a subscription but are seeing this message, you must link your Ko-fi account to Discord before you can receive benefits.",ephemeral=True)
 		if id in subscription_cache:
 			del subscription_cache[id]
 		return
 	log("Result is YES")
-	await ctx.respond(f"You have an active subscription!\nYou are able to manage {premium_character_limit} characters and {premium_custrait_limit} custom traits.\nYou can manage your subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).",ephemeral=True)
+	await ctx.respond(f"You have an active subscription!\nYou are able to manage {PREMIUM_CHARACTER_LIMIT} characters and {premium_custrait_limit} custom traits.\nYou can manage your subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).",ephemeral=True)
 	subscription_cache[id] = time() + sub_cache_timeout
 	return
 
@@ -987,8 +988,8 @@ async def add_trait(ctx,
 		await ctx.respond(f"Characters cannot have more than {trait_limit} traits.",ephemeral=True)
 		return
 	
-	if len(character['items']) >= item_limit:
-		await ctx.respond(f"Adding this trait would cause {codename.upper()}'s inventory to exceed {item_limit} items, which is not allowed.",ephemeral=True)
+	if len(character['items']) >= ITEM_LIMIT:
+		await ctx.respond(f"Adding this trait would cause {codename.upper()}'s inventory to exceed {ITEM_LIMIT} items, which is not allowed.",ephemeral=True)
 		return
 	
 	trait = trait.upper()
@@ -1211,13 +1212,13 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 		}
 	
 	premium_character = False
-	if len(character_data[userid]["chars"]) >= standard_character_limit:
+	if len(character_data[userid]["chars"]) >= STANDARD_CHARACTER_LIMIT:
 		premium_user = await ext_character_management(ctx.author.id)
 		if not premium_user:
-			await ctx.respond(f"You may not create more than {standard_character_limit} characters.\nYou can increase your character limit to {premium_character_limit} by enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
+			await ctx.respond(f"You may not create more than {STANDARD_CHARACTER_LIMIT} characters.\nYou can increase your character limit to {PREMIUM_CHARACTER_LIMIT} by enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 			return
-		elif len(character_data[userid]["chars"]) >= premium_character_limit:
-			await ctx.respond(f"You may not create more than {premium_character_limit} characters.",ephemeral=True)
+		elif len(character_data[userid]["chars"]) >= PREMIUM_CHARACTER_LIMIT:
+			await ctx.respond(f"You may not create more than {PREMIUM_CHARACTER_LIMIT} characters.",ephemeral=True)
 			return
 		else:
 			premium_character = True
@@ -1325,13 +1326,13 @@ async def clone(ctx,
 		return
 	
 	premium_character = False
-	if len(character_data[userid]["chars"]) >= standard_character_limit:
+	if len(character_data[userid]["chars"]) >= STANDARD_CHARACTER_LIMIT:
 		premium_user = await ext_character_management(ctx.author.id)
 		if not premium_user:
-			await ctx.respond(f"You may not create more than {standard_character_limit} characters.\nYou can increase your character limit to {premium_character_limit} by enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
+			await ctx.respond(f"You may not create more than {STANDARD_CHARACTER_LIMIT} characters.\nYou can increase your character limit to {PREMIUM_CHARACTER_LIMIT} by enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 			return
-		elif len(character_data[userid]["chars"]) >= premium_character_limit:
-			await ctx.respond(f"You may not create more than {premium_character_limit} characters.",ephemeral=True)
+		elif len(character_data[userid]["chars"]) >= PREMIUM_CHARACTER_LIMIT:
+			await ctx.respond(f"You may not create more than {PREMIUM_CHARACTER_LIMIT} characters.",ephemeral=True)
 			return
 		else:
 			premium_character = True
@@ -1373,9 +1374,9 @@ async def copy_inventory(ctx,
 	# verify the duplication would not run past the item limit
 	source_count = len(character_data[userid]['chars'][source_character]['items'])
 	dest_count = len(character_data[userid]['chars'][destination_character]['items'])
-	if source_count + dest_count > item_limit:
-		msg = f"Adding {source_count} items to **{destination_character.upper()}**'s inventory would bring them over the item limit ({item_limit})."
-		msg += f"\n{source_count + dest_count - item_limit} items must be removed from both inventories collectively before proceeding."
+	if source_count + dest_count > ITEM_LIMIT:
+		msg = f"Adding {source_count} items to **{destination_character.upper()}**'s inventory would bring them over the item limit ({ITEM_LIMIT})."
+		msg += f"\n{source_count + dest_count - ITEM_LIMIT} items must be removed from both inventories collectively before proceeding."
 		msg += f"\n-# If you intend to overwrite **{destination_character.upper()}**'s inventory, " + replace_commands_with_mentions("use `/replace_inventory` instead.")
 		await ctx.respond(msg)
 		return
@@ -1519,7 +1520,7 @@ async def my_characters(ctx):
 	if yourid in character_data and len(character_data[yourid]['chars']) > 0:
 		await ctx.defer()
 		yourchars = character_data[yourid]['chars']
-		msg_header = f"Characters created by <@{yourid}> ({len(yourchars)}/{premium_character_limit if await ext_character_management(yourid) else standard_character_limit}):"
+		msg_header = f"Characters created by <@{yourid}> ({len(yourchars)}/{PREMIUM_CHARACTER_LIMIT if await ext_character_management(yourid) else STANDARD_CHARACTER_LIMIT}):"
 		
 		def cretime(cd):
 			return yourchars[cd]['creation_time']
@@ -1600,7 +1601,7 @@ async def inventory(ctx, codename: discord.Option(str, "The codename of a specif
 	
 	character = character_data[yourid]['chars'][codename]
 
-	message = f"**{codename.upper()}**'s inventory ({len(character['items'])}/{item_limit}):"
+	message = f"**{codename.upper()}**'s inventory ({len(character['items'])}/{ITEM_LIMIT}):"
 	if len(character['items']) <= 0:
 		message = f"**{codename.upper()}** has no items in their inventory."
 	else:
@@ -1940,8 +1941,8 @@ async def add_item(ctx,
 		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
 		return False
 	
-	if len(character['items']) >= item_limit:
-		await ctx.respond(f"Characters cannot carry more than {item_limit} items.",ephemeral=True)
+	if len(character['items']) >= ITEM_LIMIT:
+		await ctx.respond(f"Characters cannot carry more than {ITEM_LIMIT} items.",ephemeral=True)
 		return False
 	
 	concat = name+effect
