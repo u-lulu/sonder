@@ -414,7 +414,7 @@
   {
     "Head": "SERIAL KILLER (6 HP)",
     "Features": [
-      "Signature weapon (1D6+1 DAMAGE, MESSY, SAPIENT, SHREDDER, roll 1D6 for weapon type: 1.  Axe  4. Sword 2. Chainsaw  5. Bat 3. Knife  6. Crowbar)",
+      "Signature weapon (1D6+1 DAMAGE, MESSY, SAPIENT, SHREDDER, roll 1D6 for weapon type: 1: Axe, 2: Chainsaw, 3: Knife, 4: Sword, 5: Bat, 6: Crowbar)",
       "Horrible mask (instantly iconic)",
       "Polaroid camera (temporarily blinding)",
       "Grisly photographs (shows dead bodies arranged in a particular pattern)",

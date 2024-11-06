@@ -259,7 +259,7 @@
       "Criminal (`/matrix faction criminals`) crew (4D6 crewmembers)",
       "Worn-down hull (2 ARMOR)",
       "Retrofitted torpedoes (2D6 DAMAGE, six uses)",
-      "Drug payload (roll 1D6 for payload type: 1. Cannabis    4. Cocaine 2. Magic mushrooms 5. Heroin 3. Artifical psychedelics 6. Prescription drugs"
+      "Drug payload (roll 1D6 for payload type: 1: Cannabis, 2: Magic mushrooms, 3: Artifical psychedelics, 4: Cocaine, 5: Heroin, 6: Prescription drugs"
     ],
     "Notes": [
       "AGREEMENT: The narco-submarine is a stylish way to transport drugs, but also a practical way to get FIST operatives to underwater missions. If FIST agrees to assist the narco-submarine operators with a drug run, the crew will return the favor and stay on hand for future transport."
