@@ -2783,22 +2783,27 @@ async def increase_stat(ctx,
 	if output is None:
 		return
 	
-	character[translated_stat] += int(output[0])
+	character[translated_stat] += output[0]
+	if type(character[translated_stat]) is float and character[translated_stat] == int(character[translated_stat]):
+		# if the number ends up as an integer, store it as an integer please
+		character[translated_stat] = int(character[translated_stat])
+
 	if translated_stat == "maxhp":
 		if character['maxhp'] < 1:
 			character['maxhp'] = 1
 		if output[0] > 0:
-			character['hp'] += int(output[0])
+			character['hp'] += output[0]
+			if type(character['hp']) is float and character['hp'] == int(character['hp']):
+				# store it as an integer please
+				character['hp'] = int(character['hp'])
 		elif character['hp'] > character['maxhp']:
 			character['hp'] = character['maxhp']
 	
-	message = f"{codename.upper()} has **{'in' if output[0] >= 0 else 'de'}creased** their **{stat}** by {abs(int(output[0]))}!"
+	message = f"{codename.upper()} has **{'in' if output[0] >= 0 else 'de'}creased** their **{stat}** by {abs(output[0])}!"
 	if 'hp' in translated_stat:
 		message += f"\n- Their HP is now **{character['hp']}/{character['maxhp']}**."
 	else:
 		message += f"\n- The new value is **{character[translated_stat]}**."
-	if output[0] - int(output[0]) != 0:
-		message += f"\n- The dice result or provided number was not an integer; it has been rounded down from {output[0]}"
 	if character['hp'] <= 0 and 'henshin_stored_maxhp' in character['special'] and character['special']['henshin_stored_maxhp'] > 0:
 		character['hp'] = character['special']['henshin_stored_hp']
 		character['maxhp'] = character['special']['henshin_stored_maxhp']
