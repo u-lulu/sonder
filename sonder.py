@@ -2788,7 +2788,7 @@ async def increase_stat(ctx,
 		if character['maxhp'] < 1:
 			character['maxhp'] = 1
 		if output[0] > 0:
-			character['hp'] += output[0]
+			character['hp'] += int(output[0])
 		elif character['hp'] > character['maxhp']:
 			character['hp'] = character['maxhp']
 	
