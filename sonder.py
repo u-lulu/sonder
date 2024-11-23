@@ -293,6 +293,11 @@ async def roll_dice_with_context(ctx,syntax,reply=True):
 
 	try:
 		result = func_timeout(timeout, rolldice.roll_dice, args=[syntax])
+
+		if len(str(result[0])) > 100 or len(result[0]) > 1000:
+			await ctx.respond("The result of your dice syntax is too long. Use smaller numbers.",ephemeral=True)
+			return None
+
 		return result
 	except rolldice.rolldice.DiceGroupException as e:
 		if reply:
