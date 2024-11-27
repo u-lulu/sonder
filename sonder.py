@@ -1165,18 +1165,22 @@ async def character_image(ctx: discord.ApplicationContext, image_url: discord.Op
 
 	if image_url == "REMOVE_IMAGE":
 		character["image"] = None
-		return await ctx.respond(f"Removed the image for {codename.upper()}.",ephemeral=True)
+		await ctx.respond(f"Removed the image for {codename.upper()}.",ephemeral=True)
+		return
 	else:
 		req_result = None
 		try:
 			req = func_timeout(3, requests.head, args=[image_url])
 			if not req.ok:
-				return await ctx.respond(f"Could not verify URL: remote server returned code {req.status_code} ({req.reason}).",ephemeral=True)
+				await ctx.respond(f"Could not verify URL: remote server returned code {req.status_code} ({req.reason}).",ephemeral=True)
+				return
 			ct = req.headers['Content-Type']
 			if not ct in ['image/gif','image/jpeg','image/png']:
-				return await ctx.respond(f"Could not verify URL: expected image of PNG, JPEG or GIF format; remote server sent content type `{ct}`.",ephemeral=True)
+				await ctx.respond(f"Could not verify URL: expected image of PNG, JPEG or GIF format; remote server sent content type `{ct}`.",ephemeral=True)
+				return
 		except Exception as e:
-			return await ctx.respond(f"Could not verify URL:\n```{e}```",ephemeral=True)
+			await ctx.respond(f"Could not verify URL:\n```{e}```",ephemeral=True)
+			return
 		
 		await ctx.defer()
 		character["image"] = image_url
@@ -1184,7 +1188,8 @@ async def character_image(ctx: discord.ApplicationContext, image_url: discord.Op
 		emb.image = discord.EmbedMedia(image_url)
 		emb.description = f"Set the character image for {codename.upper()}."
 
-		return await ctx.respond(embed=emb)
+		await ctx.respond(embed=emb)
+		await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Set the accent color of your active character's /sheet output")
 async def clear_sheet_color(ctx: discord.ApplicationContext):
