@@ -1187,6 +1187,10 @@ async def character_image(ctx: discord.ApplicationContext, image_url: discord.Op
 		emb = discord.Embed()
 		emb.image = discord.EmbedMedia(image_url)
 		emb.description = f"Set the character image for {codename.upper()}."
+		if character.get("embed_color",None) is not None:
+			col = character["embed_color"]
+			col = discord.Color.from_rgb(col["r"],col["g"],col["b"])
+			emb.color = col
 
 		await ctx.respond(embed=emb)
 		await save_character_data(str(ctx.author.id))
@@ -1945,11 +1949,42 @@ async def edit_notes(ctx):
 
 		async def callback(self, interaction: discord.Interaction):
 			log("Updating character notes...")
-			character['notes'] = value=self.children[0].value
+			character['notes'] = self.children[0].value
 			await save_character_data(str(ctx.author.id))
 			await interaction.response.send_message(f"Notes for {codename.upper()} have been {'updated' if len(character['notes']) > 0 else '**cleared**'}.",ephemeral=True)
 	
 	modal = NotesModal(title=f"Notes editor")
+	await ctx.send_modal(modal)
+
+@bot.command(description="Send a message in-character as your active character")
+async def talk(ctx):
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+
+	class TalkModal(discord.ui.Modal):
+		def __init__(self, *args, **kwargs) -> None:
+			super().__init__(*args, **kwargs)
+
+			self.add_item(discord.ui.InputText(label=f"Message as {codename.upper()}",placeholder="Type your message here.",style=discord.InputTextStyle.long,required=True,max_length=4000))
+
+		async def callback(self, interaction: discord.Interaction):
+			log("Sending character message...")
+			emb = discord.Embed()
+			emb.set_author(
+				name=codename.upper(),
+				icon_url=character.get("image",None) or "https://img.itch.zone/aW1nLzMxMjI4NzUucG5n/original/zku5yb.png"
+			)
+			if character.get("embed_color",None) is not None:
+				col = character["embed_color"]
+				col = discord.Color.from_rgb(col["r"],col["g"],col["b"])
+				emb.color = col
+			emb.description=self.children[0].value
+			await interaction.response.send_message(embed=emb)
+	
+	modal = TalkModal(title=f"Notes editor")
 	await ctx.send_modal(modal)
 
 @bot.command(description="Switch which character is active in this channel")
