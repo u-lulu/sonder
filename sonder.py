@@ -1169,8 +1169,9 @@ async def character_image(ctx: discord.ApplicationContext, image_url: discord.Op
 		
 		await ctx.defer()
 		character["image"] = image_url
-		emb = discord.Embed(thumbnail=image_url)
-		emb.image = f"Set the character image for {codename.upper()}."
+		emb = discord.Embed()
+		emb.image = discord.EmbedMedia(image_url)
+		emb.description = f"Set the character image for {codename.upper()}."
 
 		return await ctx.respond(embed=emb)
 
