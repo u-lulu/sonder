@@ -1819,7 +1819,7 @@ async def my_characters(ctx):
 		await ctx.respond("You haven't created any characters yet.",ephemeral=True)
 	
 @bot.command(description="Displays your current active character's sheet")
-async def sheet(ctx: discord.ApplicationContext, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default=""), qr: discord.Option(bool, "Sends a QR code of the final output instead.", required=False, default=False)):
+async def sheet(ctx: discord.ApplicationContext, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default=""), qr: discord.Option(bool, "Sends a QR code of the final output instead.", required=False, default=False), text_only: discord.Option(bool, "Sends a text-only version of the character sheet. May be sent as a file.", required=False, default=False)):
 	codename = codename.lower().strip()
 	yourid = str(ctx.author.id)
 	if codename == "":
@@ -1833,7 +1833,6 @@ async def sheet(ctx: discord.ApplicationContext, codename: discord.Option(str, "
 	
 	ch = character_data[yourid]['chars'][codename]
 	message = output_character(codename, ch)
-	blocks = output_character_embed(codename, ch, ctx.author)
 	if qr:
 		message = message.replace("*","").replace("# ","")
 		if len(message) > 2331:
@@ -1844,7 +1843,8 @@ async def sheet(ctx: discord.ApplicationContext, codename: discord.Option(str, "
 			await ctx.respond(f"QR code of character sheet for **{codename.upper()}**:",file=discord.File('qr.png'))
 			os.remove('qr.png')
 	else:
-		if any_embed_is_oversize(blocks):
+		blocks = output_character_embed(codename, ch, ctx.author)
+		if text_only or any_embed_is_oversize(blocks):
 			await response_with_file_fallback(ctx,message)
 		else:
 			first_embed_post = True
