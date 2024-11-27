@@ -927,7 +927,18 @@ def output_character_embed(codename: str, data: dict, author: discord.User):
 	items_embed = discord.Embed(title="ITEMS")
 
 	if len(data['items']) > 0:
-		items_block = "- " + "\n- ".join(data['items'])
+		items_block = ""
+
+		for item in data['items']:
+			items_block += f"\n- {item}"
+			if item in data['counters']:
+				counters = data['counters'][item]
+				counter_strings = []
+				for counter in counters:
+					counter_strings.append(f"{counter.upper()}: {counters[counter]}")
+				items_block += f" ({', '.join(counter_strings)})"
+		
+		items_block = items_block.strip()
 
 		while len(items_block) > 1024:
 			cutoff = items_block[:1024].rfind("\n")
