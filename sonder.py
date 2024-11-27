@@ -15,6 +15,7 @@ from copy import deepcopy
 import asyncio
 from io import BytesIO
 import zipfile
+import requests
 
 STANDARD_CHARACTER_LIMIT = 10
 PREMIUM_CHARACTER_LIMIT = 100
@@ -457,6 +458,14 @@ for player in character_data:
 			character_data[player]['chars'][char]['pronouns'] = None
 			log(f"{char} (owned by {player}) updated to include pronouns field")
 			changed = True
+		if 'image' not in character_data[player]['chars'][char]:
+			character_data[player]['chars'][char]['image'] = None
+			log(f"{char} (owned by {player}) updated to include image field")
+			changed = True
+		if 'embed_color' not in character_data[player]['chars'][char]:
+			character_data[player]['chars'][char]['embed_color'] = None
+			log(f"{char} (owned by {player}) updated to include embed_color field")
+			changed = True
 		if 'henshin_trait' not in character_data[player]['chars'][char]['special'] or 'henshin_stored_hp' not in character_data[player]['chars'][char]['special'] or 'henshin_stored_maxhp' not in character_data[player]['chars'][char]['special']:
 			for trt in character_data[player]['chars'][char]['traits']:
 				if trt['Number'] == 316:
@@ -828,6 +837,10 @@ def output_character_embed(codename: str, data: dict, author: discord.User):
 	output = []
 
 	stats_embed = discord.Embed()
+
+	if data.get('image',None) is not None:
+		stats_embed.thumbnail = discord.EmbedMedia(data['image'])
+
 	if data['pronouns'] is not None:
 		stats_embed.add_field(
 			name="PRONOUNS",
@@ -947,6 +960,12 @@ def output_character_embed(codename: str, data: dict, author: discord.User):
 		items_embed.description = replace_commands_with_mentions("This character's inventory is empty.\n-# Get items with `/add_item`!")
 	
 	output.append(items_embed)
+
+	if data.get('embed_color',None) is not None:
+		col = data["embed_color"]
+		col = discord.Color.from_rgb(col["r"],col["g"],col["b"])
+		for emb in output:
+			emb.color = col
 	
 	return output
 
@@ -1121,6 +1140,77 @@ trait_tips = {
 	414: "You can generate monster statblocks for this trait using the `/monsters` command.", #monsters
 	611: "You can deal damage with this trait using the `/sunder` command." #sunder
 }
+
+async def image_autocomp(ctx):
+	return ["REMOVE_IMAGE"]
+
+@bot.command(description="Set the file image of your active character")
+async def character_image(ctx: discord.ApplicationContext, image_url: discord.Option(str, "The link to the image.",autocomplete=discord.utils.basic_autocomplete(image_autocomp), required=True)):
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+
+	if image_url == "REMOVE_IMAGE":
+		character["image"] = None
+		return await ctx.respond(f"Removed the image for {codename.upper()}.",ephemeral=True)
+	else:
+		req_result = None
+		try:
+			req = func_timeout(3, requests.head, args=[image_url])
+			if not req.ok:
+				return await ctx.respond(f"Could not verify URL: remote server returned code {req.status_code} ({req.reason}).",ephemeral=True)
+			ct = req.headers['Content-Type']
+			if not ct in ['image/gif','image/jpeg','image/png']:
+				return await ctx.respond(f"Could not verify URL: expected image of PNG, JPEG or GIF format; remote server sent content type `{ct}`.",ephemeral=True)
+		except Exception as e:
+			return await ctx.respond(f"Could not verify URL:\n```{e}```",ephemeral=True)
+		
+		await ctx.defer()
+		character["image"] = image_url
+		emb = discord.Embed(thumbnail=image_url)
+		emb.image = f"Set the character image for {codename.upper()}."
+
+		return await ctx.respond(embed=emb)
+
+@bot.command(description="Set the accent color of your active character's /sheet output")
+async def clear_sheet_color(ctx: discord.ApplicationContext):
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+
+	character["embed_color"] = None
+
+	emb = discord.Embed(description=f"The color of {codename.upper()}'s sheet has been cleared.")
+
+	await ctx.respond(embed=emb)
+	await save_character_data(str(ctx.author.id))
+
+@bot.command(description="Set the accent color of your active character's /sheet output")
+async def set_sheet_color(ctx: discord.ApplicationContext,
+		red: discord.Option(int,min_value=0,max_value=255,required=True),
+		green: discord.Option(int,min_value=0,max_value=255,required=True),
+		blue: discord.Option(int,min_value=0,max_value=255,required=True)):
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+
+	character["embed_color"] = {
+		"r": red,
+		"g": green,
+		"b": blue
+	}
+
+	emb = discord.Embed(description=f"The color of {codename.upper()}'s sheet has been set.")
+	emb.color = discord.Color.from_rgb(red,green,blue)
+
+	await ctx.respond(embed=emb)
+	await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Add a core book trait to your active character")
 async def add_trait(ctx, 
@@ -1403,7 +1493,9 @@ async def create_character(ctx, codename: discord.Option(str, "The character's c
 		"counters": {},
 		"notes": "",
 		"special": {},
-		"pronouns": None
+		"pronouns": None,
+		"image": None,
+		"embed_color": None
 	}
 	
 	msg = f"Created character with the codename **{codename.upper()}**."
