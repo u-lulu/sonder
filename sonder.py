@@ -560,8 +560,8 @@ async def on_application_command(ctx):
 		log(f"/{ctx.command.qualified_name}")
 
 @bot.event
-async def on_application_command_error(ctx, e):
-	await ctx.respond(f"⚠️ This command could not be fulfilled due to the following error:\n`{e}`\n-# This error has been logged and reported to the developer. If this continues, please submit a bug report on the [Support Server](<https://discord.gg/VeedQmQc7k>) or the [Github issues page](<https://github.com/u-lulu/sonder/issues>).")
+async def on_application_command_error(ctx: discord.ApplicationContext, e):
+	await ctx.channel.send(f"⚠️ A command from {ctx.author.mention} could not be fulfilled due to the following error:\n`{e}`\n-# This error has been logged and reported to the developer. If this continues, please submit a bug report on the [Support Server](<https://discord.gg/VeedQmQc7k>) or the [Github issues page](<https://github.com/u-lulu/sonder/issues>).")
 	log(f"Uncaught exception thrown: {e}",alert=True)
 	raise e
 
@@ -680,7 +680,7 @@ async def d66(ctx, instances: discord.Option(discord.SlashCommandOptionType.inte
 	await response_with_file_fallback(ctx,message)
 
 @bot.command(description="Roll 1d666")
-async def d666(ctx, instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1, min_value=1, max_value=1000)):
+async def d666(ctx: discord.ApplicationContext, instances: discord.Option(discord.SlashCommandOptionType.integer, "The number of times to roll this dice formation", required=False, default=1, min_value=1, max_value=1000)):
 	outs = []
 
 	for i in range(instances):
@@ -688,7 +688,7 @@ async def d666(ctx, instances: discord.Option(discord.SlashCommandOptionType.int
 	message = ", ".join(outs)
 	await response_with_file_fallback(ctx,message)
 
-def output_character(codename, data):
+def output_character(codename: str, data: dict):
 	out = f"# {codename.upper()}"
 	if data['pronouns'] is not None:
 		out += f"\nPRONOUNS: {data['pronouns']}"
@@ -747,7 +747,7 @@ def output_character(codename, data):
 				out += f" ({', '.join(counter_strings)})"
 	return out
 
-def output_character_short(codename, data):
+def output_character_short(codename: str, data: dict):
 	out = f"# {codename.upper()}"
 	if data['pronouns'] is not None:
 		out += f"\nPRONOUNS: {data['pronouns']}"
@@ -799,6 +799,156 @@ def output_character_short(codename, data):
 	else:
 		out += replace_commands_with_mentions(f"*{len(data['items'])} items. View with `/inventory`*.")
 	return out
+
+def get_embed_length(emb: discord.Embed):
+	total = 0
+	for field in emb.fields:
+		total += len(field.name) + len(field.value)
+	if type(emb.title) == str:
+		total += len(emb.title)
+	if type(emb.description) == str:
+		total += len(emb.description)
+	if emb.footer is not None:
+		total += len(emb.footer.text)
+	return total
+
+def get_embed_group_length(embs: list[discord.Embed]):
+	total = 0
+	for emb in embs:
+		total += get_embed_length(emb)
+	return total
+
+def any_embed_is_oversize(embs: list[discord.Embed]):
+	for emb in embs:
+		if get_embed_length(emb) > 6000:
+			return True
+	return False
+
+def output_character_embed(codename: str, data: dict, author: discord.User):
+	output = []
+
+	stats_embed = discord.Embed()
+	if data['pronouns'] is not None:
+		stats_embed.add_field(
+			name="PRONOUNS",
+			value=f'{data["pronouns"]}',
+			inline=False
+		)
+	
+	if data["role"] != {}:
+		role_value = f'__{data["role"]["Name"]}__\n{data["role"]["Text"]}'
+		if len(role_value) > 1024:
+			role_value = role_value[:1024-3] + "..."
+		stats_embed.add_field(
+			name="ROLE",
+			value=role_value,
+			inline=False
+		)
+
+	statblock = f"HP: {data['hp']}/{data['maxhp']}"
+	if 'henshin_stored_hp' in data['special'] and 'henshin_stored_maxhp' in data['special'] and data['special']['henshin_stored_maxhp'] != 0:
+		statblock += f" - *({data['special']['henshin_stored_hp']}/{data['special']['henshin_stored_maxhp']} in normal form)*"
+	statblock += f"\nWAR DICE: {data['wd']}"
+	statblock += f"\nARMOR: {data['armor_name']} ({data['armor']})"
+	if data['armor_name'] == "Nothing" and data['armor'] == 0:
+		statblock += replace_commands_with_mentions("\n-# - Equip one with `/equip_armor`!")
+	statblock += f"\nWEAPON: {data['weapon_name']} ({data['damage']})"
+	if data['weapon_name'] == "Unarmed" and data['damage'] == "2d6k1":
+		statblock += replace_commands_with_mentions("\n-# - Equip one with `/equip_weapon`!")
+	
+	if data['frc'] != 0 or data['tac'] != 0 or data['cre'] != 0 or data['rfx'] != 0:
+		statblock += "\n"
+	
+	if data['frc'] != 0:
+		statblock += f"\nFRC: {'+' if data['frc'] > 0 else ''}{data['frc']}"
+	if data['tac'] != 0:
+		statblock += f"\nTAC: {'+' if data['tac'] > 0 else ''}{data['tac']}"
+	if data['cre'] != 0:
+		statblock += f"\nCRE: {'+' if data['cre'] > 0 else ''}{data['cre']}"
+	if data['rfx'] != 0:
+		statblock += f"\nRFX: {'+' if data['rfx'] > 0 else ''}{data['rfx']}"
+
+	stats_embed.add_field(
+		name="STATS",
+		value=statblock,
+		inline=False
+	)
+
+	output.append(stats_embed)
+
+	traits_embed = discord.Embed(title="TRAITS")
+
+	if len(data['traits']) > 0:
+		for trait in data['traits']:
+			traitvalue = f"{trait['Effect']} ({trait['Stat']})"
+			if len(traitvalue) > 1024:
+				traitvalue = traitvalue[:1024-3] + "..."
+			traits_embed.add_field(
+				name=f"**{trait['Name']}** ({trait['Number']})",
+				value=traitvalue,
+				inline=False
+			)
+	
+		if 'henshin_trait' in data['special'] and 'henshin_stored_maxhp' in data['special']:
+			htrait = data['special']['henshin_trait']
+			if htrait is not None:
+				hvalue = f"**{htrait['Name']}** ({htrait['Number']})\n{htrait['Effect']} ({htrait['Stat']})"
+				if len(hvalue) > 1024:
+					hvalue = hvalue[:1024-3] + "..."
+				traits_embed.add_field(
+					name=f"Henshin Trait ({'**__ACTIVE__**' if data['special']['henshin_stored_maxhp'] != 0 else 'INACTIVE'})",
+					value=hvalue,
+					inline=False
+				)
+			else:
+				traits_embed.add_field(
+					name="Henshin Trait",
+					value=replace_commands_with_mentions(f"*Not set. Try out `/henshin`!*\n"),
+					inline=False
+				)
+	else:
+		traits_embed.description = replace_commands_with_mentions("This character doesn't have any traits yet.\n-# Add one with `/add_trait`!")
+		
+	output.append(traits_embed)
+	
+	items_embed = discord.Embed(title="ITEMS")
+
+	if len(data['items']) > 0:
+		items_block = "- " + "\n- ".join(data['items'])
+
+		while len(items_block) > 1024:
+			cutoff = items_block[:1024].rfind("\n")
+			if cutoff != -1:
+				items_embed.add_field(
+					name='',
+					value=items_block[:cutoff],
+					inline=False
+				)
+				items_block = items_block[cutoff+1:]
+			else:
+				new_cutoff = items_block.find("\n")
+				items_embed.add_field(
+					name='',
+					value=items_block[:1021] + "...",
+					inline=False
+				)
+				if new_cutoff != -1:
+					items_block = items_block[new_cutoff+1:]
+				else:
+					items_block = ""
+		
+		if len(items_block) > 0:
+			items_embed.add_field(
+				name = '',
+				value = items_block,
+				inline=False
+			)
+	else:
+		items_embed.description = replace_commands_with_mentions("This character's inventory is empty.\n-# Get items with `/add_item`!")
+	
+	output.append(items_embed)
+	
+	return output
 
 def get_active_codename(ctx):
 	uid = None
@@ -1565,7 +1715,7 @@ async def my_characters(ctx):
 		await ctx.respond("You haven't created any characters yet.",ephemeral=True)
 	
 @bot.command(description="Displays your current active character's sheet")
-async def sheet(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default=""), full_detail: discord.Option(bool, "Sends the sheet with no information truncated.", required=False, default=False), qr: discord.Option(bool, "Sends a QR code of the final output instead.", required=False, default=False)):
+async def sheet(ctx: discord.ApplicationContext, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default=""), qr: discord.Option(bool, "Sends a QR code of the final output instead.", required=False, default=False)):
 	codename = codename.lower().strip()
 	yourid = str(ctx.author.id)
 	if codename == "":
@@ -1578,7 +1728,8 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 		return
 	
 	ch = character_data[yourid]['chars'][codename]
-	message = output_character(codename, ch) if full_detail else output_character_short(codename, ch)
+	message = output_character(codename, ch)
+	blocks = output_character_embed(codename, ch, ctx.author)
 	if qr:
 		message = message.replace("*","").replace("# ","")
 		if len(message) > 2331:
@@ -1589,7 +1740,23 @@ async def sheet(ctx, codename: discord.Option(str, "The codename of a specific c
 			await ctx.respond(f"QR code of character sheet for **{codename.upper()}**:",file=discord.File('qr.png'))
 			os.remove('qr.png')
 	else:
-		await response_with_file_fallback(ctx,message)
+		if any_embed_is_oversize(blocks):
+			await response_with_file_fallback(ctx,message)
+		else:
+			first_embed_post = True
+			while get_embed_group_length(blocks) > 6000:
+				if first_embed_post:
+					await ctx.respond(content=f"# {codename.upper()}", embed=blocks[0])
+					first_embed_post = False
+				else:
+					await ctx.channel.send(embed=blocks[0])
+				blocks = blocks[1:]
+			if len(blocks) > 0:
+				if first_embed_post:
+					await ctx.respond(content=f"# {codename.upper()}", embeds=blocks)
+					first_embed_post = False
+				else:
+					await ctx.channel.send(embeds=blocks)
 
 @bot.command(description="Show your active character's inventory")
 async def inventory(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default="")):
