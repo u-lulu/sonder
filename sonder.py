@@ -940,17 +940,21 @@ def output_character_embed(codename: str, data: dict, author: discord.User):
 		
 		items_block = items_block.strip()
 
-		cutoff = items_block[:4096].rfind("\n")
-		if cutoff != -1:
-			items_embed.description = items_block[:cutoff]
-			items_block = items_block[cutoff+1:]
-		else:
-			new_cutoff = items_block.find("\n")
-			items_embed.description = items_block[:4093] + "..."
-			if new_cutoff != -1:
-				items_block = items_block[new_cutoff+1:]
+		if len(items_block) > 4096:
+			cutoff = items_block[:4096].rfind("\n")
+			if cutoff != -1:
+				items_embed.description = items_block[:cutoff]
+				items_block = items_block[cutoff+1:]
 			else:
-				items_block = ""
+				new_cutoff = items_block.find("\n")
+				items_embed.description = items_block[:4093] + "..."
+				if new_cutoff != -1:
+					items_block = items_block[new_cutoff+1:]
+				else:
+					items_block = ""
+		else:
+			items_embed.description = items_block
+			items_block = ""
 
 		while len(items_block) > 1024:
 			cutoff = items_block[:1024].rfind("\n")
