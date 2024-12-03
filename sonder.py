@@ -319,6 +319,25 @@ async def roll_dice_with_context(ctx,syntax,reply=True):
 subscription_cache = {}
 sub_cache_timeout = 60 * 60 # 1 hour
 
+def select_random_novel_trait(character: dict):
+	allowed_traits = list(traits_by_number.keys())
+	for t in character['traits']:
+		if t['Number'] in allowed_traits:
+			allowed_traits.remove(t['Number'])
+	
+	for item in character['special'].values():
+		if (type(item) is dict
+	  		and item.get('Number',None) is not None
+			and item['Number'] in allowed_traits):
+			allowed_traits.remove(item['Number'])
+	
+	if len(allowed_traits) > 0:
+		chosen_number = rnd.choice(allowed_traits)
+		chosen_trait = traits_by_number[chosen_number]
+		return chosen_trait
+	else:
+		return None
+
 def apply_stat_change(character: dict, stat: str):
 	stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
 	
@@ -974,6 +993,17 @@ def output_character_embed(codename: str, data: dict, author: discord.User):
 					value=replace_commands_with_mentions(f"*Not set. Try out `/henshin`!*\n"),
 					inline=False
 				)
+		if 'volatile_trait' in data['special']:
+			vtrait = data['special']['volatile_trait']
+			vvalue = f"**{vtrait['Name']}** ({vtrait['Number']})\n{vtrait['Effect']} ({vtrait['Stat']})"
+			if len(vvalue) > 1024:
+				vvalue = vvalue[:1024-3] + "..."
+			traits_embed.add_field(
+				name=f"Volatile Trait",
+				value=vvalue,
+				inline=False
+			)
+
 	else:
 		traits_embed.description = replace_commands_with_mentions("This character doesn't have any traits yet.\n-# Add one with `/add_trait`!")
 		
@@ -1367,16 +1397,31 @@ async def add_trait(ctx,
 		character['special']['henshin_stored_hp'] = 0
 		character['special']['henshin_stored_maxhp'] = 0
 	
+	if my_new_trait['Number'] == 652: #volatile bookkeeping
+		vol_trait = select_random_novel_trait(character)
+		character['special']['volatile_trait'] = vol_trait
+		apply_stat_change(character,vol_trait['Stat'])
+	
 	old_max_hp = character['maxhp']
 	
 	apply_stat_change(character,my_new_trait["Stat"])
+
+	volatile_dodge = None
+	if character['special'].get('volatile_trait',None) is not None:
+		if character['special']['volatile_trait']['Name'] == my_new_trait['Name']:
+			volatile_dodge = reroll_volatile(character)
 	
 	out = f"**{codename.upper()}** has gained a trait!"
+	if volatile_dodge is not None:
+		out+= f"\n-# Their VOLATILE trait has changed to {volatile_dodge['Name']} ({volatile_dodge['Number']}) to prevent overlap."
 	if old_max_hp > character['maxhp'] and character['maxhp'] <= 0:
 		out += f"\n**This character now has a Max HP of {character['maxhp']}!!**"
 	if my_new_trait['Number'] in trait_tips:
 		out += replace_commands_with_mentions(f"\n-# 💡 {trait_tips[my_new_trait['Number']]}")
 	out += f"\n>>> {trait_message_format(my_new_trait)}"
+	if my_new_trait['Number'] == 652 and character['special'].get('volatile_trait',None) is not None:
+		v = character['special']['volatile_trait']
+		out += f"\n-# Your first Volatile trait is {v['Name']} ({v['Number']}):\n-# {v['Effect']} ({v['Stat']})"
 	await ctx.respond(out)
 	if 'add_trait' in ctx.command.qualified_name:
 		await save_character_data(str(ctx.author.id))
@@ -1446,15 +1491,85 @@ async def henshin(ctx, set_trait: discord.Option(str, "The core book name or num
 					if t['Name'] == my_new_trait['Name']:
 						await ctx.respond(f"You cannot change your HENSHIN trait to a trait you already possess.",ephemeral=True)
 						return
+
+				volatile_dodge = None
+				if character['special'].get('volatile_trait',None) is not None:
+					if character['special']['volatile_trait']['Name'] == my_new_trait['Name']:
+						volatile_dodge = reroll_volatile(character)
 				
 				character['special']['henshin_trait'] = deepcopy(my_new_trait)
-				await ctx.respond(f"{codename.upper()} has set their HENSHIN trait to **{my_new_trait['Name'].upper()} ({my_new_trait['Number']})**.")
+				out = f"{codename.upper()} has set their HENSHIN trait to **{my_new_trait['Name'].upper()} ({my_new_trait['Number']})**."
+				if volatile_dodge is not None:
+					out+= f"\n-# Their VOLATILE trait has changed to {volatile_dodge['Name']} ({volatile_dodge['Number']}) to prevent overlap."
+				await ctx.respond(out)
 				await save_character_data(str(ctx.author.id))
 				return
 	else: #character does not have henshin
 		await ctx.respond(f"**{codename.upper()}**" + replace_commands_with_mentions(" does not have the HENSHIN trait. You can add it with `/add_trait`."),ephemeral=True)
 		return
 	
+def reroll_volatile(character: dict):
+	if 'volatile_trait' not in character['special']:
+		return None
+	revoke_stat_change(character,character['special']['volatile_trait']['Stat'])
+	new_roll = select_random_novel_trait(character)
+	character['special']['volatile_trait'] = new_roll
+	apply_stat_change(character,character['special']['volatile_trait']['Stat'])
+	return new_roll
+
+@bot.command(description="Reroll (or set) your active character's VOLATILE trait")
+async def volatile(ctx: discord.ApplicationContext, force_trait: discord.Option(str, "The core book name or number of the trait to set.",autocomplete=discord.utils.basic_autocomplete(traits_and_customs_autocomp), required=False, default=None)=None):
+	if force_trait is not None:
+		force_trait = force_trait.strip().upper()
+	character = get_active_char_object(ctx)
+	if character == None:
+		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
+		return
+	codename = get_active_codename(ctx)
+
+	if character['premium'] and not await ext_character_management(ctx.author.id):
+		await ctx.respond(f"The character **{codename.upper()}** is in a premium slot, but you do not have an active subscription. You may not edit them directly.\nYou may edit them again if you clear out enough non-premium characters first, or re-enrolling in a [Ko-fi Subscription]( https://ko-fi.com/solarashlulu/tiers ), linking your Ko-fi account to Discord, and joining [Sonder's Garage]( https://discord.gg/VeedQmQc7k ).",ephemeral=True)
+		return
+	
+	if not character_has_trait(character, 652):
+		await ctx.respond(f"**{codename.upper()}**" + replace_commands_with_mentions(" does not have the VOLATILE trait. You can add it with `/add_trait`."),ephemeral=True)
+		return
+	
+	my_new_trait = None
+	if force_trait is None: # random reroll
+		my_new_trait = reroll_volatile(character)
+	else: # forced change
+		current_traits_by_name = traits_by_name | character_data[str(ctx.author.id)]['traits']
+		if force_trait == "ABRACADABRA":
+			my_new_trait = secret_trait
+		elif force_trait in current_traits_by_name:
+			my_new_trait = current_traits_by_name[force_trait]
+		elif force_trait in traits_by_numstr:
+			my_new_trait = traits_by_numstr[force_trait]
+		
+		if my_new_trait == None:
+			await ctx.respond(f'No trait with the exact name or D666 number "{force_trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
+			return
+		
+		for t in character['traits']:
+			if t['Name'] == my_new_trait['Name']:
+				await ctx.respond(f"You cannot change your VOLATILE trait to a trait you already possess.",ephemeral=True)
+				return
+		
+		for item in list(character['special'].values()):
+			if type(item) is dict and item.get('Name',None) == my_new_trait['Name']:
+				await ctx.respond(f"You cannot change your VOLATILE trait to a trait you already possess.",ephemeral=True)
+				return
+		
+		revoke_stat_change(character,character['special']['volatile_trait']['Stat'])
+		character['special']['volatile_trait'] = deepcopy(my_new_trait)
+		apply_stat_change(character,character['special']['volatile_trait']['Stat'])
+
+	out = f"{codename.upper()} has shifted their VOLATILE trait to **{my_new_trait['Name'].upper()} ({my_new_trait['Number']})**."
+	await ctx.respond(out)
+	await save_character_data(str(ctx.author.id))
+	return
+
 valid_bonuses = ["+1D6 Max Hp","+1D6 War Dice","Random Standard Issue Item","Balaclava (hides identity)","Flashlight (can be used as a weapon attachment)","Knife (1D6 DAMAGE)","MRE field rations (+1D6 HP, one use)","Pistol (1D6 DAMAGE)","Riot shield (1 ARMOR, equip as weapon)"]
 
 @bot.command(description="Create a new character to manage")
@@ -2804,6 +2919,11 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 					character['maxhp'] = character['special']['henshin_stored_maxhp']
 				del character['special']['henshin_stored_maxhp']
 		
+		if target_trait_number == 652: #volatile bookkeeping
+			if 'volatile_trait' in character['special']:
+				revoke_stat_change(character,character['special']['volatile_trait']['Stat'])
+				del character['special']['volatile_trait']
+		
 		await save_character_data(str(ctx.author.id))
 		return
 
@@ -2902,6 +3022,13 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 			if trait['Number'] == 236:
 				fated = True
 				break
+		
+		if character['special'].get('volatile_trait',{}).get('Number',None) == 236:
+			fated = True
+		
+		if character['special'].get('henshin_trait',{}).get('Number',None) == 236:
+			if character['special']['henshin_stored_maxhp'] != 0:
+				fated = True
 		
 		character['wd'] -= 1
 		remaining = character['wd']
@@ -3003,7 +3130,10 @@ async def war_die(ctx, explode: discord.Option(bool, "If TRUE, this roll follows
 			else:
 				result = d6()
 				await ctx.respond(f"**{codename.upper()}** spends a War Die: **{num_to_die[result]} ({result})**\nThey have {remaining} War Di{'e' if remaining == 1 else 'ce'} left.")
-		await save_character_data(str(ctx.author.id))
+		if character_has_trait(character,652):
+			await volatile(ctx,None)
+		else:
+			await save_character_data(str(ctx.author.id))
 	else:
 		await ctx.respond(f"{codename.upper()} has no War Dice to spend!",ephemeral=True)
 
@@ -3138,12 +3268,9 @@ async def refresh(ctx,
 		"CREATIVE":"cre",
 		"REFLEXIVE":"rfx"
 	}
-	
-	for trait in character['traits']:
-		if trait['Item'] not in character['items']:
-			character['items'].append(trait['Item'])
-		
-		bonus = trait["Stat"].split(" ")
+
+	def refresh_handle_bonus(stat: str):
+		bonus = stat.split(" ")
 		num = 0
 		# bonus is ELSE (0) and user says no (0) -> 1
 		# bonus is ELSE (0) and user says yes (1) -> 1
@@ -3161,6 +3288,15 @@ async def refresh(ctx,
 			character[translated_stat_bonus] += num
 			if translated_stat_bonus == 'maxhp':
 				character['hp'] += num
+	
+	for trait in character['traits']:
+		if trait['Item'] not in character['items']:
+			character['items'].append(trait['Item'])
+		
+		refresh_handle_bonus(trait['Stat'])
+	
+	if 'volatile_trait' in character['special']:
+		refresh_handle_bonus(character['special']['volatile_trait']['Stat'])
 	
 	character['hp'] = character['maxhp']
 	
@@ -3242,9 +3378,9 @@ async def damage(ctx,
 	dice_results = output[1]
 	
 	if armor_piercing:
-		character['hp'] -= int(before_armor)
-	else:
-		character['hp'] -= int(damage_taken)
+		damage_taken = before_armor
+	
+	character['hp'] -= int(damage_taken)
 	
 	message = f"**{codename.upper()}** has taken **{int(before_armor)} damage!**"
 	if (not armor_piercing and character['armor'] + bonus_armor > 0):
@@ -3268,7 +3404,10 @@ async def damage(ctx,
 		if len(message) > limit:
 			message = message[:limit-5]+"...]`"
 	await ctx.respond(message)
-	await save_character_data(str(ctx.author.id))
+	if character['hp'] > 0 and damage_taken >= 6 and character_has_trait(character,652):
+		await volatile(ctx,None)
+	else:
+		await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Heal your active character")
 async def heal(ctx, 
