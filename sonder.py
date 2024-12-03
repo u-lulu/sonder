@@ -510,11 +510,13 @@ else:
 
 log("Checking to see if character data needs to be updated...")
 changed = False
+volatile_changes = {}
 for player in character_data:
 	if 'traits' not in character_data[player]:
 		character_data[player]['traits'] = {}
 		log(f"{player} updated to include custom traits field")
 		changed = True
+
 	for char in character_data[player]['chars']:
 		if 'counters' not in character_data[player]['chars'][char]:
 			character_data[player]['chars'][char]['counters'] = {}
@@ -548,6 +550,19 @@ for player in character_data:
 					character_data[player]['chars'][char]['special']['henshin_trait'] = None
 					character_data[player]['chars'][char]['special']['henshin_stored_hp'] = 0
 					character_data[player]['chars'][char]['special']['henshin_stored_maxhp'] = 0
+					break
+		if 'volatile_trait' not in character_data[player]['chars'][char]['special']:
+			for trt in character_data[player]['chars'][char]['traits']:
+				if trt['Number'] == 652:
+					changed = True
+					log(f"{char} (owned by {player}) updated to include VOLATILE sub-field")
+					vtrait = select_random_novel_trait(character_data[player]['chars'][char])
+					character_data[player]['chars'][char]['special']['volatile_trait'] = vtrait
+					apply_stat_change(character_data[player]['chars'][char],vtrait['Stat'])
+					if player not in volatile_changes:
+						volatile_changes[player] = [(char.upper(),vtrait['Name'],vtrait['Number'])]
+					else:
+						volatile_changes[player].append((char.upper(),vtrait['Name'],vtrait['Number']))
 					break
 
 if changed:
@@ -627,6 +642,22 @@ async def on_ready():
 		report_character_count += len(character_data[player]['chars'])
 		report_trait_count += len(character_data[player]['traits'])
 	log(f"Currently tracking {report_player_count} players, {report_character_count} characters, and {report_trait_count} custom traits.")
+
+	global volatile_changes
+	for player in volatile_changes:
+		if len(volatile_changes[player]) > 0:
+			try:
+				user = await bot.fetch_user(int(player))
+				msg = "This is a one-time message to notify you of changes to one or more of your characters."
+				msg += "\nThe VOLATILE trait has been updated with functionality. As such, characters you own with VOLATILE have been assigned a new auxillary trait."
+				for v in volatile_changes[player]:
+					msg += f"\n- {v[0]} has been assigned {v[1]} ({v[2]})."
+				msg += replace_commands_with_mentions("\nIf you would like to change this trait assignment, you can do so with the `/volatile` command.")
+				await user.send(msg,silent=True)
+			except Exception as e:
+				raise e
+	
+	del volatile_changes
 
 	asyncio.create_task(backup_generation_loop())
 
@@ -1248,9 +1279,10 @@ async def current_trait_item_autocomp(ctx):
 		return [item_split[0]]
 
 trait_tips = {
-	316: "You can manage switching forms with this trait by using the `/henshin` command.", #henshin
+	316: "You can manage switching forms with this trait using the `/henshin` command.", #henshin
 	414: "You can generate monster statblocks for this trait using the `/monsters` command.", #monsters
-	611: "You can deal damage with this trait using the `/sunder` command." #sunder
+	611: "You can deal damage with this trait using the `/sunder` command.", #sunder
+	652: "You can roll or assign your additional random trait using the `/volatile` command." #volatile
 }
 
 async def image_autocomp(ctx):
