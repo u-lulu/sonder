@@ -319,6 +319,61 @@ async def roll_dice_with_context(ctx,syntax,reply=True):
 subscription_cache = {}
 sub_cache_timeout = 60 * 60 # 1 hour
 
+def apply_stat_change(character: dict, stat: str):
+	stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
+	
+	stats_translator = {
+		"MAX":"maxhp",
+		"WAR":"wd",
+		"FORCEFUL":"frc",
+		"TACTICAL":"tac",
+		"CREATIVE":"cre",
+		"REFLEXIVE":"rfx"
+	}
+	
+	bonus = stat.split(" ")
+	num = 0
+	if bonus[1] in stats and "in animal form" not in stat: #ignore LYCANTHROPE since Max HP is not immediate
+		translated_stat_bonus = stats_translator[bonus[1]]
+		try: 
+			num = rolldice.roll_dice(bonus[0])[0]
+		except Exception as e:
+			num = 0
+			log(f"Caught dice-rolling exception: {e}")
+		character[translated_stat_bonus] += num
+		if translated_stat_bonus == 'maxhp':
+			character['hp'] += num
+	
+	return character
+
+def revoke_stat_change(character: dict, stat: str):
+	stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
+
+	stats_translator = {
+		"MAX":"maxhp",
+		"WAR":"wd",
+		"FORCEFUL":"frc",
+		"TACTICAL":"tac",
+		"CREATIVE":"cre",
+		"REFLEXIVE":"rfx"
+	}
+
+	bonus = stat.split(" ")
+	num = 0
+	if bonus[1] in stats:
+		translated_stat_bonus = stats_translator[bonus[1]]
+		try: 
+			num = rolldice.roll_dice(bonus[0])[0]
+		except Exception as e:
+			num = 0
+			log(f"Caught dice-rolling exception: {e}")
+		if translated_stat_bonus != 'wd':
+			character[translated_stat_bonus] -= num
+		if translated_stat_bonus == 'maxhp':
+			character['hp'] -= num
+	
+	return character
+
 async def ext_character_management(id):
 	try:
 		id = int(id)
@@ -1285,7 +1340,7 @@ async def add_trait(ctx,
 		await ctx.respond(f'No trait with the exact name or D666 number "{trait.upper()}" exists. Double-check your spelling.',ephemeral=True)
 		return
 	
-	if 'henshin_trait' in character['special'] and character['special']['henshin_trait'] is not None and my_new_trait['Name'] == character['special']['henshin_trait']['Name']:
+	if character['special'].get('henshin_trait',None) is not None and my_new_trait['Name'] == character['special']['henshin_trait']['Name']:
 		await ctx.respond(f'**{codename.upper()}** is already using **{my_new_trait["Name"]} ({my_new_trait["Number"]})** as their HENSHIN trait.',ephemeral=True)
 		return
 	
@@ -1312,31 +1367,9 @@ async def add_trait(ctx,
 		character['special']['henshin_stored_hp'] = 0
 		character['special']['henshin_stored_maxhp'] = 0
 	
-	stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
-	
-	stats_translator = {
-		"MAX":"maxhp",
-		"WAR":"wd",
-		"FORCEFUL":"frc",
-		"TACTICAL":"tac",
-		"CREATIVE":"cre",
-		"REFLEXIVE":"rfx"
-	}
-	
 	old_max_hp = character['maxhp']
 	
-	bonus = my_new_trait["Stat"].split(" ")
-	num = 0
-	if bonus[1] in stats and my_new_trait['Number'] != 356: #356 is ignored so LYCANTHROPE doesn't add unnecessary MAX HP
-		translated_stat_bonus = stats_translator[bonus[1]]
-		try: 
-			num = rolldice.roll_dice(bonus[0])[0]
-		except Exception as e:
-			num = 0
-			log(f"Caught dice-rolling exception: {e}")
-		character[translated_stat_bonus] += num
-		if translated_stat_bonus == 'maxhp':
-			character['hp'] += num
+	apply_stat_change(character,my_new_trait["Stat"])
 	
 	out = f"**{codename.upper()}** has gained a trait!"
 	if old_max_hp > character['maxhp'] and character['maxhp'] <= 0:
@@ -1369,31 +1402,7 @@ async def henshin(ctx, set_trait: discord.Option(str, "The core book name or num
 				return
 			else: #successful activation
 				if character['special']['henshin_stored_maxhp'] != 0: #henshin is already active; revert it
-					stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
-
-					stats_translator = {
-						"MAX":"maxhp",
-						"WAR":"wd",
-						"FORCEFUL":"frc",
-						"TACTICAL":"tac",
-						"CREATIVE":"cre",
-						"REFLEXIVE":"rfx"
-					}
-
-					bonus = character['special']['henshin_trait']["Stat"].split(" ")
-					num = 0
-					if bonus[1] in stats:
-						translated_stat_bonus = stats_translator[bonus[1]]
-						try: 
-							num = rolldice.roll_dice(bonus[0])[0]
-						except Exception as e:
-							num = 0
-							log(f"Caught dice-rolling exception: {e}")
-						if translated_stat_bonus != 'wd':
-							character[translated_stat_bonus] -= num
-						if translated_stat_bonus == 'maxhp':
-							character['hp'] -= num
-					
+					revoke_stat_change(character,character['special']['henshin_trait']['Stat'])
 					character['hp'] = character['special']['henshin_stored_hp']
 					character['maxhp'] = character['special']['henshin_stored_maxhp']
 					character['special']['henshin_stored_hp'] = 0
@@ -1408,29 +1417,8 @@ async def henshin(ctx, set_trait: discord.Option(str, "The core book name or num
 					character['special']['henshin_stored_maxhp'] = character['maxhp']
 					character['hp'] = new_hp
 					character['maxhp'] = new_hp
-					stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
-	
-					stats_translator = {
-						"MAX":"maxhp",
-						"WAR":"wd",
-						"FORCEFUL":"frc",
-						"TACTICAL":"tac",
-						"CREATIVE":"cre",
-						"REFLEXIVE":"rfx"
-					}
+					apply_stat_change(character,character['special']['henshin_trait']['Stat'])
 
-					bonus = character['special']['henshin_trait']['Stat'].split(" ")
-					num = 0
-					if bonus[1] in stats:
-						translated_stat_bonus = stats_translator[bonus[1]]
-						try: 
-							num = rolldice.roll_dice(bonus[0])[0]
-						except Exception as e:
-							num = 0
-							log(f"Caught dice-rolling exception: {e}")
-						character[translated_stat_bonus] += num
-						if translated_stat_bonus == 'maxhp':
-							character['hp'] += num
 					await ctx.respond(f"**{codename.upper()} has activated HENSHIN!**\n- They have gained the **{character['special']['henshin_trait']['Name']}** trait.\n- They have taken {character['special']['henshin_trait']['Stat']}.\n- This form has **{character['maxhp']} MAX HP**.")
 					await save_character_data(str(ctx.author.id))
 					return
@@ -2790,33 +2778,10 @@ async def remove_trait(ctx, trait: discord.Option(str, "The name of the trait to
 			break
 	
 	if target_trait == None:
-		await ctx.respond(f"{codename.upper()} does not a trait called '{trait}'.",ephemeral=True)
+		await ctx.respond(f"{codename.upper()} does not have a trait called '{trait}'.",ephemeral=True)
 		return
 	else:
-		stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
-		
-		stats_translator = {
-			"MAX":"maxhp",
-			"WAR":"wd",
-			"FORCEFUL":"frc",
-			"TACTICAL":"tac",
-			"CREATIVE":"cre",
-			"REFLEXIVE":"rfx"
-		}
-		
-		bonus = target_trait["Stat"].split(" ")
-		num = 0
-		if bonus[1] in stats:
-			translated_stat_bonus = stats_translator[bonus[1]]
-			try: 
-				num = rolldice.roll_dice(bonus[0])[0]
-			except Exception as e:
-				num = 0
-				log(f"Caught dice-rolling exception: {e}")
-			if translated_stat_bonus != 'wd':
-				character[translated_stat_bonus] -= num
-			if translated_stat_bonus == 'maxhp':
-				character['hp'] -= num
+		revoke_stat_change(character,target_trait["Stat"])
 	
 		character['traits'].remove(target_trait)
 		await ctx.respond(f"{codename.upper()} has lost the trait **{trait.upper()}**.")
@@ -3289,30 +3254,7 @@ async def damage(ctx,
 	message += f"\nHP: {character['hp']}/{character['maxhp']}"
 	
 	if character['hp'] <= 0 and 'henshin_stored_maxhp' in character['special'] and character['special']['henshin_stored_maxhp'] > 0:
-		stats = ["MAX","WAR","FORCEFUL","TACTICAL","CREATIVE","REFLEXIVE"]
-		stats_translator = {
-			"MAX":"maxhp",
-			"WAR":"wd",
-			"FORCEFUL":"frc",
-			"TACTICAL":"tac",
-			"CREATIVE":"cre",
-			"REFLEXIVE":"rfx"
-		}
-
-		bonus = character['special']['henshin_trait']["Stat"].split(" ")
-		num = 0
-		if bonus[1] in stats:
-			translated_stat_bonus = stats_translator[bonus[1]]
-			try: 
-				num = rolldice.roll_dice(bonus[0])[0]
-			except Exception as e:
-				num = 0
-				log(f"Caught dice-rolling exception: {e}")
-			if translated_stat_bonus != 'wd':
-				character[translated_stat_bonus] -= num
-			if translated_stat_bonus == 'maxhp':
-				character['hp'] -= num
-	
+		revoke_stat_change(character,character['special']['henshin_trait']["Stat"])
 		character['hp'] = character['special']['henshin_stored_hp']
 		character['maxhp'] = character['special']['henshin_stored_maxhp']
 		character['special']['henshin_stored_hp'] = 0
