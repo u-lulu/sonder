@@ -578,7 +578,7 @@ async def backup_generation_loop():
 				
 				save_time = int(time())
 
-				with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+				with zipfile.ZipFile(zip_buffer, 'w', compression=zipfile.ZIP_BZIP2, compresslevel=9) as zipf:
 					for root,dirs,files in os.walk(data_dir):
 						for file in files:
 							relative_path = os.path.relpath(os.path.join(root, file), data_dir)
