@@ -1437,7 +1437,7 @@
   {
     "Number": 652,
     "Name": "VOLATILE",
-    "Effect": "Your menagerie of ultrahuman abilities is virtually infinite in scope, but which powers manifest themselves (and when) is completely unpredictable. At the beginning of each mission, roll a trait (`/trait random`). That trait replaces this trait (VOLATILE) until the end of the mission (although you also retain VOLATILE's containment armor and -2 TACTICAL penalty). Reroll your trait when you rest, use a WAR DIE, or take 6+ DAMAGE.",
+    "Effect": "Your menagerie of ultrahuman abilities is virtually infinite in scope, but which powers manifest themselves (and when) is completely unpredictable. At the beginning of each mission, roll a trait (`/volatile`). That trait replaces this trait (VOLATILE) until the end of the mission (although you also retain VOLATILE's containment armor and -2 TACTICAL penalty). Reroll your trait when you rest, use a WAR DIE, or take 6+ DAMAGE.",
     "Item": "Containment armor (2 ARMOR)",
     "Stat": "-2 TACTICAL"
   },
