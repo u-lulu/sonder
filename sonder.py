@@ -379,7 +379,7 @@ def revoke_stat_change(character: dict, stat: str):
 
 	bonus = stat.split(" ")
 	num = 0
-	if bonus[1] in stats:
+	if bonus[1] in stats and "in animal form" not in stat: #ignore LYCANTHROPE
 		translated_stat_bonus = stats_translator[bonus[1]]
 		try: 
 			num = rolldice.roll_dice(bonus[0])[0]
