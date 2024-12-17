@@ -1954,7 +1954,7 @@ async def my_characters(ctx):
 		await ctx.respond("You haven't created any characters yet.",ephemeral=True)
 	
 @bot.command(description="Displays your current active character's sheet")
-async def sheet(ctx: discord.ApplicationContext, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default=""), qr: discord.Option(bool, "Sends a QR code of the final output instead.", required=False, default=False), text_only: discord.Option(bool, "Sends a text-only version of the character sheet. May be sent as a file.", required=False, default=False)):
+async def sheet(ctx: discord.ApplicationContext, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default=""), text_only: discord.Option(bool, "Sends a text-only version of the character sheet. May be sent as a file.", required=False, default=False)):
 	codename = codename.lower().strip()
 	yourid = str(ctx.author.id)
 	if codename == "":
@@ -1968,34 +1968,24 @@ async def sheet(ctx: discord.ApplicationContext, codename: discord.Option(str, "
 	
 	ch = character_data[yourid]['chars'][codename]
 	message = output_character(codename, ch)
-	if qr:
-		message = message.replace("*","").replace("# ","")
-		if len(message) > 2331:
-			await ctx.respond(f"Cannot produce a QR code that encodes more than 2331 characters. Requested sheet is {len(message)} characters.",ephemeral=True)
-		else:
-			img = qrcode.make(message)
-			img.save('qr.png')
-			await ctx.respond(f"QR code of character sheet for **{codename.upper()}**:",file=discord.File('qr.png'))
-			os.remove('qr.png')
+	blocks = output_character_embed(codename, ch, ctx.author)
+	if text_only or any_embed_is_oversize(blocks):
+		await response_with_file_fallback(ctx,message)
 	else:
-		blocks = output_character_embed(codename, ch, ctx.author)
-		if text_only or any_embed_is_oversize(blocks):
-			await response_with_file_fallback(ctx,message)
-		else:
-			first_embed_post = True
-			while get_embed_group_length(blocks) > 6000:
-				if first_embed_post:
-					await ctx.respond(content=f"# {codename.upper()}", embed=blocks[0])
-					first_embed_post = False
-				else:
-					await ctx.channel.send(embed=blocks[0])
-				blocks = blocks[1:]
-			if len(blocks) > 0:
-				if first_embed_post:
-					await ctx.respond(content=f"# {codename.upper()}", embeds=blocks)
-					first_embed_post = False
-				else:
-					await ctx.channel.send(embeds=blocks)
+		first_embed_post = True
+		while get_embed_group_length(blocks) > 6000:
+			if first_embed_post:
+				await ctx.respond(content=f"# {codename.upper()}", embed=blocks[0])
+				first_embed_post = False
+			else:
+				await ctx.channel.send(embed=blocks[0])
+			blocks = blocks[1:]
+		if len(blocks) > 0:
+			if first_embed_post:
+				await ctx.respond(content=f"# {codename.upper()}", embeds=blocks)
+				first_embed_post = False
+			else:
+				await ctx.channel.send(embeds=blocks)
 
 @bot.command(description="Show your active character's inventory")
 async def inventory(ctx, codename: discord.Option(str, "The codename of a specific character to view instead.", autocomplete=discord.utils.basic_autocomplete(character_names_autocomplete), required=False, default="")):
