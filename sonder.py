@@ -1967,10 +1967,9 @@ async def sheet(ctx: discord.ApplicationContext, codename: discord.Option(str, "
 		return
 	
 	ch = character_data[yourid]['chars'][codename]
-	message = output_character(codename, ch)
 	blocks = output_character_embed(codename, ch, ctx.author)
 	if text_only or any_embed_is_oversize(blocks):
-		await response_with_file_fallback(ctx,message)
+		await response_with_file_fallback(ctx,output_character(codename, ch))
 	else:
 		first_embed_post = True
 		while get_embed_group_length(blocks) > 6000:
