@@ -32,7 +32,7 @@ def log(msg,alert=False):
 	msg = str(msg).strip()
 	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
 	try:
-		if logging_channel is not None:
+		if logging_channel is not None and not bot.is_closed():
 			full_msg = f"<t:{int(time())}:R> `{msg}`"
 			if alert:
 				full_msg += f" (<@{ownerid}>)"
