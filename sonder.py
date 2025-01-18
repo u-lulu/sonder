@@ -566,8 +566,15 @@ else:
 	log("No required changes to player data found.")
 
 SAVE_INTERVAL = 86400
+backups_have_already_started = False
 
 async def backup_generation_loop():
+	global backups_have_already_started
+	if backups_have_already_started:
+		log("Backup generation loop is already running.")
+		return
+	else:
+		backups_have_already_started = True
 	while True:
 		if backups_channel is None:
 			log(f"Backups channel does not exist. Trying again in {SAVE_INTERVAL} seconds.",alert=True)
