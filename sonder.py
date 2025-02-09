@@ -2517,6 +2517,12 @@ async def spawn_item(ctx,
 			else:
 				log("Denying invalid item spawn cancellation")
 				await interaction.response.send_message("This is not your item spawn.",ephemeral=True)
+	
+	concat = item_name+item_effect
+	if "(" in concat or ")" in concat:
+		await ctx.respond("For organizational reasons, please do not use parenthesis in the `name` or `effect` of your item.",ephemeral=True)
+		return False
+
 	full_item = item_name
 	if item_effect != "NO_EFFECT":
 		full_item += f" ({item_effect})"
