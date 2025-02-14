@@ -2275,7 +2275,7 @@ async def delete_custom_trait(ctx,
 	yourtraits = character_data[uid]['traits']
 	name = name.upper()
 	if name not in yourtraits:
-		await ctx.respond(f"You do not have a custom trait called {name}.",ephemeral=True)
+		return await ctx.respond(f"You do not have a custom trait called {name}.",ephemeral=True)
 	
 	del yourtraits[name]
 
