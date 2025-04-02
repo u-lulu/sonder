@@ -117,7 +117,7 @@
             },
             "55": {
                 "Name":"REDISTRIBUTE",
-                "Effect":"Can shift the force of impacts to... somewhere else on your body. Once per mission, you may ignore any amount of DAMAGE dealt to you and permanently reduce one of your stats by 1. Roll 1D6 to determine which: 1-2 FORCEFUL, 3-4 REFLEXIVE, 5 TACTICAL,6 CREATIVE."
+                "Effect":"Can shift the force of impacts to... somewhere else on your body. Once per mission, you may ignore any amount of DAMAGE dealt to you and permanently reduce one of your stats by 1. Roll 1D6 to determine which: 1-2 FORCEFUL, 3-4 REFLEXIVE, 5 TACTICAL, 6 CREATIVE."
             },
             "56": {
                 "Name":"SENSORS",
