@@ -3214,7 +3214,7 @@ async def increase_stat(ctx,
 		character['maxhp'] = character['special']['henshin_stored_maxhp']
 		character['special']['henshin_stored_hp'] = 0
 		character['special']['henshin_stored_maxhp'] = 0
-		message += f"\n-#  **This has deactivated HENSHIN.** HP has been reverted to **{character['hp']}/{character['maxhp']}**."
+		message += f"\n-# **This has deactivated HENSHIN.** HP has been reverted to **{character['hp']}/{character['maxhp']}**."
 
 	if 'd' in amount or 'D' in amount:
 		message += f"\n-# Dice results: `{output[1]}`"

@@ -133,7 +133,7 @@
             },
             "63": {
                 "Name":"SWAP",
-                "Effect":"Once per mission you can swap this armor with the one a character you can see is  wearing (even as a response to DAMAGE before it's applied). This effect still works if the target has no armor equipped."
+                "Effect":"Once per mission you can swap this armor with the one a character you can see is wearing (even as a response to DAMAGE before it's applied). This effect still works if the target has no armor equipped."
             },
             "64": {
                 "Name":"THREATENING",

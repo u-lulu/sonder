@@ -23,7 +23,7 @@
   {
     "Number": 114,
     "Name": "AIMBOT",
-    "Effect": "You  can only attack one target at a time. You are unable to engage another until your target has either left your line of sight or died. While attacking your target, partial successes become full ones.",
+    "Effect": "You can only attack one target at a time. You are unable to engage another until your target has either left your line of sight or died. While attacking your target, partial successes become full ones.",
     "Item": "Hand cannon (1D6+1 DAMAGE)",
     "Stat": "-1 TACTICAL"
   },
