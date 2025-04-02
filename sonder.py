@@ -4565,11 +4565,13 @@ async def weaponsmith(ctx,
 	tags = rnd.sample(list(intelligence["gear_weapons_and_armor"][2]["Values"].values()),amount)
 	
 	skin = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
-	message = f"**{model}** (adorned with **{skin}**)"
+	
+	output_embed = discord.Embed()
+	output_embed.color = discord.Color.from_rgb(rnd.randint(0,255), rnd.randint(0,255), rnd.randint(0,255))
+	output_embed.title = f"**{model}** (adorned with **{skin}**)"
 	for tag in tags:
-		message += f"\n- **{tag['Name']}**: {tag['Effect']}"
-	message = replace_commands_with_mentions(message)
-	await ctx.respond(message)
+		output_embed.add_field(name=tag['Name'],value=replace_commands_with_mentions(tag['Effect']),inline=False)
+	await ctx.respond(embed=output_embed)
 
 @gear_group.command(description="Generates a fully unique Armor piece")
 async def armorsmith(ctx,
@@ -4579,14 +4581,23 @@ async def armorsmith(ctx,
 	tags = []
 	amount = (d6() if d6() <= 1 else 1) if armor_tags is None else armor_tags
 	tags = rnd.sample(list(intelligence["guard"]["Values"].values()),amount)
+
+	if intelligence["guard"]["Values"]["66"] in tags:
+		for i in range(2):
+			extra_tag = rnd.choice(list(intelligence["guard"]["Values"].values()))
+			while extra_tag in tags:
+				extra_tag = rnd.choice(list(intelligence["guard"]["Values"].values()))
+			tags.append(extra_tag)
 	
 	skin = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
-	message = f"**{model}** (adorned with **{skin}**)"
+
+	output_embed = discord.Embed()
+	output_embed.color = discord.Color.from_rgb(rnd.randint(0,255), rnd.randint(0,255), rnd.randint(0,255))
+	output_embed.title = f"**{model}** (adorned with **{skin}**)"
 	for tag in tags:
-		message += f"\n- **{tag['Name']}**: {tag['Effect']}"
-	message = replace_commands_with_mentions(message)
-	message += "\n-# Armor tags are courtesy of Hevybot's [GUARD](<https://hevybot.itch.io/guard>) supplement."
-	await ctx.respond(message)
+		output_embed.add_field(name=tag['Name'],value=tag['Effect'],inline=False)
+	output_embed.set_footer(text="Armor tags are courtesy of Hevybot's GUARD supplement: https://hevybot.itch.io/guard")
+	await ctx.respond(embed=output_embed)
 
 @gear_group.command(description="Generates a fully unique Vehicle")
 async def hangar(ctx):
