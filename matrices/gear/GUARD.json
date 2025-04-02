@@ -1,0 +1,151 @@
+{
+    "Title":"GUARD ARMOR TAGS",
+    "Roll":"D66",
+    "Values":
+        {
+            "11": {
+                "Name":"AMMO",
+                "Effect":"This armor stores, assembles or grows an experimental type of ammo that mimics a weapon tag of your choice. Once per mission, you may refill a ranged weapon's ammo and its next attack will have the effects of that weapon tag, as well as dealing +2 DAMAGE if it hits."
+            },
+            "12": {
+                "Name":"AUTOPILOT",
+                "Effect":"Through onboard AI, supernatural possession or some other quirk, this armor can move independently of you and clumsily follow simple commands. While autopiloting, the armor has 1D6 max HP and its own armor value."
+            },
+            "13": {
+                "Name":"BLASTPROOF",
+                "Effect":"6 ARMOR against explosions."
+            },
+            "14": {
+                "Name":"BLINK",
+                "Effect":"This armor grants one use of the TELEPORT trait per mission. If you already have the TELEPORT trait, this instead becomes one automatic success when teleporting somewhere you'd have to roll for."
+            },
+            "15": {
+                "Name":"BULKY",
+                "Effect":"This armor is clunky and reduces your REFLEXIVE by 1, but while you're wearing it you cannot be involuntarily moved."
+            },
+            "16": {
+                "Name":"CHARMED",
+                "Effect":"Add +1 to each WAR DICE you roll, and +1 to each Die of Fate (or -1 if the Die isan X-in-1D6 chance) rolled while you have this armor equipped."
+            },
+            "21": {
+                "Name":"COMPACT",
+                "Effect":"This armor can be disassembled, folded, etc. for easy transport and concealment, but will not provide its armor bonus unless it's in its standard state."
+            },
+            "22": {
+                "Name":"COUNTERMEASURES",
+                "Effect":"+3 armor against one very specific type of DAMAGE (such as the claws of a certain clan of werewolves, a type of bullet only in use in a small number of guns, or a one-of-a-kind legendary sword)."
+            },
+            "23": {
+                "Name":"DIRECTIONAL",
+                "Effect":"+2 armor against attacks from a specific direction, -1 armor against attacks from the opposite direction."
+            },
+            "24": {
+                "Name":"DODGE",
+                "Effect":"+1 to all rolls that involve moving your body to avoid incoming damage."
+            },
+            "25": {
+                "Name":"ENVIRONMENTAL",
+                "Effect":"Enables comfortable movement in, and provides safety from, one type of hazardous environment (such as the deep sea, outer space, the area surrounding an active volcano, etc.)."
+            },
+            "26": {
+                "Name":"ELEMENTAL",
+                "Effect":"While wearing this armor you take half DAMAGE, rounded down, from one type of elemental attack (such as fire, radiation, poison, electricity, etc.)."
+            },
+            "31": {
+                "Name":"EYE-CATCHING",
+                "Effect":"In addition to its regular appearance, this armor has an attention-grabbingflourish (Inlaid gemstones, a bright and ugly paint job, obvious weak points, massive andcompletely non-functional helmet horns, etc). You may roll +CREATIVE to taunt and make yourself the target of all DAMAGE from enemies that can see you, even on failed rolls by other player characters, until you break their line of sight."
+            },
+            "32": {
+                "Name":"FRICTIONLESS",
+                "Effect":"While wearing this armor, the referee cannot say you've been grabbed or restrained by any physical means."
+            },
+            "33": {
+                "Name":"GLOW",
+                "Effect":"This armor can act as a medium-intensity light source, and this property can be switched on and off."
+            },
+            "34": {
+                "Name":"GRIT",
+                "Effect":"This piece of armor never quits, and while wearing it you won't either. Once persession, if you're at full HP and take DAMAGE that would kill you, instead survive with 1 HP."
+            },
+            "35": {
+                "Name":"HOLLOW",
+                "Effect":"Bigger on the inside than the outside. Characters may enter or exit this piece of armor's vast depths unless it's being worn normally. Player characters must roll +REFLEXIVE to do this."
+            },
+            "36": {
+                "Name":"LOCK",
+                "Effect":"You can lock this armor at any time to gain +2 armor(even as a response to DAMAGE before it's applied), but become unable to move or act physically. Unlocking it requires you to roll +FORCEFUL, or get help from another character."
+            },
+            "41": {
+                "Name":"MAGNETIC",
+                "Effect":"You may roll +TACTICAL to engage this armor’s built-in magnets, attracting or repelling nearby metal objects."
+            },
+            "42": {
+                "Name":"MALLEABLE",
+                "Effect":"Can perfectly fit any character, regardless of their proportions."
+            },
+            "43": {
+                "Name":"MASTERWORK",
+                "Effect":"+1 ARMOR and a much stronger visual aesthetic."
+            },
+            "44": {
+                "Name":"MENDING",
+                "Effect":"Increases healing applied to you by 2."
+            },
+            "45": {
+                "Name":"MOUNT",
+                "Effect":"You can permanently attach a weapon to this armor, giving +1 to all rolls that use the weapon to attack. If the armor is destroyed or unequipped, the weapon will be too."
+            },
+            "46": {
+                "Name":"PARACHUTE",
+                "Effect":"Once per mission, you can deploy this armor's built-in parachute."
+            },
+            "51": {
+                "Name":"PARRY",
+                "Effect":"When taking DAMAGE from an enemy's melee attack, you may roll a number of D6 equal to the number of D6 that were rolled to DAMAGE you (minimum 1D6). If you tie with the attack's DAMAGE, you completely ignore it and stun the attacker, otherwise you are damaged as normal."
+            },
+            "52": {
+                "Name":"POWERED",
+                "Effect":"This armor has a unique power source that the ref will describe. They will always give you an opportunity to get more of it during a mission, but if you haven't obtained this power source by the time it ends the armor will become un-equippable until you do. Once per mission, you may power the armor with its source. After this, you may make one FORCEFUL or REFLEXIVE roll one degree of success higher during that mission."
+            },
+            "53": {
+                "Name":"PRISTINE",
+                "Effect":"Perpetually shiny and brand-new looking. Gives +2 ARMOR the first time you take DAMAGE each mission, and will never accumulate any buildup of dirt, mud, slime, etc."
+            },
+            "54": {
+                "Name":"REACTIVE",
+                "Effect":"Taking DAMAGE adds +1 to the DAMAGE of your next attack.This effect stacks."
+            },
+            "55": {
+                "Name":"REDISTRIBUTE",
+                "Effect":"Can shift the force of impacts to... somewhere else on your body. Once per mission, you may ignore any amount of DAMAGE dealt to you and permanently reduce one of your stats by 1. Roll 1D6 to determine which: 1-2 FORCEFUL, 3-4 REFLEXIVE, 5 TACTICAL,6 CREATIVE."
+            },
+            "56": {
+                "Name":"SENSORS",
+                "Effect":"Scans your surroundings. Each time you take 4 or more total DAMAGE from a new source, the ref will tell you a useful fact about whatever did DAMAGE to you."
+            },
+            "61": {
+                "Name":"SPECIALIZED",
+                "Effect":"Designed to focus the wearer's potential. Grants +1 to your highest attribute and -1 to your lowest. You pick what is increased if more than one of your highest attributes tie, and the ref picks what is decreased if the lowest tie. "
+            },
+            "62": {
+                "Name":"STIMS",
+                "Effect":"When you roll to do something risky, you may activate the combat stim syringe array in this piece of armor and add 1D6 to the roll. Take the result as DAMAGE once your risky action resolves, as the syringes are unembedded from your flesh."
+            },
+            "63": {
+                "Name":"SWAP",
+                "Effect":"Once per mission you can swap this armor with the one a character you can see is  wearing (even as a response to DAMAGE before it's applied). This effect still works if the target has no armor equipped."
+            },
+            "64": {
+                "Name":"THREATENING",
+                "Effect":"Has an intimidating aura that strikes fear into others, thanks to one or more menacing features (e.g. spikes, painted-on skulls, or a kill count scratched onto it somewhere). Grants +2 to rolls made to intimidate, coerce, etc. but -2 to rolls made to build trust, calm others, etc."
+            },
+            "65": {
+                "Name":"WARDED",
+                "Effect":"Gain +1 armor against supernatural or psychic attacks, and your ARMOR value cannot be reduced or ignored by them."
+            },
+            "66": {
+                "Name":"XENOTECH",
+                "Effect":"Contains (or is entirely made from) alien technology. Roll two more tags for it (rerolling them if they're additional instances of XENOTECH.). Aliens will likely be attracted by this piece of armor, and may offer a reward for its return or become hostile at the sight of you wearing it."
+            }
+        }
+}

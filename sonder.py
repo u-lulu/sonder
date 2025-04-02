@@ -4325,6 +4325,10 @@ file = open('matrices/gear/weapons_and_armor.json')
 intelligence["gear_weapons_and_armor"] = json.load(file)
 file.close()
 
+file = open('matrices/gear/GUARD.json')
+intelligence["guard"] = json.load(file)
+file.close()
+
 file = open('matrices/gear/vehicles.json')
 intelligence["gear_vehicles"] = json.load(file)
 file.close()
@@ -4428,7 +4432,7 @@ async def tag_lookup_autocomp(ctx):
 	return wep_tag_names
 
 @gear_group.command(description="Applies a random Weapon Tag")
-async def tag(ctx, lookup: discord.Option(str,"Including this argument searches for a specific tag instead",autocomplete=discord.utils.basic_autocomplete(tag_lookup_autocomp),required=False,default=None)=None):
+async def weapon_tag(ctx, lookup: discord.Option(str,"Including this argument searches for a specific tag instead",autocomplete=discord.utils.basic_autocomplete(tag_lookup_autocomp),required=False,default=None)=None):
 	tags = intelligence["gear_weapons_and_armor"][2]["Values"]
 	message = ""
 	hidden = False
@@ -4456,6 +4460,45 @@ async def tag(ctx, lookup: discord.Option(str,"Including this argument searches 
 				message = "Could not find a tag with an approximately similar name."
 				hidden = True
 	message = replace_commands_with_mentions(message)
+	await ctx.respond(message,ephemeral=hidden)
+
+armor_tag_names = []
+for tag in intelligence["guard"]["Values"].values():
+	armor_tag_names.append(tag['Name'])
+
+async def armor_tag_lookup_autocomp(ctx):
+	return armor_tag_names
+
+@gear_group.command(description="Applies a random Weapon Tag")
+async def armor_tag(ctx, lookup: discord.Option(str,"Including this argument searches for a specific tag instead",autocomplete=discord.utils.basic_autocomplete(armor_tag_lookup_autocomp),required=False,default=None)=None):
+	tags = intelligence["guard"]["Values"]
+	message = ""
+	hidden = False
+	if lookup is None:
+		result = roll_intelligence_matrix(intelligence["guard"])
+		message = f"**{result['Name']}**: {result['Effect']}"
+	else:
+		if re.match("^\d+$", lookup):
+			if lookup in tags:
+				result = tags[lookup]
+				message = f"**{result['Name']}**: {result['Effect']}"
+			else:
+				message = "No tag exists with the given number. Tag numbers must be possible d66 roll outputs."
+				hidden = True
+		else:
+			best_match = get_close_matches(lookup.upper(), armor_tag_names, n=1, cutoff=0.0)
+			
+			if len(best_match) > 0:
+				for tag in tags.values():
+					if tag["Name"] == best_match[0]:
+						result = tag
+						message = f"**{result['Name']}**: {result['Effect']}"
+						break
+			else:
+				message = "Could not find a tag with an approximately similar name."
+				hidden = True
+	message = replace_commands_with_mentions(message)
+	message += "\n-# Armor tags are courtesy of Hevybot's [GUARD](<https://hevybot.itch.io/guard>) supplement."
 	await ctx.respond(message,ephemeral=hidden)
 
 @gear_group.command(description="Grants a random Vehicle")
@@ -4526,6 +4569,23 @@ async def weaponsmith(ctx,
 	for tag in tags:
 		message += f"\n- **{tag['Name']}**: {tag['Effect']}"
 	message = replace_commands_with_mentions(message)
+	await ctx.respond(message)
+
+@gear_group.command(description="Generates a fully unique Armor piece")
+async def armorsmith(ctx,
+		armor_tags: discord.Option(discord.SlashCommandOptionType.integer, "The number of tags the armor has", required=False, default=None, min_value=1, max_value=6)=None):
+	model = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][0])
+	
+	tags = []
+	amount = (d6() if d6() <= 1 else 1) if armor_tags is None else armor_tags
+	tags = rnd.sample(list(intelligence["guard"]["Values"].values()),amount)
+	
+	skin = roll_intelligence_matrix(intelligence["gear_weapons_and_armor"][3])
+	message = f"**{model}** (adorned with **{skin}**)"
+	for tag in tags:
+		message += f"\n- **{tag['Name']}**: {tag['Effect']}"
+	message = replace_commands_with_mentions(message)
+	message += "\n-# Armor tags are courtesy of Hevybot's [GUARD](<https://hevybot.itch.io/guard>) supplement."
 	await ctx.respond(message)
 
 @gear_group.command(description="Generates a fully unique Vehicle")
