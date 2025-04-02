@@ -53,7 +53,7 @@
             },
             "31": {
                 "Name":"EYE-CATCHING",
-                "Effect":"In addition to its regular appearance, this armor has an attention-grabbingflourish (Inlaid gemstones, a bright and ugly paint job, obvious weak points, massive andcompletely non-functional helmet horns, etc). You may roll +CREATIVE to taunt and make yourself the target of all DAMAGE from enemies that can see you, even on failed rolls by other player characters, until you break their line of sight."
+                "Effect":"In addition to its regular appearance, this armor has an attention-grabbing flourish (Inlaid gemstones, a bright and ugly paint job, obvious weak points, massive and completely non-functional helmet horns, etc). You may roll +CREATIVE to taunt and make yourself the target of all DAMAGE from enemies that can see you, even on failed rolls by other player characters, until you break their line of sight."
             },
             "32": {
                 "Name":"FRICTIONLESS",
@@ -73,11 +73,11 @@
             },
             "36": {
                 "Name":"LOCK",
-                "Effect":"You can lock this armor at any time to gain +2 armor(even as a response to DAMAGE before it's applied), but become unable to move or act physically. Unlocking it requires you to roll +FORCEFUL, or get help from another character."
+                "Effect":"You can lock this armor at any time to gain +2 armor (even as a response to DAMAGE before it's applied), but become unable to move or act physically. Unlocking it requires you to roll +FORCEFUL, or get help from another character."
             },
             "41": {
                 "Name":"MAGNETIC",
-                "Effect":"You may roll +TACTICAL to engage this armor’s built-in magnets, attracting or repelling nearby metal objects."
+                "Effect":"You may roll +TACTICAL to engage this armor's built-in magnets, attracting or repelling nearby metal objects."
             },
             "42": {
                 "Name":"MALLEABLE",
@@ -113,7 +113,7 @@
             },
             "54": {
                 "Name":"REACTIVE",
-                "Effect":"Taking DAMAGE adds +1 to the DAMAGE of your next attack.This effect stacks."
+                "Effect":"Taking DAMAGE adds +1 to the DAMAGE of your next attack. This effect stacks."
             },
             "55": {
                 "Name":"REDISTRIBUTE",
@@ -125,7 +125,7 @@
             },
             "61": {
                 "Name":"SPECIALIZED",
-                "Effect":"Designed to focus the wearer's potential. Grants +1 to your highest attribute and -1 to your lowest. You pick what is increased if more than one of your highest attributes tie, and the ref picks what is decreased if the lowest tie. "
+                "Effect":"Designed to focus the wearer's potential. Grants +1 to your highest attribute and -1 to your lowest. You pick what is increased if more than one of your highest attributes tie, and the ref picks what is decreased if the lowest tie."
             },
             "62": {
                 "Name":"STIMS",
