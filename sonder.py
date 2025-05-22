@@ -5259,7 +5259,7 @@ async def coverup(ctx):
 	desc = result[2]
 	feature = result[3]
 	hook = result[4]
-	message = f"Suppression: {suppression}\nWitness: {witness}\nDescription: {desc}\nFeature: {feature}\nHook: {hook}"
+	message = f"Description: {desc}\nFeature: {feature}\nWitness: {witness}\nSuppression: {suppression}\nHook: {hook}"
 	message = replace_commands_with_mentions(message)
 	await ctx.respond(message)
 
