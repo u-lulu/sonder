@@ -2722,7 +2722,7 @@ async def adjust_item_counter(ctx,
 		return
 	
 	if item not in character['items']:
-		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'. The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
+		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'.\n-# The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
 		return
 	
 	counter_name = counter_name.lower()
@@ -2760,7 +2760,7 @@ async def ammo_check(ctx,
 	
 	item = get_full_item_from_name(item,character)
 	if item not in character['items']:
-		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'. The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
+		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'.\n-# The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
 		return
 	
 	counter_name = counter_name.lower()
@@ -2815,7 +2815,7 @@ async def set_item_counter(ctx,
 	
 	item = get_full_item_from_name(item,character)
 	if item not in character['items']:
-		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'. The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
+		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'.\n-# The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
 		return
 	
 	counter_name = counter_name.lower()
@@ -2852,7 +2852,7 @@ async def remove_item_counter(ctx,
 	
 	full_item = get_full_item_from_name(item,character)
 	if full_item not in character['items']:
-		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'. The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
+		await ctx.respond(f"**{codename.upper()}** is not carrying the item '{item}'.\n-# The item field is case- and formatting-sensitive; try using autofill suggestions.",ephemeral=True)
 		return
 	item = full_item
 	
