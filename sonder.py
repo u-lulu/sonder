@@ -2726,7 +2726,7 @@ async def adjust_item_counter(ctx,
 		return
 	
 	counter_name = counter_name.lower()
-	if counter_name.lower() not in character['counters'][item]:
+	if (item not in character['counters']) or (counter_name.lower() not in character['counters'][item]):
 		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'.",ephemeral=True)
 		return
 	
@@ -2764,7 +2764,7 @@ async def ammo_check(ctx,
 		return
 	
 	counter_name = counter_name.lower()
-	if counter_name.lower() not in character['counters'][item]:
+	if (item not in character['counters']) or (counter_name.lower() not in character['counters'][item]):
 		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'.",ephemeral=True)
 		return
 	
@@ -2819,7 +2819,7 @@ async def set_item_counter(ctx,
 		return
 	
 	counter_name = counter_name.lower()
-	if counter_name.lower() not in character['counters'][item]:
+	if (item not in character['counters']) or (counter_name.lower() not in character['counters'][item]):
 		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'.",ephemeral=True)
 		return
 	
@@ -2857,7 +2857,7 @@ async def remove_item_counter(ctx,
 	item = full_item
 	
 	counter_name = counter_name.lower()
-	if counter_name.lower() not in character['counters'][item]:
+	if (item not in character['counters']) or (counter_name.lower() not in character['counters'][item]):
 		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'.",ephemeral=True)
 		return
 	
