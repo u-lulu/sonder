@@ -2727,7 +2727,7 @@ async def adjust_item_counter(ctx,
 	
 	counter_name = counter_name.lower()
 	if (item not in character['counters']) or (counter_name.lower() not in character['counters'][item]):
-		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'.",ephemeral=True)
+		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'. " + replace_commands_with_mentions("Add one with `/add_item_counter`."),ephemeral=True)
 		return
 	
 	output = await roll_dice_with_context(ctx,amount,True)
@@ -2765,7 +2765,7 @@ async def ammo_check(ctx,
 	
 	counter_name = counter_name.lower()
 	if (item not in character['counters']) or (counter_name.lower() not in character['counters'][item]):
-		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'.",ephemeral=True)
+		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'. " + replace_commands_with_mentions("Add one with `/add_item_counter`."),ephemeral=True)
 		return
 	
 	if character['counters'][item][counter_name] <= 0:
@@ -2820,7 +2820,7 @@ async def set_item_counter(ctx,
 	
 	counter_name = counter_name.lower()
 	if (item not in character['counters']) or (counter_name.lower() not in character['counters'][item]):
-		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'.",ephemeral=True)
+		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'. " + replace_commands_with_mentions("Add one with `/add_item_counter`."),ephemeral=True)
 		return
 	
 	output = await roll_dice_with_context(ctx,amount,True)
@@ -2858,7 +2858,7 @@ async def remove_item_counter(ctx,
 	
 	counter_name = counter_name.lower()
 	if (item not in character['counters']) or (counter_name.lower() not in character['counters'][item]):
-		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'.",ephemeral=True)
+		await ctx.respond(f"Your **{item}** does not have an associated counter called '{counter_name}'. " + replace_commands_with_mentions("Add one with `/add_item_counter`."),ephemeral=True)
 		return
 	
 	del character['counters'][item][counter_name]
