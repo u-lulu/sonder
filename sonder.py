@@ -1275,7 +1275,7 @@ async def image_autocomp(ctx):
 	return ["REMOVE_IMAGE"]
 
 @bot.command(description="Set the file image of your active character")
-async def character_image(ctx: discord.ApplicationContext, image_url: discord.Option(str, "The link to the image.",autocomplete=discord.utils.basic_autocomplete(image_autocomp), required=True)):
+async def character_image(ctx: discord.ApplicationContext, image_url: discord.Option(str, "The link to the image.",autocomplete=discord.utils.basic_autocomplete(image_autocomp), required=True, max_length=750)):
 	character = get_active_char_object(ctx)
 	if character == None:
 		await ctx.respond(replace_commands_with_mentions("You do not have an active character in this channel. Select one with `/switch_character`."),ephemeral=True)
