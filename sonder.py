@@ -1287,7 +1287,7 @@ async def character_image(ctx: discord.ApplicationContext, image_url: discord.Op
 		await ctx.respond(f"Removed the image for {codename.upper()}.",ephemeral=True)
 		return
 	else:
-		image_advice = "\n-# If you are having trouble getting a link that works, try the following:\n-# 1. Upload your image to a Discord channel, such as this bot's DMs.\n-# 2. Right-click the image in chat and select 'Copy Link'.\n-# 3. Paste that link into this command.\n-# Alternatively, you can use an image hosting service such as [Imgur]( <https://imgur.com/> ) or [Postimages]( <https://postimages.org/> )."
+		image_advice = "\n-# If you are having trouble getting a link that works, try the following:\n-# 1. Upload your image to a Discord channel, such as this bot's DMs. (Don't delete it afterwards; it'll stop working!)\n-# 2. Right-click the image in chat and select 'Copy Link'.\n-# 3. Paste that link into this command.\n-# Alternatively, you can use an image hosting service such as [Imgur]( <https://imgur.com/> ) or [Postimages]( <https://postimages.org/> )."
 		try:
 			req = func_timeout(3, requests.head, args=[image_url])
 			if not req.ok:
