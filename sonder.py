@@ -16,6 +16,7 @@ import asyncio
 from io import BytesIO
 import zipfile
 import requests
+from hashlib import md5
 
 STANDARD_CHARACTER_LIMIT = 10
 PREMIUM_CHARACTER_LIMIT = 100
@@ -565,7 +566,7 @@ if changed:
 else:
 	log("No required changes to player data found.")
 
-SAVE_INTERVAL = 86400
+SAVE_INTERVAL = 60 * 60 # 1 hour
 backups_have_already_started = False
 
 async def backup_generation_loop():
@@ -575,6 +576,10 @@ async def backup_generation_loop():
 		return
 	else:
 		backups_have_already_started = True
+
+	previous_hash = None
+	previous_skip_message = None
+	skipped_backups = 0
 	while True:
 		if backups_channel is None:
 			log(f"Backups channel does not exist. Trying again in {SAVE_INTERVAL} seconds.",alert=True)
@@ -593,11 +598,29 @@ async def backup_generation_loop():
 				
 				zip_buffer.seek(0)
 
-				n = f'backup-{save_time}.zip'
-				backup_file = discord.File(zip_buffer,filename=n)
+				new_hash = md5(zip_buffer.getbuffer()).hexdigest()
+				if new_hash == previous_hash:
+					skipped_backups += 1
+					msg = await backups_channel.send(f"*Skipped {skipped_backups} backups. No changes since last backup.*")
 
-				await backups_channel.send(file=backup_file)
-				log(f"Created backup file '{n}' in backup channel. Repeating in {SAVE_INTERVAL} seconds.")
+					if previous_skip_message:
+						try:
+							await previous_skip_message.delete()
+						except Exception as e:
+							log(f"Could not delete previous backup skip message: {e}")
+					
+					previous_skip_message = msg
+
+					log(f"Player data unchanged; backup skipped. Repeating in {SAVE_INTERVAL} seconds.")
+				else:
+					n = f'backup-{save_time}.zip'
+					backup_file = discord.File(zip_buffer,filename=n)
+					await backups_channel.send(f"Hash: `{new_hash}`",file=backup_file)
+					log(f"Created backup file '{n}' in backup channel. Repeating in {SAVE_INTERVAL} seconds.")
+					
+					previous_hash = new_hash
+					previous_skip_message = None
+					skipped_backups = 0
 			except Exception as e:
 				log(f"Failed to create a backup. Trying again in {SAVE_INTERVAL} seconds. Error: {e}",alert=True)
 
