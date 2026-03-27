@@ -2090,7 +2090,11 @@ async def edit_notes(ctx):
 		def __init__(self, *args, **kwargs) -> None:
 			super().__init__(*args, **kwargs)
 
-			self.add_item(discord.ui.InputText(label=f"Notes for '{codename.upper()}'",placeholder="Type your notes here.\nLeave this blank to clear notes.",style=discord.InputTextStyle.long,required=False,value=note,max_length=1900))
+			input_label = f"Notes for '{codename.upper()}'"
+			if len(input_label) > 45:
+				input_label = input_label[:41].strip() + "...'"
+
+			self.add_item(discord.ui.InputText(label=input_label,placeholder="Type your notes here.\nLeave this blank to clear notes.",style=discord.InputTextStyle.long,required=False,value=note,max_length=1900))
 
 		async def callback(self, interaction: discord.Interaction):
 			log("Updating character notes...")
