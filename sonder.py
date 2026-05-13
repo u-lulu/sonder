@@ -29,6 +29,8 @@ logging_channel = None
 backups_channel_id = 1240474179481108510
 backups_channel = None
 
+premium_role_ids = [1142272148099055666, 1504000749783351410]
+
 def log(msg,alert=False):
 	msg = str(msg).strip()
 	print(date.today(), datetime.now().strftime("| %H:%M:%S |"), msg)
@@ -419,7 +421,11 @@ async def ext_character_management(id):
 		if id in subscription_cache:
 			del subscription_cache[id]
 		return False
-	role = user.get_role(1142272148099055666)
+	role = None
+	for r_id in premium_role_ids:
+		role = user.get_role(r_id)
+		if role is not None:
+			break
 	if role is None:
 		log(f"User does not have role, membership check fails")
 		if id in subscription_cache:
@@ -754,7 +760,11 @@ async def membership(ctx):
 		if id in subscription_cache:
 			del subscription_cache[id]
 		return
-	role = user.get_role(1142272148099055666)
+	role = None
+	for r_id in premium_role_ids:
+		role = user.get_role(r_id)
+		if role is not None:
+			break
 	if role is None:
 		log("Result is NO; no assigned role")
 		await ctx.respond(f"You do not have an active subscription on [Ko-fi]( https://ko-fi.com/solarashlulu/tiers ).\nYou are able to manage {STANDARD_CHARACTER_LIMIT} characters and {standard_custrait_limit} custom traits.\nIf you have paid for a subscription but are seeing this message, you must link your Ko-fi account to Discord before you can receive benefits.",ephemeral=True)
