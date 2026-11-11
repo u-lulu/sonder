@@ -1320,27 +1320,22 @@ async def character_image(ctx: discord.ApplicationContext, image_url: discord.Op
 		await ctx.respond(f"Removed the image for {codename.upper()}.",ephemeral=True)
 		return
 	else:
-		image_advice = "\n-# If you are having trouble getting a link that works, try the following:\n-# 1. Upload your image to a Discord channel, such as this bot's DMs. (Don't delete it afterwards; it'll stop working!)\n-# 2. Right-click the image in chat and select 'Copy Link'.\n-# 3. Paste that link into this command.\n-# Alternatively, you can use an image hosting service such as [Imgur]( <https://imgur.com/> ) or [Postimages]( <https://postimages.org/> )."
-		try:
-			req = func_timeout(3, requests.head, args=[image_url])
-			if not req.ok:
-				await ctx.respond(f"Could not verify URL: remote server returned code {req.status_code} ({req.reason})." + image_advice,ephemeral=True)
-				return
-			ct = req.headers['Content-Type']
-			if not ct in ['image/gif','image/jpeg','image/png','image/webp']:
-				await ctx.respond(f"Could not verify URL: expected image of PNG, JPEG, GIF, or WEBP format; remote server sent content type `{ct}`." + image_advice,ephemeral=True)
-				return
-		except Exception as e:
-			await ctx.respond(f"Could not verify URL:\n```{e}```" + image_advice,ephemeral=True)
-			return
+		image_advice = "\n-# If you are having trouble getting a link that works or displays correctly, try the following:\n-# 1. Upload your image to a Discord channel, such as this bot's DMs. (Don't delete it afterwards; it'll stop working!)\n-# 2. Right-click the image in chat and select 'Copy Link'.\n-# 3. Paste that link into this command.\n-# Alternatively, you can use an image hosting service such as [Imgur]( <https://imgur.com/> ) or [Postimages]( <https://postimages.org/> )."
 		
-		await ctx.defer()
-		character["image"] = image_url
 		emb = discord.Embed()
 		emb.image = discord.EmbedMedia(image_url)
 		emb.description = f"Set the character image for {codename.upper()}."
 
-		await ctx.respond(embed=emb)
+		advice_embed = discord.Embed(description=image_advice)
+		embeds = [emb,advice_embed]
+		try:
+			await ctx.respond(embeds=embeds)
+		except Exception as e:
+			await ctx.defer(ephemeral=True)
+			log(f"Caught: {e}")
+			await ctx.respond(f"The provided input cannot be used, as the following error was thrown:\n```{e}```{image_advice}",ephemeral=True)
+			return
+		character["image"] = image_url
 		await save_character_data(str(ctx.author.id))
 
 @bot.command(description="Set the accent color of your active character's /sheet output")
