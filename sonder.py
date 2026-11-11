@@ -1327,8 +1327,8 @@ async def character_image(ctx: discord.ApplicationContext, image_url: discord.Op
 				await ctx.respond(f"Could not verify URL: remote server returned code {req.status_code} ({req.reason})." + image_advice,ephemeral=True)
 				return
 			ct = req.headers['Content-Type']
-			if not ct in ['image/gif','image/jpeg','image/png']:
-				await ctx.respond(f"Could not verify URL: expected image of PNG, JPEG or GIF format; remote server sent content type `{ct}`." + image_advice,ephemeral=True)
+			if not ct in ['image/gif','image/jpeg','image/png','image/webp']:
+				await ctx.respond(f"Could not verify URL: expected image of PNG, JPEG, GIF, or WEBP format; remote server sent content type `{ct}`." + image_advice,ephemeral=True)
 				return
 		except Exception as e:
 			await ctx.respond(f"Could not verify URL:\n```{e}```" + image_advice,ephemeral=True)
